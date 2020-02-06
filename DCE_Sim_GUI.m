@@ -25,7 +25,7 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-addpath(['/DCE_Simulation_Functions']);
+addpath('DCE_Simulation_Functions');
 
 % --- Executes just before DCE_Sim_GUI is made visible.
 function DCE_Sim_GUI_OpeningFcn(hObject, eventdata, handles, varargin)
