@@ -15,3 +15,5 @@ First, paramteres need to be set - parameters may be set manually, or by using t
 Simulations can assess ranges of tissue-appropriate PS values by pressing the 'Simulate PS' button. 
 
 Similarly, ranges of vP values are assessed by pressing the 'Simulate vP' button. 
+
+A single PS value may be tested using the 'Single PS' button.
