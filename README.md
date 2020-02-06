@@ -1,4 +1,4 @@
-# CM-DCE
+# DCE-MRI Simulations
 ## Introduction
 Repository for scripts related to Patlak model simulations for DCE-MRI, used for "Manning et al. (2020) Slow Injection Paper"
 
