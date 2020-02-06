@@ -1,8 +1,8 @@
 # DCE-MRI Simulations
 ## Introduction
-Repository for scripts related to Patlak model simulations for DCE-MRI, used for "Manning et al. (2020) Slow Injection Paper"
+Repository for scripts related to Patlak model simulations for DCE-MRI, used for "*Manning et al. (2020) Slow Injection Paper*"
 
-The paper uses figures generated using 'DCE_sims_GUI.fig'
+The paper uses figures generated using `DCE_Sim_GUI.fig`
 
 All necessary functions are contained within the folder 'DCE_Simulation_Functions' - no additional paths should be needed
 
