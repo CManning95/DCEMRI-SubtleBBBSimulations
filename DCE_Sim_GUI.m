@@ -1174,18 +1174,10 @@ end
 %Sort slow injection parameters
 if SimParam.InjectionRate == 'slow'
     SimParam.baselineScans = 3; % datapoints to use for calculating base signal
-    patient_IDs = {'MSS3_ED_002' 'MSS3_ED_004' 'MSS3_ED_007' 'MSS3_ED_008' 'MSS3_ED_010' 'MSS3_ED_012' 'MSS3_ED_013' 'MSS3_ED_016' 'MSS3_ED_017' 'MSS3_ED_021'};
-    N = size(patient_IDs,2);
-    for n = 1:N % loads the AIFs from MSS3 patients
-        thisAIF=load(['U:\Datastore\CMVM\scs\groups\BRICIA\E181935_MSS_III_Res\MRI\Processing\DCE_PROCESSING\output\' patient_IDs{1,n} '\Cp_AIF_mM.mat']);
-        if n==1; Cp_AIF_array_mM=nan(size(thisAIF.Cp_AIF_mM,1),N); end
-        Cp_AIF_array_mM(:,n) = thisAIF.Cp_AIF_mM;
-    end
-    Cp_AIF_mM_mean = mean(Cp_AIF_array_mM,2); % mean of MSS3 patients AIFs
-    SimParam.Cp_AIF_mM = Cp_AIF_mM_mean;
-    load(['U:\Datastore\CMVM\scs\groups\BRICIA\E181935_MSS_III_Res\MRI\Processing\DCE_PROCESSING\output\' patient_IDs{1,1} '\acqPars.mat']); % same protocol for every patient, selects first patient
-    SimParam.tRes_InputAIF_s = acqPars.tRes_s; % original time resolution of AIFs
-    SimParam.InputAIFDCENFrames = acqPars.DCENFrames; % number of time points
+    load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
+    SimParam.Cp_AIF_mM = Cp_AIF_mM;
+    SimParam.tRes_InputAIF_s = 18.49; % original time resolution of AIFs
+    SimParam.InputAIFDCENFrames = 69; % number of time points
 elseif SimParam.InjectionRate == 'fast'
     SimParam.baselineScans = 1; % datapoints to use for calculating base signal
 end
