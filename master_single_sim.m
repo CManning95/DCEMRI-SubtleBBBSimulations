@@ -23,8 +23,8 @@ T10_s = [PhysParam.T10_blood_s T10_ES_s T10_ES_s]; % vector of compartmental T1s
 % start by generating AIF concentration curve
 switch SimParam.InjectionRate
     case 'fast' % Use Parker model to generate synthetic 'fast' injection
-        [timepoints_full_s, Cp_AIF_mM] = DCEFunc_getParkerModAIF(SimParam.t_res_full_s, SeqParam.t_acq_s, SimParam.t_start_s, PhysParam.Hct, 'MSS3'); % Generate AIF from modified Parker model
-    case 'slow' % use AIFs from MSS3 to generate 'slow' injection
+        [timepoints_full_s, Cp_AIF_mM] = DCEFunc_getParkerModAIF(SimParam.t_res_full_s, SeqParam.t_acq_s, SimParam.t_start_s, PhysParam.Hct, 'OG Parker-MSS3'); % Generate AIF from modified Parker model
+    case 'slow' % use slow injection AIF from patient data to generate 'slow' injection
         t_AIF_input_s = ((1:1:SimParam.InputAIFDCENFrames) * (SimParam.tRes_InputAIF_s)) - (SimParam.tRes_InputAIF_s/2).'; % Assume concentration is measured at centre of acquisition
         initial_timepoints_full_s = (0:SimParam.t_res_full_s:(SeqParam.t_acq_s - SimParam.t_start_s)).'; % full range of upsampled time points (subtract additional pre-injection delay from end of AIF)
         Cp_AIF_mM = interp1(t_AIF_input_s,SimParam.Cp_AIF_mM,initial_timepoints_full_s,'spline','extrap'); % interpolate AIF to high temporal resolution
@@ -67,7 +67,7 @@ SI_tissue_drifted = SI_tissue.*(1+drift); % apply drift to tissue signal
 
 %% add noise to downsampled tissue signal
 SI_tissue_sample = repmat(SI_tissue_sample,1,SimParam.N_repetitions); %generate multiple copies so that noise effects can be simulated
-sigma_signal_noise = min(SI_tissue)/SimParam.SNR; % standard deviation of noise
+sigma_signal_noise = SI_tissue(1)/SimParam.SNR; % standard deviation of noise
 signal_noise = sigma_signal_noise * randn(size(SI_tissue_sample)); % random array of noise, same size as SI_tissue_sample
 SI_tissue_sample_noisy = SI_tissue_sample + signal_noise; % add noise to sampled signal
 
@@ -107,7 +107,7 @@ subplot(3,2,1)
 plot(timepoints_full_s,meas_AIF_mM,'k-',timepoints_full_s,Cp_AIF_mM,'r-',t_sample,Cp_AIF_sample_mM,'bx',timepoints_full_s,c_cp_mM,'m:');
 title(['measured AIF Conc (\deltat=' num2str(SimParam.t_res_full_s) ')']);
 ylabel('C_p (AIF) / mMol');
-legend({'Measured (venous) VIF', 'Actual AIF','sampled VIF','c_c_p'}, 'Location', 'northeastoutside','Fontsize',10)
+legend({'Measured VIF', 'Actual AIF','sampled VIF','c_c_p'}, 'Location', 'northeastoutside','Fontsize',10)
 subplot(3,2,3)
 plot(timepoints_full_s,enh_AIF_pct,'k-',t_sample,enh_AIF_sample_pct,'bx')
 title('measured VIF enhancement');
