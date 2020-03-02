@@ -1,9 +1,10 @@
-function[T1_meas,S0_meas,k_meas,modelFit] = MeasureT1(S0,T1,acqParam,T1_acq_method,assumed_T1)
+function[T1_meas,S0_meas,k_meas,modelFit] = MeasureT1(S0,T1,acqParam,T1_acq_method,varargin)
 % MeasureT1 simulates T1 acquisition using either Variable Flip Angle (VFA)
 % or HIFI methods to measure T1
 % Input Parameters:
 % S0 - base signal
 % T1 - actual base T1 to measure
+% --variable input --
 % assumed_T1 - assumed T1 in s, only for 'Assumed' acquisition method
 
 % acqParam: struct containing T1 measurement acquisition parameters:
@@ -37,6 +38,7 @@ switch T1_acq_method
         % fit T1 scan intensities to model
         [T1_meas,S0_meas,k_meas,modelFit] = fit_R1(SI,acqParam.isIR,acqParam.isFit,acqParam.TR_s,acqParam.FA_nom_rads,acqParam.TI_s,acqParam.PECentre,acqParam.NReadout,acqParam.NTry);
     case 'Assumed'
+        assumed_T1 = varargin{1};
         T1_meas = assumed_T1;
         S0_meas = NaN;
         k_meas = NaN;

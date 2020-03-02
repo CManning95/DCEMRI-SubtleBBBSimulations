@@ -85,10 +85,10 @@ handles.PhysParam.S0_blood = 100;
 handles.PhysParam.S0_tissue = 100;
 handles.PhysParam.kbe_perS = 2.5;
 handles.PhysParam.kie_perS = 1.7;
-handles.PhysParam.vP_fixed = 0.0045;
-handles.PhysParam.vP_fixed_single = 0.0045;
-handles.PhysParam.PS_fixed = 1.5 * 1e-4;
-handles.PhysParam.PS_fixed_single = 1.5 * 1e-4;
+handles.PhysParam.vP_fixed = 0.0058;
+handles.PhysParam.vP_fixed_single = 0.0058;
+handles.PhysParam.PS_fixed = 2.96 * 1e-4;
+handles.PhysParam.PS_fixed_single = 2.96 * 1e-4;
 
 set(handles.Hct, 'String', handles.PhysParam.Hct);
 set(handles.vE, 'String', handles.PhysParam.vE);
@@ -110,8 +110,8 @@ handles.SeqParam.t_acq_s = 1268;
 handles.SeqParam.t_res_sample_s = 39.62;
 handles.SeqParam.TR_s = 1e-3*3.4;
 handles.SeqParam.TE_s = 1e-3*1.7;
-handles.SeqParam.r1_per_mM_per_s = 5.2;
-handles.SeqParam.r2_per_mM_per_s = 6.1;
+handles.SeqParam.r1_per_mM_per_s = 5.0;
+handles.SeqParam.r2_per_mM_per_s = 7.1;
 handles.SeqParam.FA_nom_deg = 15;
 handles.SeqParam.FA_error = 1;
 
@@ -201,8 +201,8 @@ handles.SeqParam.t_acq_s = 1268;
 handles.SeqParam.t_res_sample_s = 39.62;
 handles.SeqParam.TR_s = 1e-3*3.4;
 handles.SeqParam.TE_s = 1e-3*1.7;
-handles.SeqParam.r1_per_mM_per_s = 5.2;
-handles.SeqParam.r2_per_mM_per_s = 6.1;
+handles.SeqParam.r1_per_mM_per_s = 5.0;
+handles.SeqParam.r2_per_mM_per_s = 7.1;
 handles.SeqParam.FA_nom_deg = 15;
 handles.SeqParam.FA_error = 1;
 
@@ -653,22 +653,20 @@ end
 % check previous legend
 if handles.plot_hold == 1 && ishandle(2) == 1; % if plot hold is on, read current legend
     old_leg = (findall(figure(2),'Type','Legend'));
-    if isempty(old_leg) == 0 % if previous legend is empty (no labels) don't assign new labels
+    if isempty(old_leg.String) == 0 % if previous legend is empty (no labels) don't assign new labels
         fig_legend_entry = old_leg.String;
     end
 elseif handles.plot_hold == 0; % if plot hold off, clear fig_legend_entry
     clear fig_legend_entry
 end
 
+SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
 %Sort slow injection parameters
 if SimParam.InjectionRate == 'slow'
-    SimParam.baselineScans = 3; % datapoints to use for calculating base signal
     load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
     SimParam.Cp_AIF_mM = Cp_AIF_mM;
     SimParam.tRes_InputAIF_s = 18.49; % original time resolution of AIFs
     SimParam.InputAIFDCENFrames = 69; % number of time points
-elseif SimParam.InjectionRate == 'fast'
-    SimParam.baselineScans = 3; % datapoints to use for calculating base signal
 end
 
 %derive some additional parameters
@@ -677,11 +675,11 @@ SeqParam.NPoints = round(SeqParam.t_acq_s/SeqParam.t_res_sample_s);
 SeqParam.FA_true_deg = SeqParam.FA_error*SeqParam.FA_meas_deg;
 
 % ranges of PS to test for fixed vP
-PS_range = linspace(SimParam.min_PS,SimParam.max_PS,10)+1e-8;
+PS_range = linspace(SimParam.min_PS,SimParam.max_PS,10)'+1e-8;
 vP_fixed = PhysParam.vP_fixed; %vP for NAWM, Heye et al. 2016 
 
 %range sizes
-N_PS = size(PS_range,2);
+N_PS = size(PS_range,1);
 PS_fit_1 = nan(SimParam.N_repetitions,N_PS);
 
 for i_PS = 1:N_PS
@@ -690,8 +688,8 @@ for i_PS = 1:N_PS
     [temp, PS_fit_1(:,i_PS)] = master_single_sim(PhysParam,SeqParam,SimParam);
 end
 
-PS_means_1 = mean(PS_fit_1,1); % mean for each PS
-PS_devs_1 = std(PS_fit_1,0,1); % standard deviation for each PS
+PS_means_1 = mean(PS_fit_1,1)'; % mean for each PS
+PS_devs_1 = std(PS_fit_1,0,1)'; % standard deviation for each PS
 
 %% plotting graphs of results
 figure(2);
@@ -700,34 +698,43 @@ set(gcf,'Units','centimeters','Position',[20,0,25,25]);
 
 % plot True PS line if no other plots (so it only plots once)
 if exist('fig_legend_entry') == 0;
-    plot(PS_range,zeros(size(PS_range)),'k:','LineWidth',2,'DisplayName','True PS','HandleVisibility','off'); hold on; % No legend entry for true PS line
-    if isempty(handles.plot_label) == 1;
-        fig_legend_entry = handles.plot_label; 
+    plot(PS_range*1e4,zeros(size(PS_range)),'k:','LineWidth',2,'DisplayName','True PS','HandleVisibility','off'); hold on; % No legend entry for true PS line
+    if isa(handles.plot_label,'char') == 1;
+        fig_legend_entry = handles.plot_label;
+        fig_legend_entry = cellstr(fig_legend_entry);
     end
 elseif exist('fig_legend_entry') == 1; % if previous plot exist, add plot label to existing set of legend entries
     fig_legend_entry{end+1} = handles.plot_label;
 end
 
+% change scale for aesthetics
+PS_range = PS_range * 1e4;
+PS_means_1 = PS_means_1 * 1e4;
+PS_devs_1 = PS_devs_1 * 1e4;
+
 % plot results of simulations
-errorbar(PS_range, PS_means_1(1,:) - PS_range, 1*PS_devs_1(1,:),'LineWidth',2);
-xlabel('True PS (/min)');
-ylabel('fitted PS error (/min)');
+errorbar(PS_range, PS_means_1(:,1) - PS_range, 1*PS_devs_1(:,1),'LineWidth',1.3);
+xlabel('True PS (x10^{-4} min^{-1} )');
+ylabel('fitted PS error (x10^{-4} min^{-1} )');
 xlim([0 max(PS_range)]);
 if strcmp(SimParam.InjectionRate,'slow') == 1 % zoom in on y axis if slow injection
-    ylim([-1.6e-4 1.6e-4])
+    ylim([-1.6 1.6])
 elseif strcmp(SimParam.InjectionRate,'fast') == 1 && SimParam.NIgnore >= 4 % zoom in on y axis if excluding points
-    ylim([-1.6e-4 1.6e-4])
-elseif strcmp(SimParam.InjectionRate,'fast') == 1 && SimParam.NIgnore == 0
-    ylim([-3e-4 3e-4]);
+    ylim([-1.6 1.6])
+elseif strcmp(SimParam.InjectionRate,'fast') == 1 && SimParam.NIgnore <= 3
+    ylim([-3.2 3.2]);
 end
 
-%plot legend
-if exist('fig_legend_entry') == 1
-    legend(fig_legend_entry);
+%plot legend (if there are entries)
+if exist('fig_legend_entry') ~= 0;
+    if isa(fig_legend_entry,'cell') == 1
+        legend(fig_legend_entry);
+        legend('boxoff');
+    end
 end
 % set font size for axes ticks and labels
 a = get(gca,'XTickLabel');
-set(gca,'XTickLabel',a,'fontsize',10);
+set(gca,'XTickLabel',a,'fontsize',9);
 
 % --- Executes on selection change in InjectionRate.
 function InjectionRate_Callback(hObject, eventdata, handles)
@@ -984,6 +991,7 @@ end
 
 handles.FA_error_meas = acqParam.FA_error_meas;
 
+disp(['Simulated baseline T1 acquisitions:']);
 disp(['Flip Angle error = ' num2str((100*SeqParam.FA_error)-100) ' %'])
 disp(['Actual blood T1 = ' num2str(PhysParam.T10_blood_s)])
 disp(['Measured blood T1 = ' num2str(PhysParam.T1_blood_meas_s)])
@@ -1008,34 +1016,31 @@ end
 % check previous legend
 if handles.plot_hold == 1 && ishandle(2) == 1; % if plot hold is on, read current legend
     old_leg = (findall(figure(2),'Type','Legend'));
-    if exist(old_leg) == 1
+    if isempty(old_leg.String) == 0 % if previous legend is empty (no labels) don't assign new labels
         fig_legend_entry = old_leg.String;
     end
 elseif handles.plot_hold == 0; % if plot hold off, clear fig_legend_entry
     clear fig_legend_entry
 end
 
+SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
 %Sort slow injection parameters
 if SimParam.InjectionRate == 'slow'
-    SimParam.baselineScans = 3; % datapoints to use for calculating base signal
     load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
     SimParam.Cp_AIF_mM = Cp_AIF_mM;
     SimParam.tRes_InputAIF_s = 18.49; % original time resolution of AIFs
     SimParam.InputAIFDCENFrames = 69; % number of time points
-elseif SimParam.InjectionRate == 'fast'
-    SimParam.baselineScans = 3; % datapoints to use for calculating base signal
 end
-
 %derive some additional parameters
 SeqParam.NPoints = round(SeqParam.t_acq_s/SeqParam.t_res_sample_s);
 SeqParam.FA_true_deg = SeqParam.FA_error*SeqParam.FA_meas_deg;
 
 % ranges of PS to test for fixed vP
-vP_range = linspace(SimParam.min_vP,SimParam.max_vP,10)+1e-8;
+vP_range = linspace(SimParam.min_vP,SimParam.max_vP,10)'+1e-8;
 PS_fixed = PhysParam.PS_fixed; 
 
 %range sizes
-N_vP = size(vP_range,2);
+N_vP = size(vP_range,1);
 vP_fit_1 = nan(SimParam.N_repetitions,N_vP);
 
 for i_vP = 1:N_vP
@@ -1044,8 +1049,8 @@ for i_vP = 1:N_vP
     [vP_fit_1(:,i_vP),temp] = master_single_sim(PhysParam,SeqParam,SimParam);
 end
 
-vP_means_1 = mean(vP_fit_1,1); % mean for each PS
-vP_devs_1 = std(vP_fit_1,0,1); % standard deviation for each PS
+vP_means_1 = mean(vP_fit_1,1)'; % mean for each PS
+vP_devs_1 = std(vP_fit_1,0,1)'; % standard deviation for each PS
 
 %% plotting graphs of results
 figure(2);
@@ -1053,28 +1058,42 @@ set(gcf,'Units','centimeters','Position',[20,0,20,20]);
 
 % plot True vP line if no other plots (so it only plots once)
 if exist('fig_legend_entry') == 0;
-    plot(vP_range,zeros(size(vP_range)),'k:','LineWidth',2,'DisplayName','True vP','HandleVisibility','off'); hold on; % No legend entry for true vP line
-    if handles.plot_label ~= ''
-        fig_legend_entry = handles.plot_label; 
+    plot(vP_range*1e3,zeros(size(vP_range)),'k:','LineWidth',2,'DisplayName','True vP','HandleVisibility','off'); hold on; % No legend entry for true vP line
+    if isa(handles.plot_label,'char') == 1;
+        fig_legend_entry = handles.plot_label;
+        fig_legend_entry = cellstr(fig_legend_entry);
     end
 elseif exist('fig_legend_entry') == 1; % if previous plot exist, add plot label to existing set of legend entries
     fig_legend_entry{end+1} = handles.plot_label;
 end
 
-errorbar(vP_range, vP_means_1(1,:) - vP_range, 1*vP_devs_1(1,:),'LineWidth',2);
-xlabel('True vP');
-ylabel('fitted vP error');
-xlim([0 SimParam.max_vP]);
-ylim([-7e-3 7e-3]);
+% Change scale for aesthetics
+vP_range = vP_range * 1e3;
+vP_means_1 = vP_means_1 * 1e3;
+vP_devs_1 = vP_devs_1 * 1e3;
 
-%plot legend
-if exist('fig_legend_entry') == 1
-    legend(fig_legend_entry);
+errorbar(vP_range, vP_means_1(:,1) - vP_range, 1*vP_devs_1(:,1),'LineWidth',1.3);
+xlabel('True vP (x10^{-3})');
+ylabel('fitted vP error (x10^{-3})');
+xlim([0 max(vP_range)]);
+if strcmp(SimParam.InjectionRate,'slow') == 1 % zoom in on y axis if slow injection
+    ylim([-3 3])
+elseif strcmp(SimParam.InjectionRate,'fast') == 1 && SimParam.NIgnore >= 4 % zoom in on y axis if excluding points
+    ylim([-3 3])
+elseif strcmp(SimParam.InjectionRate,'fast') == 1 && SimParam.NIgnore <= 3
+    ylim([-6 6]);
 end
 
+%plot legend
+if exist('fig_legend_entry') ~= 0;
+    if isa(fig_legend_entry,'cell') == 1
+        legend(fig_legend_entry);
+        legend('boxoff');
+    end
+end
 % set font size for axes ticks and labels
 a = get(gca,'XTickLabel');
-set(gca,'XTickLabel',a,'fontsize',10);
+set(gca,'XTickLabel',a,'fontsize',9);
 
 % --- Executes on button press in pushbutton5.
 function pushbutton5_Callback(hObject, eventdata, handles)
@@ -1157,15 +1176,13 @@ if handles.plot_hold == 0; % delete previous figures if plot hold is off
     delete(figures_del);
 end
 
+SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
 %Sort slow injection parameters
 if SimParam.InjectionRate == 'slow'
-    SimParam.baselineScans = 3; % datapoints to use for calculating base signal
     load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
     SimParam.Cp_AIF_mM = Cp_AIF_mM;
     SimParam.tRes_InputAIF_s = 18.49; % original time resolution of AIFs
     SimParam.InputAIFDCENFrames = 69; % number of time points
-elseif SimParam.InjectionRate == 'fast'
-    SimParam.baselineScans = 3; % datapoints to use for calculating base signal
 end
 
 %derive some additional parameters
