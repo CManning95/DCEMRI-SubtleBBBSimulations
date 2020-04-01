@@ -1,4 +1,4 @@
-% Generates the PS and vP simulation figures for variable flow as shown in Manning et al.
+% Generates the PS and vP simulation figures for assumed T1 as shown in Manning et al.
 % (2020) Slow injection paper
 % This is purely for aesthetics - all simulations can be run from the GUI
 % for ease of use
@@ -52,20 +52,12 @@ SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
 
 % Acquisition parameters (for determining T1)
 % - Variable Flip Angle (VFA), or HIFI (accurate)
-T1acqParam.T1_acq_method = 'Accurate';  % T1 acquisition method
-
-
-%% Generate variable flow figures
-
-% Simulate T1 acquisiton
-[PhysParam.T1_blood_meas_s,temp,T1acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
-[PhysParam.T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
-
-DCESeqParam.FA_meas_deg = DCESeqParam.FA_nom_deg; % measured flip angle is same as nominal
+T1acqParam.T1_acq_method = 'Assumed';  % T1 acquisition method
 
 %derive additional parameters
 DCESeqParam.NPoints = round(DCESeqParam.t_acq_s/DCESeqParam.t_res_sample_s); % number of sample points
-DCESeqParam.FA_true_deg = DCESeqParam.FA_error*DCESeqParam.FA_meas_deg; % true flip angle
+DCESeqParam.FA_true_deg = DCESeqParam.FA_nom_deg; % true flip angle
+DCESeqParam.FA_meas_deg = DCESeqParam.FA_nom_deg; % measured flip angle is same as nominal
 
 % ranges of PS and vP to test
 PS_range = linspace(SimParam.min_PS,SimParam.max_PS,10)'+1e-8;
@@ -78,31 +70,33 @@ vP_range = linspace(SimParam.min_vP,SimParam.max_vP,10)'+1e-8;
 N_PS = size(PS_range,1);
 N_vP = size(vP_range,1);
 
-% Flow rates to test
-Fp_ranges = [18 9 4.5];
+%% Generate variable flow figures
+% Assumed T1 differences (fractional)
+T1_diff_ranges = [1 0.8 1.2];
 
  % Generate variable flow PS and vP - fast injection (no exclude)
  SimParam.InjectionRate = 'fast';
  SimParam.baselineScans = [3:5]; % datapoints to use for calculating base signal
  SimParam.NIgnore = max(SimParam.baselineScans);
  
- for i = 1:size(Fp_ranges,2)
-     PhysParam.FP_mlPer100gPerMin = Fp_ranges(i);
+ for i = 1:size(T1_diff_ranges,2)
+     PhysParam.T1_blood_meas_s = PhysParam.T10_blood_s * T1_diff_ranges(i);
+     PhysParam.T1_tissue_meas_s = PhysParam.T10_tissue_s * T1_diff_ranges(i);
      for i_PS = 1:N_PS
          PhysParam.vP = vP_fixed(1);
          PhysParam.PS_perMin = PS_range(i_PS);
-         [temp, PS_fit_Fp_fast(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
+         [temp, PS_fit_T1assumed_fast(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
      end
      for i_vP = 1:N_vP
          PhysParam.PS_perMin = PS_fixed(1);
          PhysParam.vP = vP_range(i_vP);
-         [vP_fit_Fp_fast(:,i_vP),temp] = master_single_sim(PhysParam,DCESeqParam,SimParam);
+         [vP_fit_T1assumed_fast(:,i_vP),temp] = master_single_sim(PhysParam,DCESeqParam,SimParam);
      end
-     PS_means_Fp_fast(:,i) = mean(PS_fit_Fp_fast,1)'; % mean for each PS at high flow
-     PS_devs_Fp_fast(:,i) = std(PS_fit_Fp_fast,0,1)'; % standard deviation for each PS at high flow
+     PS_means_T1assumed_fast(:,i) = mean(PS_fit_T1assumed_fast,1)'; % mean for each PS at high flow
+     PS_devs_T1assumed_fast(:,i) = std(PS_fit_T1assumed_fast,0,1)'; % standard deviation for each PS at high flow
      
-     vP_means_Fp_fast(:,i) = mean(vP_fit_Fp_fast,1)'; % mean for each vP at high flow
-     vP_devs_Fp_fast(:,i) = std(vP_fit_Fp_fast,0,1)'; % standard deviation for each vP at high flow
+     vP_means_Fp_fast(:,i) = mean(vP_fit_T1assumed_fast,1)'; % mean for each vP at high flow
+     vP_devs_Fp_fast(:,i) = std(vP_fit_T1assumed_fast,0,1)'; % standard deviation for each vP at high flow
  end
  
  % Generate variable flow PS and vP - fast injection (exclude)
@@ -110,23 +104,24 @@ Fp_ranges = [18 9 4.5];
   SimParam.baselineScans = [3:5]; % datapoints to use for calculating base signal
   SimParam.NIgnore = max(SimParam.baselineScans) + 3;
   
-  for i = 1:size(Fp_ranges,2)
-     PhysParam.FP_mlPer100gPerMin = Fp_ranges(i);
+  for i = 1:size(T1_diff_ranges,2)
+     PhysParam.T1_blood_meas_s = PhysParam.T10_blood_s * T1_diff_ranges(i);
+     PhysParam.T1_tissue_meas_s = PhysParam.T10_tissue_s * T1_diff_ranges(i);
      for i_PS = 1:N_PS
          PhysParam.vP = vP_fixed(1);
          PhysParam.PS_perMin = PS_range(i_PS);
-         [temp, PS_fit_Fp_exclude(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
+         [temp, PS_fit_T1assumed_exclude(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
      end
      for i_vP = 1:N_vP
          PhysParam.PS_perMin = PS_fixed(1);
          PhysParam.vP = vP_range(i_vP);
-         [vP_fit_Fp_exclude(:,i_vP),temp] = master_single_sim(PhysParam,DCESeqParam,SimParam);
+         [vP_fit_T1assumed_exclude(:,i_vP),temp] = master_single_sim(PhysParam,DCESeqParam,SimParam);
      end
-     PS_means_Fp_exclude(:,i) = mean(PS_fit_Fp_exclude,1)'; % mean for each PS at high flow
-     PS_devs_Fp_exclude(:,i) = std(PS_fit_Fp_exclude,0,1)'; % standard deviation for each PS at high flow
+     PS_means_T1assumed_exclude(:,i) = mean(PS_fit_T1assumed_exclude,1)'; % mean for each PS at high flow
+     PS_devs_T1assumed_exclude(:,i) = std(PS_fit_T1assumed_exclude,0,1)'; % standard deviation for each PS at high flow
      
-     vP_means_Fp_exclude(:,i) = mean(vP_fit_Fp_exclude,1)'; % mean for each vP at high flow
-     vP_devs_Fp_exclude(:,i) = std(vP_fit_Fp_exclude,0,1)'; % standard deviation for each vP at high flow
+     vP_means_T1assumed_exclude(:,i) = mean(vP_fit_T1assumed_exclude,1)'; % mean for each vP at high flow
+     vP_devs_T1assumed_exclude(:,i) = std(vP_fit_T1assumed_exclude,0,1)'; % standard deviation for each vP at high flow
   end
  
  % Generate variable flow PS and vP - slow injection
@@ -139,43 +134,44 @@ Fp_ranges = [18 9 4.5];
  SimParam.tRes_InputAIF_s = 18.49; % original time resolution of AIFs
  SimParam.InputAIFDCENFrames = 69; % number of time points
 
-  for i = 1:size(Fp_ranges,2)
-     PhysParam.FP_mlPer100gPerMin = Fp_ranges(i);
+  for i = 1:size(T1_diff_ranges,2)
+     PhysParam.T1_blood_meas_s = PhysParam.T10_blood_s * T1_diff_ranges(i);
+     PhysParam.T1_tissue_meas_s = PhysParam.T10_tissue_s * T1_diff_ranges(i);
      for i_PS = 1:N_PS
          PhysParam.vP = vP_fixed(1);
          PhysParam.PS_perMin = PS_range(i_PS);
-         [temp, PS_fit_Fp_slow(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
+         [temp, PS_fit_T1assumed_slow(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
      end
      for i_vP = 1:N_vP
          PhysParam.PS_perMin = PS_fixed(1);
          PhysParam.vP = vP_range(i_vP);
-         [vP_fit_Fp_slow(:,i_vP),temp] = master_single_sim(PhysParam,DCESeqParam,SimParam);
+         [vP_fit_T1assumed_slow(:,i_vP),temp] = master_single_sim(PhysParam,DCESeqParam,SimParam);
      end
-     PS_means_Fp_slow(:,i) = mean(PS_fit_Fp_slow,1)'; % mean for each PS at high flow
-     PS_devs_Fp_slow(:,i) = std(PS_fit_Fp_slow,0,1)'; % standard deviation for each PS at high flow
+     PS_means_T1assumed_slow(:,i) = mean(PS_fit_T1assumed_slow,1)'; % mean for each PS at high flow
+     PS_devs_T1assumed_slow(:,i) = std(PS_fit_T1assumed_slow,0,1)'; % standard deviation for each PS at high flow
      
-     vP_means_Fp_slow(:,i) = mean(vP_fit_Fp_slow,1)'; % mean for each vP at high flow
-     vP_devs_Fp_slow(:,i) = std(vP_fit_Fp_slow,0,1)'; % standard deviation for each vP at high flow
+     vP_means_T1assumed_slow(:,i) = mean(vP_fit_T1assumed_slow,1)'; % mean for each vP at high flow
+     vP_devs_T1assumed_slow(:,i) = std(vP_fit_T1assumed_slow,0,1)'; % standard deviation for each vP at high flow
   end
 
 % Generate graphs
 
 % Change scale of PS and vP values (for graphing)
 PS_range = PS_range * 1e4;
-PS_means_Fp_fast = PS_means_Fp_fast * 1e4;
-PS_means_Fp_exclude = PS_means_Fp_exclude * 1e4;
-PS_means_Fp_slow = PS_means_Fp_slow * 1e4;
-PS_devs_Fp_fast = PS_devs_Fp_fast * 1e4;
-PS_devs_Fp_exclude = PS_devs_Fp_exclude * 1e4;
-PS_devs_Fp_slow = PS_devs_Fp_slow * 1e4;
+PS_means_T1assumed_fast = PS_means_T1assumed_fast * 1e4;
+PS_means_T1assumed_exclude = PS_means_T1assumed_exclude * 1e4;
+PS_means_T1assumed_slow = PS_means_T1assumed_slow * 1e4;
+PS_devs_T1assumed_fast = PS_devs_T1assumed_fast * 1e4;
+PS_devs_T1assumed_exclude = PS_devs_T1assumed_exclude * 1e4;
+PS_devs_T1assumed_slow = PS_devs_T1assumed_slow * 1e4;
 
 vP_range = vP_range * 1e3;
 vP_means_Fp_fast = vP_means_Fp_fast * 1e3;
-vP_means_Fp_exclude = vP_means_Fp_exclude * 1e3;
-vP_means_Fp_slow = vP_means_Fp_slow * 1e3;
+vP_means_T1assumed_exclude = vP_means_T1assumed_exclude * 1e3;
+vP_means_T1assumed_slow = vP_means_T1assumed_slow * 1e3;
 vP_devs_Fp_fast = vP_devs_Fp_fast * 1e3;
-vP_devs_Fp_exclude = vP_devs_Fp_exclude * 1e3;
-vP_devs_Fp_slow = vP_devs_Fp_slow * 1e3;
+vP_devs_T1assumed_exclude = vP_devs_T1assumed_exclude * 1e3;
+vP_devs_T1assumed_slow = vP_devs_T1assumed_slow * 1e3;
 
 %Set colours of plots
 Colour1  = [0 0.447 0.741];
@@ -185,14 +181,14 @@ Colour3 = [0.929 0.694 0.125];
 figure(2)
 subplot(2,3,1)
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(PS_range, PS_means_Fp_fast(:,1) - PS_range, 1*PS_devs_Fp_fast(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(PS_range + 0.03, PS_means_Fp_fast(:,2) - PS_range, 1*PS_devs_Fp_fast(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(PS_range + 0.06, PS_means_Fp_fast(:,3) - PS_range, 1*PS_devs_Fp_fast(:,3),'LineWidth',1.3,'Color',Colour3);
+errorbar(PS_range, PS_means_T1assumed_fast(:,1) - PS_range, 1*PS_devs_T1assumed_fast(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
+errorbar(PS_range + 0.03, PS_means_T1assumed_fast(:,2) - PS_range, 1*PS_devs_T1assumed_fast(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
+errorbar(PS_range + 0.06, PS_means_T1assumed_fast(:,3) - PS_range, 1*PS_devs_T1assumed_fast(:,3),'LineWidth',1.3,'Color',Colour3);
 xlabel('True {\it PS} (x10^{-4} min^{-1} )');
 ylabel('fitted {\it PS} error (x10^{-4} min^{-1} )');
 xlim([0 max(PS_range)]);
 ylim([-3.2 3.2]);
-legend({'F_p = 18 ml 100g^{-1}min^{-1}','F_p = 9 ml 100g^{-1}min^{-1}','F_p = 4.5 ml 100g^{-1}min^{-1}'},'Location','southwest')
+legend({'Accurate {\it T_{10}}','{\it T_{10}} 20% underest.','{\it T_{10}} 20% oversest.'},'Location','southwest')
 legend('boxoff')
 
 ax = gca;
@@ -200,9 +196,9 @@ ax.FontSize = 9;
 
 subplot(2,3,2)
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(PS_range, PS_means_Fp_exclude(:,1) - PS_range, 1*PS_devs_Fp_exclude(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(PS_range + 0.03, PS_means_Fp_exclude(:,2) - PS_range, 1*PS_devs_Fp_exclude(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(PS_range + 0.06, PS_means_Fp_exclude(:,3) - PS_range, 1*PS_devs_Fp_exclude(:,3),'LineWidth',1.3,'Color',Colour3);
+errorbar(PS_range, PS_means_T1assumed_exclude(:,1) - PS_range, 1*PS_devs_T1assumed_exclude(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
+errorbar(PS_range + 0.03, PS_means_T1assumed_exclude(:,2) - PS_range, 1*PS_devs_T1assumed_exclude(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
+errorbar(PS_range + 0.06, PS_means_T1assumed_exclude(:,3) - PS_range, 1*PS_devs_T1assumed_exclude(:,3),'LineWidth',1.3,'Color',Colour3);
 xlabel('True {\it PS} (x10^{-4} min^{-1} )');
 xlim([0 max(PS_range)]);
 ylim([-1.6 1.6]);
@@ -212,9 +208,9 @@ ax.FontSize = 9;
 
 subplot(2,3,3)
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(PS_range, PS_means_Fp_slow(:,1) - PS_range, 1*PS_devs_Fp_slow(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(PS_range + 0.03, PS_means_Fp_slow(:,2) - PS_range, 1*PS_devs_Fp_slow(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(PS_range + 0.06, PS_means_Fp_slow(:,3) - PS_range, 1*PS_devs_Fp_slow(:,3),'LineWidth',1.3,'Color',Colour3);
+errorbar(PS_range, PS_means_T1assumed_slow(:,1) - PS_range, 1*PS_devs_T1assumed_slow(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
+errorbar(PS_range + 0.03, PS_means_T1assumed_slow(:,2) - PS_range, 1*PS_devs_T1assumed_slow(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
+errorbar(PS_range + 0.06, PS_means_T1assumed_slow(:,3) - PS_range, 1*PS_devs_T1assumed_slow(:,3),'LineWidth',1.3,'Color',Colour3);
 xlabel('True {\it PS} (x10^{-4} min^{-1} )');
 xlim([0 max(PS_range)]);
 ylim([-1.6 1.6]);
@@ -237,9 +233,9 @@ ax.FontSize = 9;
 
 subplot(2,3,5)
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True vP','HandleVisibility','off'); hold on;
-errorbar(vP_range, vP_means_Fp_exclude(:,1) - vP_range, 1*vP_devs_Fp_exclude(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(vP_range + 0.015, vP_means_Fp_exclude(:,2) - vP_range, 1*vP_devs_Fp_exclude(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(vP_range + 0.03, vP_means_Fp_exclude(:,3) - vP_range, 1*vP_devs_Fp_exclude(:,3),'LineWidth',1.3,'Color',Colour3);
+errorbar(vP_range, vP_means_T1assumed_exclude(:,1) - vP_range, 1*vP_devs_T1assumed_exclude(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
+errorbar(vP_range + 0.015, vP_means_T1assumed_exclude(:,2) - vP_range, 1*vP_devs_T1assumed_exclude(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
+errorbar(vP_range + 0.03, vP_means_T1assumed_exclude(:,3) - vP_range, 1*vP_devs_T1assumed_exclude(:,3),'LineWidth',1.3,'Color',Colour3);
 xlabel('True {\it v_p} (x10^{-3})');
 xlim([0 max(vP_range)]);
 ylim([-3.1 3.1]);
@@ -249,9 +245,9 @@ ax.FontSize = 9;
 
 subplot(2,3,6)
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True vP','HandleVisibility','off'); hold on;
-errorbar(vP_range, vP_means_Fp_slow(:,1) - vP_range, 1*vP_devs_Fp_slow(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(vP_range + 0.015, vP_means_Fp_slow(:,2) - vP_range, 1*vP_devs_Fp_slow(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(vP_range + 0.03, vP_means_Fp_slow(:,3) - vP_range, 1*vP_devs_Fp_slow(:,3),'LineWidth',1.3,'Color',Colour3);
+errorbar(vP_range, vP_means_T1assumed_slow(:,1) - vP_range, 1*vP_devs_T1assumed_slow(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
+errorbar(vP_range + 0.015, vP_means_T1assumed_slow(:,2) - vP_range, 1*vP_devs_T1assumed_slow(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
+errorbar(vP_range + 0.03, vP_means_T1assumed_slow(:,3) - vP_range, 1*vP_devs_T1assumed_slow(:,3),'LineWidth',1.3,'Color',Colour3);
 xlabel('True {\it v_p} (x10^{-3})');
 xlim([0 max(vP_range)]);
 ylim([-3.1 3.1]);
