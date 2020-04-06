@@ -81,7 +81,7 @@ N_PS = size(PS_range,1);
 N_vP = size(vP_range,1);
 
 % kie values to test
-kbe_ranges = [2.5 5 10];
+kbe_ranges = [2.75 5.5 11.0];
 
  % Generate variable temporal jitter PS and vP - fast injection (no exclude)
  SimParam.InjectionRate = 'fast';

@@ -76,14 +76,11 @@ enh_AIF_sample_pct = DCEFunc_Sig2Enh(SI_AIF_sample,SimParam.baselineScans); % sa
 enh_tissue_sample_pct = DCEFunc_Sig2Enh(SI_tissue_sample_noisy,SimParam.baselineScans); % sampled tissue signal enhancement percentages
 
 %% Calculate sampled AIF and tissue concentrations using enhancements at sampling points (note we use "measured" FA and T1 values to allow for possible errors)
-if SeqParam.r2_per_mM_per_s == 0;
-    mode = 'analytical';
-else
-    mode = 'numeric';
-end
-Cp_AIF_sample_mM = (1/(1-PhysParam.Hct))*DCEFunc_Enh2Conc_SPGR(enh_AIF_sample_pct,PhysParam.T1_blood_meas_s,SeqParam.TR_s,SeqParam.TE_s,SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode);
+if SeqParam.r2_per_mM_per_s == 0
+    mode = '
+Cp_AIF_sample_mM = (1/(1-PhysParam.Hct))*DCEFunc_Enh2Conc_SPGR(enh_AIF_sample_pct,PhysParam.T1_blood_meas_s,SeqParam.TR_s,SeqParam.TE_s,SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s);
 for i = 1:size(enh_tissue_sample_pct,2)
-    Ct_sample_mM(:,i) = DCEFunc_Enh2Conc_SPGR(enh_tissue_sample_pct(:,i),PhysParam.T1_tissue_meas_s,SeqParam.TR_s,SeqParam.TE_s,SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode); 
+    Ct_sample_mM(:,i) = DCEFunc_Enh2Conc_SPGR(enh_tissue_sample_pct(:,i),PhysParam.T1_tissue_meas_s,SeqParam.TR_s,SeqParam.TE_s,SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s); 
 end
 % add noise to tissue concentration curves
 % sigma_noise_mM = max(Ct_mM)/SimParam.CNR; % calculate standard deviation of noise, using max tissue concentration over CNR
