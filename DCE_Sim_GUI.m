@@ -573,10 +573,7 @@ PhysParam.T2s0_blood_s = 0.191;
 PhysParam.T2s0_tissue_s = 0.050;
 
 % Parameters to simulate a T1 acquisition
-if acqParam.VFA_FA_1 == NaN && acqParam.T1_acq_method == 'VFA';
-    
-end
-VFA_FA_array = [acqParam.VFA_FA_1 acqParam.VFA_FA_2 acqParam.VFA_FA_3];
+VFA_FA_array = [acqParam.VFA_FA_1 acqParam.VFA_FA_2 acqParam.VFA_FA_3]; % collate VFA flip angles
 acqParam.isFit = [1 1 1]; % Which acquisitions to fit
 acqParam.TR_s = [0.0054 0.0054 0.0054]; % TR of acquisitions
 acqParam.FA_nom_rads = VFA_FA_array*2*(pi/360); % Nominal FA in rads

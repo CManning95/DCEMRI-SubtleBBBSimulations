@@ -107,41 +107,48 @@ end
 
 %% plot results
 figure(1); set(gcf,'Units','normalized','outerposition',[0 0 1 1]);
-suptitle(['vP=' num2str(PhysParam.vP) ', PS (per Min)=' num2str(PhysParam.PS_perMin) ', Fp = ' num2str(PhysParam.FP_mlPer100gPerMin) ', model = ' SimParam.water_exch_model]);
+suptitle(['v_p=' num2str(PhysParam.vP) ', PS (per Min)=' num2str(PhysParam.PS_perMin) ', Fp = ' num2str(PhysParam.FP_mlPer100gPerMin) ', model = ' SimParam.water_exch_model]);
 subplot(3,2,1)
 plot(timepoints_full_s,meas_AIF_mM,'k-',timepoints_full_s,Cp_AIF_mM,'r-',t_sample,Cp_AIF_sample_mM,'bx',timepoints_full_s,c_cp_mM,'m:');
-title(['measured AIF Conc (\deltat=' num2str(SimParam.t_res_full_s) ')']);
+title(['AIF Conc (\deltat=' num2str(SimParam.t_res_full_s) ')']);
 ylabel('C_p (AIF) / mMol');
-legend({'Measured VIF', 'Actual AIF','sampled VIF','c_c_p'}, 'Location', 'northeastoutside','Fontsize',10)
+legend({'VIF', 'AIF','sampled VIF','c_c_p'}, 'Location', 'northeastoutside','Fontsize',10)
 subplot(3,2,3)
 plot(timepoints_full_s,enh_AIF_pct,'k-',t_sample,enh_AIF_sample_pct,'bx')
-title('measured VIF enhancement');
+title('VIF enhancement');
 ylabel('enh / %');
-legend({'full VIF enhancement','sampled VIF enhancement'},'Location','northeastoutside','Fontsize',10)
+legend({'VIF enh %','sampled VIF enh %'},'Location','northeastoutside','Fontsize',10)
 subplot(3,2,2)
 plot(timepoints_full_s,Ct_mM,'k-',timepoints_full_s,Ct_cp_mM,'r--',timepoints_full_s,Ct_ees_mM,'g--'); hold on
 errorbar(t_sample,mean(Ct_sample_mM,2),1*std(Ct_sample_mM,0,2),'.');
-title(['Tissue Conc, vP=' num2str(PhysParam.vP) ', PS (per Min)=' num2str(PhysParam.PS_perMin)]);
+title(['Tissue Conc']);
 ylabel('C_t / mMol');
-legend({'Full C_t','v_p x c_c_p', 'v_e x c_e', 'Sampled C_t'}, 'Location', 'northeastoutside', 'Fontsize',10)
+legend({'Full C_t','vascular conc', 'extravascular conc', 'Sampled C_t'}, 'Location', 'northeastoutside', 'Fontsize',10)
 subplot(3,2,4)
-plot(timepoints_full_s,c_cp_mM,'r-',timepoints_full_s,c_ees_mM,'g-',timepoints_full_s,c_ev_mM,'b-');
 title(['Ccp, EES and EV conc']);
-ylabel('c / mMol');
-legend({'c_c_p','c_e','c_e_v'}, 'Location', 'northeastoutside','Fontsize',10)
+yyaxis left
+plot(timepoints_full_s,c_cp_mM,'r-');
+ylabel('c_c_p / mMol');
+yyaxis right
+plot(timepoints_full_s,c_ees_mM,'g-',timepoints_full_s,c_ev_mM,'b-');
+ylabel('c_e_e_s and c_e_v / mMol');
+ylim([0 0.04]);
+legend({'c_c_p','c_e_e_s','c_e_v'}, 'Location', 'northeastoutside','Fontsize',10)
 subplot(3,2,6)
 plot(timepoints_full_s,enh_tissue_pct,'k:'); hold on;
 errorbar(t_sample,mean(enh_tissue_sample_pct,2),1*std(enh_tissue_sample_pct,0,2),'.');
 title('tissue enhancement');
 ylabel('enh tissue / %');
-legend({'actual tissue enh %','sampled tissue enh %'}, 'Location','northeastoutside','Fontsize',10)
+xlabel('time (s)')
+legend({'full tissue enh %','sampled tissue enh %'}, 'Location','northeastoutside','Fontsize',10)
 subplot(3,2,5)
 plot(timepoints_full_s,Ct_mM,'k:'); hold on
 errorbar(t_sample,mean(Ct_sample_mM,2),1*std(Ct_sample_mM,0,2),'.'); hold on;
 plot(t_sample,mean(Ct_fit_mM,2));
-legend({'full C_t','sampled C_t','fitted C_t (Patlak)'},'Location','northeastoutside','Fontsize',10);
-title(['Patlak: mean vP=' num2str(mean(PatlakResults.vP)) ', mean PS(per Min)=' num2str(mean(PatlakResults.PS_perMin))]);
+legend({'full C_t','measured C_t','fitted C_t (Patlak)'},'Location','northeastoutside','Fontsize',10);
+title(['Patlak: mean v_p=' num2str(mean(PatlakResults.vP)) ', mean PS(per Min)=' num2str(mean(PatlakResults.PS_perMin))]);
 ylabel('C_t / mMol');
+xlabel('time (s)');
 %ylim([min(Ct_sample_mM(:,1)) max(Ct_sample_mM(:,1))]);
 pause(0.01)
 
