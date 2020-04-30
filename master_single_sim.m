@@ -85,10 +85,6 @@ Cp_AIF_sample_mM = (1/(1-PhysParam.Hct))*DCEFunc_Enh2Conc_SPGR(enh_AIF_sample_pc
 for i = 1:size(enh_tissue_sample_pct,2)
     Ct_sample_mM(:,i) = DCEFunc_Enh2Conc_SPGR(enh_tissue_sample_pct(:,i),PhysParam.T1_tissue_meas_s,SeqParam.TR_s,SeqParam.TE_s,SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode); 
 end
-% add noise to tissue concentration curves
-% sigma_noise_mM = max(Ct_mM)/SimParam.CNR; % calculate standard deviation of noise, using max tissue concentration over CNR
-% Ct_noise_mM = sigma_noise_mM * randn(size(Ct_sample_mM)); % generate array of noise, same size as Ct_sample_mM
-% Ct_sample_mM_noisy = Ct_sample_mM + Ct_noise_mM; % add the noise
 
 %% Fit sampled concentration curves using Patlak model
 [PatlakResults, Ct_fit_mM] = DCEFunc_fitModel(SeqParam.t_res_sample_s,Ct_sample_mM,Cp_AIF_sample_mM,'PatlakFast',struct('NIgnore',SimParam.NIgnore));
@@ -129,6 +125,7 @@ title(['Ccp, EES and EV conc']);
 yyaxis left
 plot(timepoints_full_s,c_cp_mM,'r-');
 ylabel('c_c_p / mMol');
+ylim([0 10]);
 yyaxis right
 plot(timepoints_full_s,c_ees_mM,'g-',timepoints_full_s,c_ev_mM,'b-');
 ylabel('c_e_e_s and c_e_v / mMol');

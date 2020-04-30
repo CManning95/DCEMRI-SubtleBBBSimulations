@@ -692,14 +692,14 @@ PS_devs_1 = PS_devs_1 * 1e4;
 errorbar(PS_range, PS_means_1(:,1) - PS_range, 1*PS_devs_1(:,1),'LineWidth',1.3);
 xlabel('True PS (x10^{-4} min^{-1} )');
 ylabel('fitted PS error (x10^{-4} min^{-1} )');
-xlim([0 max(PS_range)]);
-if strcmp(SimParam.InjectionRate,'slow') == 1 % zoom in on y axis if slow injection
-    ylim([-1.6 1.6])
-elseif strcmp(SimParam.InjectionRate,'fast') == 1 && SimParam.NIgnore >= 4 % zoom in on y axis if excluding points
-    ylim([-1.6 1.6])
-elseif strcmp(SimParam.InjectionRate,'fast') == 1 && SimParam.NIgnore <= 3
-    ylim([-3.2 3.2]);
-end
+% xlim([0 max(PS_range)]);
+% if strcmp(SimParam.InjectionRate,'slow') == 1 % zoom in on y axis if slow injection
+%     ylim([-1.6 1.6])
+% elseif strcmp(SimParam.InjectionRate,'fast') == 1 && SimParam.NIgnore >= 4 % zoom in on y axis if excluding points
+%     ylim([-1.6 1.6])
+% elseif strcmp(SimParam.InjectionRate,'fast') == 1 && SimParam.NIgnore <= 3
+%     ylim([-3.2 3.2]);
+% end
 
 %plot legend (if there are entries)
 if exist('fig_legend_entry') ~= 0;
