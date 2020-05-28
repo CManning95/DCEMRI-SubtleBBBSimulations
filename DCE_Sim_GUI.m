@@ -4,7 +4,7 @@ function varargout = DCE_Sim_GUI(varargin)
 % Will assess various physiological and technical DCE parameters for PS
 % and vP accuracy
 
-% Last Modified by GUIDE v2.5 06-Apr-2020 15:22:53
+% Last Modified by GUIDE v2.5 27-May-2020 12:10:45
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -76,15 +76,15 @@ function initialise_DCE_NAWM_MSS3(handles)
 
 handles.PhysParam.Hct = 0.42;
 handles.PhysParam.vE = 0.2;
-handles.PhysParam.FP_mlPer100gPerMin = 18;
+handles.PhysParam.FP_mlPer100gPerMin = 11;
 handles.PhysParam.T10_blood_s = 1.901;
 handles.PhysParam.T10_tissue_s = 0.917;
 handles.PhysParam.S0_blood = 100;
 handles.PhysParam.S0_tissue = 100;
 handles.PhysParam.kbe_perS = 2.5;
 handles.PhysParam.kie_perS = 1.7;
-handles.PhysParam.vP_fixed = 0.0058;
-handles.PhysParam.vP_fixed_single = 0.0058;
+handles.PhysParam.vP_fixed = 0.015;
+handles.PhysParam.vP_fixed_single = 0.015;
 handles.PhysParam.PS_fixed = 2.96 * 1e-4;
 handles.PhysParam.PS_fixed_single = 2.96 * 1e-4;
 
@@ -107,7 +107,7 @@ handles.SeqParam.t_res_sample_s = 39.62;
 handles.SeqParam.TR_s = 1e-3*3.4;
 handles.SeqParam.TE_s = 1e-3*1.7;
 handles.SeqParam.r1_per_mM_per_s = 5.0;
-handles.SeqParam.r2_per_mM_per_s = 7.1;
+handles.SeqParam.r2_per_mM_per_s = 0;
 handles.SeqParam.FA_nom_deg = 15;
 handles.SeqParam.FA_error = 1;
 
@@ -124,99 +124,6 @@ handles.SimParam.N_repetitions = 1000;
 handles.SimParam.t_res_full_s = 0.1;
 handles.SimParam.NIgnore = 0;
 handles.SimParam.SNR = 164;
-handles.SimParam.drift_pctPerMin = 0;
-handles.SimParam.min_PS = 0 * 1e-4;
-handles.SimParam.max_PS = 5 * 1e-4;
-handles.SimParam.min_vP = 0;
-handles.SimParam.max_vP = 0.01;
-handles.SimParam.venous_delay_s = 6;
-t_start = 0;
-handles.SimParam.t_start_s = t_start*handles.SeqParam.t_res_sample_s;
-
-set(handles.N_repetitions,'string',handles.SimParam.N_repetitions);
-set(handles.t_res_full_s, 'string',handles.SimParam.t_res_full_s);
-set(handles.NIgnore, 'string',handles.SimParam.NIgnore);
-set(handles.SNR, 'string', handles.SimParam.SNR);
-set(handles.drift_pctPerMin,'string', handles.SimParam.drift_pctPerMin);
-set(handles.min_PS,'string', handles.SimParam.min_PS * 1e4);
-set(handles.max_PS,'string', handles.SimParam.max_PS * 1e4);
-set(handles.min_vP,'String', handles.SimParam.min_vP);
-set(handles.max_vP,'String', handles.SimParam.max_vP);
-set(handles.venous_delay_s,'string',handles.SimParam.venous_delay_s);
-set(handles.t_start,'string',t_start);
-
-handles.acqParam.T1_acq_method = 'Accurate';
-handles.SimParam.InjectionRate = 'slow';
-handles.SimParam.syn_model = '2CXM';
-handles.SimParam.water_exch_model = 'FXL';
-handles.acqParam.B1_correction = 'off';
-handles.acqParam.VFA_FA_1 = 2;
-handles.acqParam.VFA_FA_2 = 5;
-handles.acqParam.VFA_FA_3 = 12;
-
-set(handles.T1_acq_method,'value',3);
-set(handles.InjectionRate,'value',2);
-set(handles.syn_model, 'value',2);
-set(handles.water_exch_model, 'value',2);
-set(handles.B1_correction, 'value',0);
-set(handles.VFA_FA_1,'string',handles.acqParam.VFA_FA_1);
-set(handles.VFA_FA_2,'string',handles.acqParam.VFA_FA_2);
-set(handles.VFA_FA_3,'string',handles.acqParam.VFA_FA_3);
-
-guidata(handles.figure1,handles)
-
-function initialise_DCE_scGM_MSS3(handles)
-
-handles.PhysParam.Hct = 0.42;
-handles.PhysParam.vE = 0.2;
-handles.PhysParam.FP_mlPer100gPerMin = 42;
-handles.PhysParam.T10_blood_s = 1.901;
-handles.PhysParam.T10_tissue_s = 1.212;
-handles.PhysParam.S0_blood = 100;
-handles.PhysParam.S0_tissue = 100;
-handles.PhysParam.kbe_perS = 2.5;
-handles.PhysParam.kie_perS = 1.7;
-handles.PhysParam.vP_fixed = 0.0127;
-handles.PhysParam.vP_fixed_single = 0.0127;
-handles.PhysParam.PS_fixed = 2.5 * 1e-4;
-handles.PhysParam.PS_fixed_single = 2.5 * 1e-4;
-
-set(handles.Hct, 'String', handles.PhysParam.Hct);
-set(handles.vE, 'String', handles.PhysParam.vE);
-set(handles.Fp, 'String', handles.PhysParam.FP_mlPer100gPerMin);
-set(handles.T10_blood_s, 'String', handles.PhysParam.T10_blood_s);
-set(handles.T10_tissue_s, 'String', handles.PhysParam.T10_tissue_s);
-set(handles.S0_blood, 'String', handles.PhysParam.S0_blood);
-set(handles.S0_tissue, 'String', handles.PhysParam.S0_tissue);
-set(handles.Kbe, 'String', handles.PhysParam.kbe_perS);
-set(handles.Kie, 'String', handles.PhysParam.kie_perS);
-set(handles.vP_fixed,'String',handles.PhysParam.vP_fixed);
-set(handles.vP_fixed_single,'String',handles.PhysParam.vP_fixed_single);
-set(handles.PS_fixed,'String',handles.PhysParam.PS_fixed * 1e4);
-set(handles.PS_fixed_single,'String',handles.PhysParam.PS_fixed_single * 1e4);
-
-handles.SeqParam.t_acq_s = 1268;
-handles.SeqParam.t_res_sample_s = 39.62;
-handles.SeqParam.TR_s = 1e-3*3.4;
-handles.SeqParam.TE_s = 1e-3*1.7;
-handles.SeqParam.r1_per_mM_per_s = 5.0;
-handles.SeqParam.r2_per_mM_per_s = 7.1;
-handles.SeqParam.FA_nom_deg = 15;
-handles.SeqParam.FA_error = 1;
-
-set(handles.t_acq_s, 'String', handles.SeqParam.t_acq_s);
-set(handles.t_res_sample, 'String', handles.SeqParam.t_res_sample_s);
-set(handles.TR,'String',1e3*handles.SeqParam.TR_s);
-set(handles.TE,'String',1e3*handles.SeqParam.TE_s);
-set(handles.r1,'String',handles.SeqParam.r1_per_mM_per_s);
-set(handles.r2,'String',handles.SeqParam.r2_per_mM_per_s);
-set(handles.FA_nom_deg,'String',handles.SeqParam.FA_nom_deg);
-set(handles.FA_error,'String',handles.SeqParam.FA_error);
-
-handles.SimParam.N_repetitions = 1000;
-handles.SimParam.t_res_full_s = 0.1;
-handles.SimParam.NIgnore = 0;
-handles.SimParam.SNR = 90;
 handles.SimParam.drift_pctPerMin = 0;
 handles.SimParam.min_PS = 0 * 1e-4;
 handles.SimParam.max_PS = 5 * 1e-4;
@@ -243,6 +150,8 @@ handles.SimParam.InjectionRate = 'slow';
 handles.SimParam.syn_model = '2CXM';
 handles.SimParam.water_exch_model = 'FXL';
 handles.acqParam.B1_correction = 'off';
+handles.SimParam.Plot_extra_figs = 0;
+handles.SimParam.SXLfit = 0;
 handles.acqParam.VFA_FA_1 = 2;
 handles.acqParam.VFA_FA_2 = 5;
 handles.acqParam.VFA_FA_3 = 12;
@@ -252,6 +161,105 @@ set(handles.InjectionRate,'value',2);
 set(handles.syn_model, 'value',2);
 set(handles.water_exch_model, 'value',2);
 set(handles.B1_correction, 'value',0);
+set(handles.Plot_extra_figs,'value',0);
+handles.SXLfit,'value',0;
+set(handles.VFA_FA_1,'string',handles.acqParam.VFA_FA_1);
+set(handles.VFA_FA_2,'string',handles.acqParam.VFA_FA_2);
+set(handles.VFA_FA_3,'string',handles.acqParam.VFA_FA_3);
+
+guidata(handles.figure1,handles)
+
+function initialise_DCE_scGM_MSS3(handles)
+
+handles.PhysParam.Hct = 0.42;
+handles.PhysParam.vE = 0.2;
+handles.PhysParam.FP_mlPer100gPerMin = 31;
+handles.PhysParam.T10_blood_s = 1.901;
+handles.PhysParam.T10_tissue_s = 1.212;
+handles.PhysParam.S0_blood = 100;
+handles.PhysParam.S0_tissue = 100;
+handles.PhysParam.kbe_perS = 2.5;
+handles.PhysParam.kie_perS = 1.7;
+handles.PhysParam.vP_fixed = 0.03;
+handles.PhysParam.vP_fixed_single = 0.03;
+handles.PhysParam.PS_fixed = 5 * 1e-4;
+handles.PhysParam.PS_fixed_single = 5 * 1e-4;
+
+set(handles.Hct, 'String', handles.PhysParam.Hct);
+set(handles.vE, 'String', handles.PhysParam.vE);
+set(handles.Fp, 'String', handles.PhysParam.FP_mlPer100gPerMin);
+set(handles.T10_blood_s, 'String', handles.PhysParam.T10_blood_s);
+set(handles.T10_tissue_s, 'String', handles.PhysParam.T10_tissue_s);
+set(handles.S0_blood, 'String', handles.PhysParam.S0_blood);
+set(handles.S0_tissue, 'String', handles.PhysParam.S0_tissue);
+set(handles.Kbe, 'String', handles.PhysParam.kbe_perS);
+set(handles.Kie, 'String', handles.PhysParam.kie_perS);
+set(handles.vP_fixed,'String',handles.PhysParam.vP_fixed);
+set(handles.vP_fixed_single,'String',handles.PhysParam.vP_fixed_single);
+set(handles.PS_fixed,'String',handles.PhysParam.PS_fixed * 1e4);
+set(handles.PS_fixed_single,'String',handles.PhysParam.PS_fixed_single * 1e4);
+
+handles.SeqParam.t_acq_s = 1268;
+handles.SeqParam.t_res_sample_s = 39.62;
+handles.SeqParam.TR_s = 1e-3*3.4;
+handles.SeqParam.TE_s = 1e-3*1.7;
+handles.SeqParam.r1_per_mM_per_s = 5.0;
+handles.SeqParam.r2_per_mM_per_s = 0;
+handles.SeqParam.FA_nom_deg = 15;
+handles.SeqParam.FA_error = 1;
+
+set(handles.t_acq_s, 'String', handles.SeqParam.t_acq_s);
+set(handles.t_res_sample, 'String', handles.SeqParam.t_res_sample_s);
+set(handles.TR,'String',1e3*handles.SeqParam.TR_s);
+set(handles.TE,'String',1e3*handles.SeqParam.TE_s);
+set(handles.r1,'String',handles.SeqParam.r1_per_mM_per_s);
+set(handles.r2,'String',handles.SeqParam.r2_per_mM_per_s);
+set(handles.FA_nom_deg,'String',handles.SeqParam.FA_nom_deg);
+set(handles.FA_error,'String',handles.SeqParam.FA_error);
+
+handles.SimParam.N_repetitions = 1000;
+handles.SimParam.t_res_full_s = 0.1;
+handles.SimParam.NIgnore = 0;
+handles.SimParam.SNR = 90;
+handles.SimParam.drift_pctPerMin = 0;
+handles.SimParam.min_PS = 0 * 1e-4;
+handles.SimParam.max_PS = 10 * 1e-4;
+handles.SimParam.min_vP = 0;
+handles.SimParam.max_vP = 0.05;
+handles.SimParam.venous_delay_s = 6;
+t_start = 0;
+handles.SimParam.t_start_s = t_start*handles.SeqParam.t_res_sample_s;
+
+set(handles.N_repetitions,'string',handles.SimParam.N_repetitions);
+set(handles.t_res_full_s, 'string',handles.SimParam.t_res_full_s);
+set(handles.NIgnore, 'string',handles.SimParam.NIgnore);
+set(handles.SNR, 'string', handles.SimParam.SNR);
+set(handles.drift_pctPerMin,'string', handles.SimParam.drift_pctPerMin);
+set(handles.min_PS,'string', handles.SimParam.min_PS * 1e4);
+set(handles.max_PS,'string', handles.SimParam.max_PS * 1e4);
+set(handles.min_vP,'String', handles.SimParam.min_vP);
+set(handles.max_vP,'String', handles.SimParam.max_vP);
+set(handles.venous_delay_s,'string',handles.SimParam.venous_delay_s);
+set(handles.t_start,'string',t_start);
+
+handles.acqParam.T1_acq_method = 'Accurate';
+handles.SimParam.InjectionRate = 'slow';
+handles.SimParam.syn_model = '2CXM';
+handles.SimParam.water_exch_model = 'FXL';
+handles.acqParam.B1_correction = 'off';
+handles.SimParam.Plot_extra_figs = 0;
+handles.SimParam.SXLfit = 0;
+handles.acqParam.VFA_FA_1 = 2;
+handles.acqParam.VFA_FA_2 = 5;
+handles.acqParam.VFA_FA_3 = 12;
+
+set(handles.T1_acq_method,'value',3);
+set(handles.InjectionRate,'value',2);
+set(handles.syn_model, 'value',2);
+set(handles.water_exch_model, 'value',2);
+set(handles.B1_correction, 'value',0);
+set(handles.Plot_extra_figs,'value',0);
+set(handles.SXLfit,'value',0);
 set(handles.VFA_FA_1,'string',handles.acqParam.VFA_FA_1);
 set(handles.VFA_FA_2,'string',handles.acqParam.VFA_FA_2);
 set(handles.VFA_FA_3,'string',handles.acqParam.VFA_FA_3);
@@ -1183,7 +1191,7 @@ end
 SimParam.NIgnore = SimParam.NIgnore + max(SimParam.baselineScans); % Ignore baseline scans, AND no. of post-contrast points specified
 
 %derive some additional parameters
-SeqParam.NPoints = round(SeqParam.t_acq_s/SeqParam.t_res_sample_s); % Number of smapled data points
+SeqParam.NPoints = round(SeqParam.t_acq_s/SeqParam.t_res_sample_s); % Number of sampled data points
 SeqParam.FA_meas_deg = SeqParam.FA_nom_deg; % For single sim
 SeqParam.FA_true_deg = SeqParam.FA_error*SeqParam.FA_nom_deg; % Actual FA experienced by tissue/blood
 
@@ -1224,13 +1232,10 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-
 function assumed_T1_blood_Callback(hObject, eventdata, handles)
 assumed_T1_blood = str2double(get(hObject,'String'));
 handles.assumed_T1_blood = assumed_T1_blood;
 guidata(hObject,handles)
-
 
 % --- Executes during object creation, after setting all properties.
 function assumed_T1_blood_CreateFcn(hObject, eventdata, handles)
@@ -1238,13 +1243,10 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-
 function assumed_T1_tissue_Callback(hObject, eventdata, handles)
 assumed_T1_tissue = str2double(get(hObject,'String'));
 handles.assumed_T1_tissue = assumed_T1_tissue;
 guidata(hObject,handles)
-
 
 % --- Executes during object creation, after setting all properties.
 function assumed_T1_tissue_CreateFcn(hObject, eventdata, handles)
@@ -1270,8 +1272,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-
 function VFA_FA_1_Callback(hObject, eventdata, handles)
 VFA_FA_1 = str2double(get(hObject,'String'));
 handles.acqParam.VFA_FA_1 = VFA_FA_1;
@@ -1285,4 +1285,16 @@ guidata(hObject,handles)
 function VFA_FA_3_Callback(hObject, eventdata, handles)
 VFA_FA_3 = str2double(get(hObject,'String'));
 handles.acqParam.VFA_FA_3 = VFA_FA_3;
+guidata(hObject,handles)
+
+% --- Executes on button press in Plot_extra_figs.
+function Plot_extra_figs_Callback(hObject, eventdata, handles)
+Plot_extra_figs = get(hObject,'Value');
+handles.SimParam.Plot_extra_figs = Plot_extra_figs;
+guidata(hObject,handles)
+
+% --- Executes on button press in SXLfit.
+function SXLfit_Callback(hObject, eventdata, handles)
+SXLfit = get(hObject,'Value');
+handles.SimParam.SXLfit = SXLfit;
 guidata(hObject,handles)

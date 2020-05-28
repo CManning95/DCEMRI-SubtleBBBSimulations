@@ -45,7 +45,7 @@ switch mode
         
         for iSeries=1:NSeries %loop through different time series (e.g. voxels or ROIs)
             
-            if isnan(T10_s(1,iSeries)); continue; end; %skip voxels without a T1 value
+            if isnan(T10_s(1,iSeries)) || T10_s(1,iSeries)<=0; continue; end %skip voxels without a valid T1 value
             
             predictedSignal_pre = DCEFunc_getSPGRSignal(S0,T10_s(1,iSeries),T2s0_s,TR_s,TE_s,FA_deg(1,iSeries)); %calculate pre-contrast signal
             
@@ -70,7 +70,8 @@ switch mode
         R10 = repmat(1./T10_s,[NTimePoints 1]);
         FA = repmat(2*pi*(FA_deg/360),[NTimePoints 1]);
         conc_mM(:,:) = -log((exp(R10*TR_s).*(enhancementPct - 100*cos(FA) - enhancementPct.*exp(R10*TR_s) + 100))./(100*exp(R10*TR_s) + enhancementPct.*cos(FA) - 100*exp(R10*TR_s).*cos(FA) - enhancementPct.*exp(R10*TR_s).*cos(FA)))/(TR_s*r1_permMperS);
-        conc_mM(imag(conc_mM)~=0 | isinf(conc_mM) | conc_mM<-0.1 | conc_mM>8 ) = nan;
+        %conc_mM(imag(conc_mM)~=0 | isinf(conc_mM) | conc_mM<-0.1 | conc_mM>8 ) = nan; %constrain in same way as numeric version
+        conc_mM(imag(conc_mM)~=0 | isinf(conc_mM)) = nan; %no constraint
     
     otherwise
         error('Mode not recognised.');

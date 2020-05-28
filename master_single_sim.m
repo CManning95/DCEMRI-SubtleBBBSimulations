@@ -19,6 +19,15 @@ M0 = PhysParam.S0_tissue * p; % assume magnetisation is proportional to the popu
 T10_ES_s = (M0(2) + M0(3)) / ( ((1/PhysParam.T10_tissue_s)*(M0(1)+M0(2)+M0(3))) - ( (1/PhysParam.T10_blood_s)*M0(1)) ); %calculate T10 for combined extravascular space
 T10_s = [PhysParam.T10_blood_s T10_ES_s T10_ES_s]; % vector of compartmental T1s for blood, EES, intracellular; assume T10 is equal in EES and cells (equivalent to assuming FX between interstitium and cells)
 
+% If SXLfit not selected, default to traditional Patlak analysis
+if isfield(SimParam,'SXLfit') == 0; 
+    SimParam.SXLfit = 0;
+end
+
+if isfield(SimParam,'Plot_extra_figs') == 0; 
+    SimParam.Plot_extra_figs = 0;
+end
+
 %% Simulating synthetic AIF and tissue signals
 % start by generating AIF concentration curve
 switch SimParam.InjectionRate
@@ -82,12 +91,18 @@ else
     mode = 'numeric';
 end
 Cp_AIF_sample_mM = (1/(1-PhysParam.Hct))*DCEFunc_Enh2Conc_SPGR(enh_AIF_sample_pct,PhysParam.T1_blood_meas_s,SeqParam.TR_s,SeqParam.TE_s,SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode);
-for i = 1:size(enh_tissue_sample_pct,2)
-    Ct_sample_mM(:,i) = DCEFunc_Enh2Conc_SPGR(enh_tissue_sample_pct(:,i),PhysParam.T1_tissue_meas_s,SeqParam.TR_s,SeqParam.TE_s,SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode); 
-end
+Ct_sample_mM = DCEFunc_Enh2Conc_SPGR(enh_tissue_sample_pct,ones(1,SimParam.N_repetitions)*PhysParam.T1_tissue_meas_s,SeqParam.TR_s,SeqParam.TE_s,ones(1,SimParam.N_repetitions)*SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode); 
 
-%% Fit sampled concentration curves using Patlak model
-[PatlakResults, Ct_fit_mM] = DCEFunc_fitModel(SeqParam.t_res_sample_s,Ct_sample_mM,Cp_AIF_sample_mM,'PatlakFast',struct('NIgnore',SimParam.NIgnore));
+%% Fit enhancement curves using SXL fitting method or Patlak model
+if SimParam.SXLfit == 1;
+    opts.init_vP = 0.0001; % initial vP value to test for SXL fitting
+    opts.init_PS_perMin = 1e-8; % initial PS value to test for SXL fitting
+    opts.NIgnore = SimParam.NIgnore;
+    [PatlakResults, enhModelFit_pct] = DCEFunc_fitPatlak_waterEx(SeqParam.t_res_sample_s,enh_tissue_sample_pct,Cp_AIF_sample_mM,PhysParam.Hct,ones(1,SimParam.N_repetitions)*PhysParam.T1_tissue_meas_s,PhysParam.T1_blood_meas_s,SeqParam.TR_s,SeqParam.TE_s,ones(1,SimParam.N_repetitions)*SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,opts);
+    Ct_fit_mM = PatlakResults.Ct_SXL_mM(:,1);
+else
+    [PatlakResults, Ct_fit_mM] = DCEFunc_fitModel(SeqParam.t_res_sample_s,Ct_sample_mM,Cp_AIF_sample_mM,'PatlakFast',struct('NIgnore',SimParam.NIgnore));
+end
 
 %% Plot detailed graph of tissue concentration (full and sampled) and Patlak fit
 % figure()
@@ -102,53 +117,54 @@ end
 % text(11,0.005,txt,'FontSize',14);
 
 %% plot results
-figure(1); set(gcf,'Units','normalized','outerposition',[0 0 1 1]);
-suptitle(['v_p=' num2str(PhysParam.vP) ', PS (per Min)=' num2str(PhysParam.PS_perMin) ', Fp = ' num2str(PhysParam.FP_mlPer100gPerMin) ', model = ' SimParam.water_exch_model]);
-subplot(3,2,1)
-plot(timepoints_full_s,meas_AIF_mM,'k-',timepoints_full_s,Cp_AIF_mM,'r-',t_sample,Cp_AIF_sample_mM,'bx',timepoints_full_s,c_cp_mM,'m:');
-title(['AIF Conc (\deltat=' num2str(SimParam.t_res_full_s) ')']);
-ylabel('C_p (AIF) / mMol');
-legend({'VIF', 'AIF','sampled VIF','c_c_p'}, 'Location', 'northeastoutside','Fontsize',10)
-subplot(3,2,3)
-plot(timepoints_full_s,enh_AIF_pct,'k-',t_sample,enh_AIF_sample_pct,'bx')
-title('VIF enhancement');
-ylabel('enh / %');
-legend({'VIF enh %','sampled VIF enh %'},'Location','northeastoutside','Fontsize',10)
-subplot(3,2,2)
-plot(timepoints_full_s,Ct_mM,'k-',timepoints_full_s,Ct_cp_mM,'r--',timepoints_full_s,Ct_ees_mM,'g--'); hold on
-errorbar(t_sample,mean(Ct_sample_mM,2),1*std(Ct_sample_mM,0,2),'.');
-title(['Tissue Conc']);
-ylabel('C_t / mMol');
-legend({'Full C_t','vascular conc', 'extravascular conc', 'Sampled C_t'}, 'Location', 'northeastoutside', 'Fontsize',10)
-subplot(3,2,4)
-title(['Ccp, EES and EV conc']);
-yyaxis left
-plot(timepoints_full_s,c_cp_mM,'r-');
-ylabel('c_c_p / mMol');
-ylim([0 10]);
-yyaxis right
-plot(timepoints_full_s,c_ees_mM,'g-',timepoints_full_s,c_ev_mM,'b-');
-ylabel('c_e_e_s and c_e_v / mMol');
-ylim([0 0.04]);
-legend({'c_c_p','c_e_e_s','c_e_v'}, 'Location', 'northeastoutside','Fontsize',10)
-subplot(3,2,6)
-plot(timepoints_full_s,enh_tissue_pct,'k:'); hold on;
-errorbar(t_sample,mean(enh_tissue_sample_pct,2),1*std(enh_tissue_sample_pct,0,2),'.');
-title('tissue enhancement');
-ylabel('enh tissue / %');
-xlabel('time (s)')
-legend({'full tissue enh %','sampled tissue enh %'}, 'Location','northeastoutside','Fontsize',10)
-subplot(3,2,5)
-plot(timepoints_full_s,Ct_mM,'k:'); hold on
-errorbar(t_sample,mean(Ct_sample_mM,2),1*std(Ct_sample_mM,0,2),'.'); hold on;
-plot(t_sample,mean(Ct_fit_mM,2));
-legend({'full C_t','measured C_t','fitted C_t (Patlak)'},'Location','northeastoutside','Fontsize',10);
-title(['Patlak: mean v_p=' num2str(mean(PatlakResults.vP)) ', mean PS(per Min)=' num2str(mean(PatlakResults.PS_perMin))]);
-ylabel('C_t / mMol');
-xlabel('time (s)');
-%ylim([min(Ct_sample_mM(:,1)) max(Ct_sample_mM(:,1))]);
-pause(0.01)
-
+if SimParam.Plot_extra_figs == 1;
+    figure(1); set(gcf,'Units','normalized','outerposition',[0 0 1 1]);
+    suptitle(['v_p=' num2str(PhysParam.vP) ', PS (per Min)=' num2str(PhysParam.PS_perMin) ', Fp = ' num2str(PhysParam.FP_mlPer100gPerMin) ', model = ' SimParam.water_exch_model]);
+    subplot(3,2,1)
+    plot(timepoints_full_s,meas_AIF_mM,'k-',timepoints_full_s,Cp_AIF_mM,'r-',t_sample,Cp_AIF_sample_mM,'bx',timepoints_full_s,c_cp_mM,'m:');
+    title(['AIF Conc (\deltat=' num2str(SimParam.t_res_full_s) ')']);
+    ylabel('C_p (AIF) / mMol');
+    legend({'VIF', 'AIF','sampled VIF','c_c_p'}, 'Location', 'northeastoutside','Fontsize',10)
+    subplot(3,2,3)
+    plot(timepoints_full_s,enh_AIF_pct,'k-',t_sample,enh_AIF_sample_pct,'bx')
+    title('VIF enhancement');
+    ylabel('enh / %');
+    legend({'VIF enh %','sampled VIF enh %'},'Location','northeastoutside','Fontsize',10)
+    subplot(3,2,2)
+    plot(timepoints_full_s,Ct_mM,'k-',timepoints_full_s,Ct_cp_mM,'r--',timepoints_full_s,Ct_ees_mM,'g--'); hold on
+    errorbar(t_sample,mean(Ct_sample_mM,2),1*std(Ct_sample_mM,0,2),'.');
+    title(['Tissue Conc']);
+    ylabel('C_t / mMol');
+    legend({'Full C_t','vascular conc', 'extravascular conc', 'Sampled C_t'}, 'Location', 'northeastoutside', 'Fontsize',10)
+    subplot(3,2,4)
+    title(['Ccp, EES and EV conc']);
+    yyaxis left
+    plot(timepoints_full_s,c_cp_mM,'r-');
+    ylabel('c_c_p / mMol');
+    ylim([0 10]);
+    yyaxis right
+    plot(timepoints_full_s,c_ees_mM,'g-',timepoints_full_s,c_ev_mM,'b-');
+    ylabel('c_e_e_s and c_e_v / mMol');
+    ylim([0 0.04]);
+    legend({'c_c_p','c_e_e_s','c_e_v'}, 'Location', 'northeastoutside','Fontsize',10)
+    subplot(3,2,6)
+    plot(timepoints_full_s,enh_tissue_pct,'k:'); hold on;
+    errorbar(t_sample,mean(enh_tissue_sample_pct,2),1*std(enh_tissue_sample_pct,0,2),'.');
+    title('tissue enhancement');
+    ylabel('enh tissue / %');
+    xlabel('time (s)')
+    legend({'full tissue enh %','sampled tissue enh %'}, 'Location','northeastoutside','Fontsize',10)
+    subplot(3,2,5)
+    plot(timepoints_full_s,Ct_mM,'k:'); hold on
+    errorbar(t_sample,mean(Ct_sample_mM,2),1*std(Ct_sample_mM,0,2),'.'); hold on;
+    plot(t_sample,mean(Ct_fit_mM,2));
+    legend({'full C_t','measured C_t','fitted C_t (Patlak)'},'Location','northeastoutside','Fontsize',10);
+    title(['Patlak: mean v_p=' num2str(mean(PatlakResults.vP)) ', mean PS(per Min)=' num2str(mean(PatlakResults.PS_perMin))]);
+    ylabel('C_t / mMol');
+    xlabel('time (s)');
+    %ylim([min(Ct_sample_mM(:,1)) max(Ct_sample_mM(:,1))]);
+    pause(0.01)
+end
 vP_fit = PatlakResults.vP;
 PS_fit_perMin = PatlakResults.PS_perMin;
 
