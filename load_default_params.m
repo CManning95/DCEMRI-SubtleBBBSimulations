@@ -21,7 +21,7 @@ DCESeqParam.t_res_sample_s = 39.62; % sample temporal resolution
 DCESeqParam.TR_s = 1e-3*3.4; % repetition time
 DCESeqParam.TE_s = 1e-3*1.7; % echo time
 DCESeqParam.r1_per_mM_per_s = 5.0; % T1 relaxivity of contrast agent
-DCESeqParam.r2_per_mM_per_s = 7.1; % T2 relaxivity of contrast agent
+DCESeqParam.r2_per_mM_per_s = 0; % T2 relaxivity of contrast agent
 DCESeqParam.NPoints = round(DCESeqParam.t_acq_s/DCESeqParam.t_res_sample_s); % number of sample points
 
 DCESeqParam.FA_nom_deg = 15; % nominal flip angle
@@ -39,10 +39,10 @@ SimParam.venous_delay_s = 6; % delay of measured VIF compared to AIF
 SimParam.t_start_s = 198; % injection delay in seconds
 SimParam.InjectionRate = 'fast'; % Speed of injection (slow or fast)
 SimParam.syn_model = '2CXM'; % model to simulate contrast leakage
-SimParam.water_exch_model = 'FXL'; % water exchange model to generate signals
+SimParam.water_exch_model = '2S1XA'; % water exchange model to generate signals
 SimParam.baselineScans = [3:5]; % datapoints to use for calculating base signal
 SimParam.NIgnore = max(SimParam.baselineScans); % number of post-contrast points to exclude (always uses 3 points for baseline signal)
-SimParam.SXLfit = 0; % fit enhancements according to SXL method
+SimParam.SXLfit = 1; % fit enhancements according to SXL method
 SimParam.Plot_extra_figs = 0; % plot figures of extra data for each simulation
 
 %% T1 acquisition parameters

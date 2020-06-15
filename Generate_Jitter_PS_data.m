@@ -8,6 +8,7 @@ clear; close all;
 addpath('DCE_Simulation_Functions');
 
 [PhysParam,DCESeqParam,SimParam,T1acqParam] = load_default_params;
+
 PS_range = linspace(SimParam.min_PS,SimParam.max_PS,10)'+1e-8;
 vP_fixed = PhysParam.vP_fixed;
 N_PS = size(PS_range,1); %range sizes to test

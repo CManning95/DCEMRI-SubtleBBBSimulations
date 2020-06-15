@@ -44,7 +44,7 @@ for iSeries=1:N %loop through different time series (e.g. voxels or ROIs)
     
     %% Optimise vP and PS until predicted enhancement matches measured enhancement
     [fitParams,resnorm,residual,exitflag,output]=lsqcurvefit(@fPatlak,fitParams0,[],enh_pct(opts.NIgnore+1:end,iSeries)...
-        ,[0 -inf],[1 inf],optimoptions(@lsqcurvefit,'Display','iter','TolFun',1e-7,'TolX',1e-7,'TypicalX',fitParams0));
+        ,[0 -inf],[1 inf],optimoptions(@lsqcurvefit,'Display','off','TolFun',1e-7,'TolX',1e-7,'TypicalX',fitParams0));
     
     if exitflag<1
         continue; %return nan if solution not found

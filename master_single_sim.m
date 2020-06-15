@@ -91,7 +91,7 @@ else
     mode = 'numeric';
 end
 Cp_AIF_sample_mM = (1/(1-PhysParam.Hct))*DCEFunc_Enh2Conc_SPGR(enh_AIF_sample_pct,PhysParam.T1_blood_meas_s,SeqParam.TR_s,SeqParam.TE_s,SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode);
-Ct_sample_mM = DCEFunc_Enh2Conc_SPGR(enh_tissue_sample_pct,ones(1,SimParam.N_repetitions)*PhysParam.T1_tissue_meas_s,SeqParam.TR_s,SeqParam.TE_s,ones(1,SimParam.N_repetitions)*SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode); 
+
 
 %% Fit enhancement curves using SXL fitting method or Patlak model
 if SimParam.SXLfit == 1;
@@ -99,22 +99,13 @@ if SimParam.SXLfit == 1;
     opts.init_PS_perMin = 1e-8; % initial PS value to test for SXL fitting
     opts.NIgnore = SimParam.NIgnore;
     [PatlakResults, enhModelFit_pct] = DCEFunc_fitPatlak_waterEx(SeqParam.t_res_sample_s,enh_tissue_sample_pct,Cp_AIF_sample_mM,PhysParam.Hct,ones(1,SimParam.N_repetitions)*PhysParam.T1_tissue_meas_s,PhysParam.T1_blood_meas_s,SeqParam.TR_s,SeqParam.TE_s,ones(1,SimParam.N_repetitions)*SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,opts);
-    Ct_fit_mM = PatlakResults.Ct_SXL_mM(:,1);
+    Ct_sample_mM = PatlakResults.Ct_SXL_mM;
+    Ct_fit_mM = mean(Ct_sample_mM,2);
+    
 else
+    Ct_sample_mM = DCEFunc_Enh2Conc_SPGR(enh_tissue_sample_pct,ones(1,SimParam.N_repetitions)*PhysParam.T1_tissue_meas_s,SeqParam.TR_s,SeqParam.TE_s,ones(1,SimParam.N_repetitions)*SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode); 
     [PatlakResults, Ct_fit_mM] = DCEFunc_fitModel(SeqParam.t_res_sample_s,Ct_sample_mM,Cp_AIF_sample_mM,'PatlakFast',struct('NIgnore',SimParam.NIgnore));
 end
-
-%% Plot detailed graph of tissue concentration (full and sampled) and Patlak fit
-% figure()
-% plot(timepoints_full_s,SI_tissue,'k',t_sample,SI_tissue_sample(:,1),'bx','LineWidth',1.5)
-% xlabel('Time (sec)','fontsize',16);
-% ylabel('Tissue signal','fontsize',16);
-% %title('');
-% % xlim([0 22]);
-% ylim([2.5 2.64]);
-%legend({'Simulation tissue signal','sampled (experimental) signal estimates'},'fontsize',14);
-% txt = {['K^{trans} error = ' num2str(round(100*(1 - (PhysParam.PS_perMin/PatlakResults.PS_perMin(1))),2)) '%']};
-% text(11,0.005,txt,'FontSize',14);
 
 %% plot results
 if SimParam.Plot_extra_figs == 1;

@@ -7,6 +7,7 @@ clear; close all;
 addpath('DCE_Simulation_Functions');
     
 [PhysParam,DCESeqParam,SimParam,T1acqParam] = load_default_params;
+%SimParam.water_exch_model = '2S1XA'; % water exchange model to generate signals
 
 %% Generate variable flow/injection delay sims
 % ranges of PS and vP to test
