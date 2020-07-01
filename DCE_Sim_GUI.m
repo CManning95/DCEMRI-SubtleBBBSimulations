@@ -4,7 +4,7 @@ function varargout = DCE_Sim_GUI(varargin)
 % Will assess various physiological and technical DCE parameters for PS
 % and vP accuracy
 
-% Last Modified by GUIDE v2.5 27-May-2020 12:10:45
+% Last Modified by GUIDE v2.5 23-Jun-2020 16:18:32
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -155,6 +155,7 @@ handles.SimParam.SXLfit = 0;
 handles.acqParam.VFA_FA_1 = 2;
 handles.acqParam.VFA_FA_2 = 5;
 handles.acqParam.VFA_FA_3 = 12;
+handles.acqParam.T1_SNR = 319;
 
 set(handles.T1_acq_method,'value',3);
 set(handles.InjectionRate,'value',2);
@@ -166,7 +167,7 @@ handles.SXLfit,'value',0;
 set(handles.VFA_FA_1,'string',handles.acqParam.VFA_FA_1);
 set(handles.VFA_FA_2,'string',handles.acqParam.VFA_FA_2);
 set(handles.VFA_FA_3,'string',handles.acqParam.VFA_FA_3);
-
+set(handles.T1acq_SNR,'string',handles.acqParam.T1_SNR);
 guidata(handles.figure1,handles)
 
 function initialise_DCE_scGM_MSS3(handles)
@@ -252,6 +253,7 @@ handles.SimParam.SXLfit = 0;
 handles.acqParam.VFA_FA_1 = 2;
 handles.acqParam.VFA_FA_2 = 5;
 handles.acqParam.VFA_FA_3 = 12;
+handles.acqParam.T1_SNR = 170;
 
 set(handles.T1_acq_method,'value',3);
 set(handles.InjectionRate,'value',2);
@@ -263,6 +265,7 @@ set(handles.SXLfit,'value',0);
 set(handles.VFA_FA_1,'string',handles.acqParam.VFA_FA_1);
 set(handles.VFA_FA_2,'string',handles.acqParam.VFA_FA_2);
 set(handles.VFA_FA_3,'string',handles.acqParam.VFA_FA_3);
+set(handles.T1acq_SNR,'string',handles.acqParam.T1_SNR);
 
 guidata(handles.figure1,handles)
 
@@ -644,8 +647,8 @@ end
 if SimParam.InjectionRate == 'slow'
     load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
     SimParam.Cp_AIF_mM = Cp_AIF_mM;
-    SimParam.tRes_InputAIF_s = 18.49; % original time resolution of AIFs
-    SimParam.InputAIFDCENFrames = 69; % number of time points
+    SimParam.tRes_InputAIF_s = 39.62; % original time resolution of AIFs
+    SimParam.InputAIFDCENFrames = 32; % number of time points
     SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
 elseif SimParam.InjectionRate == 'fast'
     SimParam.baselineScans = [3:5]; % datapoints to use for calculating base signal
@@ -959,6 +962,7 @@ acqParam.TI_s = [NaN NaN NaN]; % Inversion times
 acqParam.PECentre = [NaN NaN NaN]; % indicates time of centre of k-space
 acqParam.NReadout = [160 160 160]; % number of readout pulses (Siemens - number of slices)
 acqParam.NTry = 1; % Fitting attempts
+acqParam.T1_SNR = inf; % SNR of T1 acquisition signals
 
 if isempty('handles.assumed_T1_blood');
     handles.assumed_T1_blood = NaN;
@@ -1012,8 +1016,8 @@ end
 if SimParam.InjectionRate == 'slow'
     load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
     SimParam.Cp_AIF_mM = Cp_AIF_mM;
-    SimParam.tRes_InputAIF_s = 18.49; % original time resolution of AIFs
-    SimParam.InputAIFDCENFrames = 69; % number of time points
+    SimParam.tRes_InputAIF_s = 39.62; % original time resolution of AIFs
+    SimParam.InputAIFDCENFrames = 32; % number of time points
     SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
 elseif SimParam.InjectionRate == 'fast'
     SimParam.baselineScans = [3:5]; % datapoints to use for calculating base signal
@@ -1181,8 +1185,8 @@ end
 if SimParam.InjectionRate == 'slow'
     load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
     SimParam.Cp_AIF_mM = Cp_AIF_mM;
-    SimParam.tRes_InputAIF_s = 18.49; % original time resolution of AIFs
-    SimParam.InputAIFDCENFrames = 69; % number of time points
+    SimParam.tRes_InputAIF_s = 39.62; % original time resolution of AIFs
+    SimParam.InputAIFDCENFrames = 32; % number of time points
     SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
 elseif SimParam.InjectionRate == 'fast'
     SimParam.baselineScans = [3:5]; % datapoints to use for calculating base signal
@@ -1298,3 +1302,17 @@ function SXLfit_Callback(hObject, eventdata, handles)
 SXLfit = get(hObject,'Value');
 handles.SimParam.SXLfit = SXLfit;
 guidata(hObject,handles)
+
+
+
+function T1acq_SNR_Callback(hObject, eventdata, handles)
+T1_SNR = str2double(get(hObject,'String'));
+handles.acqParam.T1_SNR = T1_SNR;
+guidata(hObject,handles)
+
+
+% --- Executes during object creation, after setting all properties.
+function T1acq_SNR_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

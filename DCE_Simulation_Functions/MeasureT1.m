@@ -30,10 +30,16 @@ switch T1_acq_method
         NIR=sum(acqParam.isFit,2);
         NT1=size(acqParam.isFit,2);
         % generate T1 scan intensities
-        SI=nan(1,NT1); %pre-allocate        
+        SI=nan(1,NT1); %pre-allocate
+        T1_noise=nan(1,NT1);
+        
         SI(~acqParam.isIR) = SPGRFormula(S0,T1,acqParam.TR_s(~acqParam.isIR),acqParam.FA_true_rads(~acqParam.isIR)); % signal of SPGR components
         SI(acqParam.isIR==1) = deichmannFormula(S0,T1,acqParam.TR_s(acqParam.isIR==1),acqParam.TI_s(acqParam.isIR==1),0,pi*ones(1,NIR),acqParam.FA_true_rads(acqParam.isIR==1), ...
             acqParam.NReadout(acqParam.isIR==1),acqParam.PECentre(acqParam.isIR==1)); %signal of IR components
+        
+        sigma_signal_noise = max(SI)/acqParam.T1_SNR; % standard deviation of noise
+        T1_noise = sigma_signal_noise * randn(size(SI)); % random array of noise, same size as SI
+        SI = SI + T1_noise; % add noise to signal
         
         % fit T1 scan intensities to model
         [T1_meas,S0_meas,k_meas,modelFit] = fit_R1(SI,acqParam.isIR,acqParam.isFit,acqParam.TR_s,acqParam.FA_nom_rads,acqParam.TI_s,acqParam.PECentre,acqParam.NReadout,acqParam.NTry);

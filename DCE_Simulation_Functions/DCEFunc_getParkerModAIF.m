@@ -23,7 +23,8 @@ t_min=t_s/60; %Parker function uses minute units, so convert time;
 %%set Parker function parameters
 A1=0.809; A2=0.330;
 T1=0.17046; T2=0.365;
-sigma1=0.0563; sigma2=0.132;
+sigma1=0.0563; 
+sigma2=0.132;
 s=38.078; tau=0.483;
 
 % take decay_type from variable input, if none then default to MSS2

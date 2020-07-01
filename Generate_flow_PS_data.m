@@ -7,7 +7,8 @@ clear; close all;
 addpath('DCE_Simulation_Functions');
     
 [PhysParam,DCESeqParam,SimParam,T1acqParam] = load_default_params;
-%SimParam.water_exch_model = '2S1XA'; % water exchange model to generate signals
+%  SimParam.water_exch_model = '2S1XA'; % water exchange model to generate signals
+%  SimParam.SXLfit = 0; % fit enhancements according to SXL method
 
 %% Generate variable flow/injection delay sims
 % ranges of PS and vP to test
@@ -56,8 +57,8 @@ Fp_ranges = [11 8.25 5.5]; % Plasma flow ranges
  
  load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
  SimParam.Cp_AIF_mM = Cp_AIF_mM;
- SimParam.tRes_InputAIF_s = 18.49; % original time resolution of AIFs
- SimParam.InputAIFDCENFrames = 69; % number of time points
+ SimParam.tRes_InputAIF_s = 39.62; % original time resolution of AIFs
+ SimParam.InputAIFDCENFrames = 32; % number of time points
  
  for i = 1:size(Fp_ranges,2)
      PhysParam.FP_mlPer100gPerMin = Fp_ranges(i);
@@ -70,7 +71,6 @@ Fp_ranges = [11 8.25 5.5]; % Plasma flow ranges
      PS_means_Fp_slow(:,i) = mean(PS_fit_Fp_slow,1)'; % mean for each PS at high flow
      PS_devs_Fp_slow(:,i) = std(PS_fit_Fp_slow,0,1)'; % standard deviation for each PS at high flow
  end
-  
 
 %% Generate graphs
 

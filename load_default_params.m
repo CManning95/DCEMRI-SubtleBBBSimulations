@@ -10,7 +10,7 @@ PhysParam.T2s0_blood_s = 0.191; % baseline T2* blood
 PhysParam.T2s0_tissue_s = 0.050; % baseline T2* tissue
 PhysParam.S0_blood = 100; % baseline signal blood
 PhysParam.S0_tissue = 100; % baseline signal tissue
-PhysParam.kbe_perS = 2.5; % blood - EES water exchange rate
+PhysParam.kbe_perS = 2.75; % blood - EES water exchange rate
 PhysParam.kie_perS = 1.7; % intracellular space - EES exchange rate
 PhysParam.vP_fixed = 0.015; % plasma volume fraction
 PhysParam.PS_fixed = 2.96 * 1e-4; % surface area - permeability product
@@ -39,10 +39,10 @@ SimParam.venous_delay_s = 6; % delay of measured VIF compared to AIF
 SimParam.t_start_s = 198; % injection delay in seconds
 SimParam.InjectionRate = 'fast'; % Speed of injection (slow or fast)
 SimParam.syn_model = '2CXM'; % model to simulate contrast leakage
-SimParam.water_exch_model = '2S1XA'; % water exchange model to generate signals
+SimParam.water_exch_model = 'FXL'; % water exchange model to generate signals
 SimParam.baselineScans = [3:5]; % datapoints to use for calculating base signal
 SimParam.NIgnore = max(SimParam.baselineScans); % number of post-contrast points to exclude (always uses 3 points for baseline signal)
-SimParam.SXLfit = 1; % fit enhancements according to SXL method
+SimParam.SXLfit = 0; % fit enhancements according to SXL method
 SimParam.Plot_extra_figs = 0; % plot figures of extra data for each simulation
 
 %% T1 acquisition parameters
@@ -56,6 +56,7 @@ T1acqParam.TI_s = [NaN NaN NaN]; % Inversion times for T1 acquisition (for HIFI)
 T1acqParam.PECentre = [NaN NaN NaN]; % indicates time of centre of k-space
 T1acqParam.NReadout = [160 160 160]; % number of readout pulses (Siemens - number of slices)
 T1acqParam.NTry = 1; % fitting attempts
+T1acqParam.T1_SNR = inf;
 
 [PhysParam.T1_blood_meas_s,temp,T1acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
 [PhysParam.T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);

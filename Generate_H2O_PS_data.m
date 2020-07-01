@@ -10,14 +10,15 @@ addpath('DCE_Simulation_Functions');
     
 % Select default parameters
 [PhysParam,DCESeqParam,SimParam,T1acqParam] = load_default_params;
-
+ SimParam.water_exch_model = '2S1XA';
+ 
 % ranges of PS and vP to test
 PS_range = linspace(SimParam.min_PS,SimParam.max_PS,10)'+1e-8;
 vP_fixed = PhysParam.vP_fixed;
 
 %range sizes to test
 N_PS = size(PS_range,1);
-kbe_ranges = [2.5 5 10];
+kbe_ranges = [1.375 2.75 5.5];
 
 PS_means_H2O_fast = NaN(10,3);
 PS_means_H2O_exclude = NaN(10,3);
@@ -26,7 +27,7 @@ PS_devs_H2O_fast = NaN(10,3);
 PS_devs_H2O_exclude = NaN(10,3);
 PS_devs_H2O_slow = NaN(10,3);
 
- SimParam.water_exch_model = '2S1XA';
+
  
 %% Sim water exchange with Patlak fitting (fast injection, no exclude)
     for i = 1:size(kbe_ranges,2);
@@ -44,7 +45,6 @@ PS_devs_H2O_slow = NaN(10,3);
     %% Sim water exchange with Patlak fitting (fast injection, exclude)
     SimParam.NIgnore = max(SimParam.baselineScans) + 3;
     
-    SimParam.water_exch_model = '2S1XA';
     for i = 1:size(kbe_ranges,2);
         PhysParam.kbe_perS = kbe_ranges(i);
         for i_PS = 1:N_PS
@@ -65,10 +65,9 @@ PS_devs_H2O_slow = NaN(10,3);
     
     load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
     SimParam.Cp_AIF_mM = Cp_AIF_mM;
-    SimParam.tRes_InputAIF_s = 18.49; % original time resolution of AIFs
-    SimParam.InputAIFDCENFrames = 69; % number of time points
+    SimParam.tRes_InputAIF_s = 39.62; % original time resolution of AIFs
+    SimParam.InputAIFDCENFrames = 32; % number of time points
     
-    SimParam.water_exch_model = '2S1XA';
     for i = 1:size(kbe_ranges,2);
         PhysParam.kbe_perS = kbe_ranges(i);
         for i_PS = 1:N_PS
@@ -84,9 +83,10 @@ PS_devs_H2O_slow = NaN(10,3);
     
     %% Sim water exchange with SXL fitting (fast injection, no exclude)
     [PhysParam,DCESeqParam,SimParam,T1acqParam] = load_default_params;
+    SimParam.water_exch_model = '2S1XA';
     SimParam.SXLfit = 1;
      
-    SimParam.water_exch_model = '2S1XA';
+
     for i = 1:size(kbe_ranges,2);
         PhysParam.kbe_perS = kbe_ranges(i);
         for i_PS = 1:N_PS
@@ -122,8 +122,8 @@ PS_devs_H2O_slow = NaN(10,3);
     
     load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
     SimParam.Cp_AIF_mM = Cp_AIF_mM;
-    SimParam.tRes_InputAIF_s = 18.49; % original time resolution of AIFs
-    SimParam.InputAIFDCENFrames = 69; % number of time points
+    SimParam.tRes_InputAIF_s = 39.62; % original time resolution of AIFs
+    SimParam.InputAIFDCENFrames = 32; % number of time points
         
     for i = 1:size(kbe_ranges,2);
         PhysParam.kbe_perS = kbe_ranges(i);
@@ -175,7 +175,7 @@ ylabel('fitted PS error (x10^{-4} min^{-1} )');
 title('Bolus injection');
 xlim([0 max(PS_range)]);
 ylim([-5 5]);
-legend({'k_{be} = 2.5 s^{-1}','k_{be} = 5 s^{-1}','k_{be} = 10 s^{-1}'},'Location','best')
+legend({'k_{be} = 1.375 s^{-1}','k_{be} = 2.75 s^{-1}','k_{be} = 5.5 s^{-1}'},'Location','best')
 legend('boxoff')
 
 ax = gca;
