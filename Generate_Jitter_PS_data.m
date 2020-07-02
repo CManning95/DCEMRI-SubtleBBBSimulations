@@ -14,7 +14,7 @@ SimParam.SXLfit = 0; % fit enhancements according to SXL method
 PS_range = linspace(SimParam.min_PS,SimParam.max_PS,10)'+1e-8;
 vP_fixed = PhysParam.vP_fixed;
 N_PS = size(PS_range,1); %range sizes to test
-Delay_ranges = [0 6 12]; % Injection delay ranges
+Delay_ranges = [0 10 20]; % Injection delay ranges
 
 %% Generate variable jitter PS - fast injection
 for i = 1:size(Delay_ranges,2);
@@ -94,7 +94,7 @@ ylabel('fitted PS error (x10^{-4} min^{-1} )');
 title('Bolus injection');
 xlim([0 max(PS_range)]);
 ylim([-4 4]);
-legend({'No delay','+ 6 s','+ 12 s'},'Location','best')
+legend({'No delay','+ 2 s','+ 4 s'},'Location','best')
 legend('boxoff')
 
 ax = gca;

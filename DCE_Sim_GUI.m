@@ -645,9 +645,12 @@ end
 
 %Sort slow injection parameters
 if SimParam.InjectionRate == 'slow'
+    %load('Cp_AIF_mM_HighRes.mat');
     load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
     SimParam.Cp_AIF_mM = Cp_AIF_mM;
+    %SimParam.tRes_InputAIF_s = 18.49;
     SimParam.tRes_InputAIF_s = 39.62; % original time resolution of AIFs
+    %SimParam.InputAIFDCENFrames = 69;
     SimParam.InputAIFDCENFrames = 32; % number of time points
     SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
 elseif SimParam.InjectionRate == 'fast'
@@ -1161,31 +1164,14 @@ switch handles.acqParam.B1_correction
         SeqParam.FA_error = 1;
 end
 
-% Check previous legend, clear figures if plot hold is off
-if handles.plot_hold == 0; % delete previous figures if plot hold is off
-    fig_GUI = findall(0,'type','figure','Tag','figure1'); %Keeps GUI open
-    fig_other = findall(0,'type','figure');
-    figures_del = setdiff(fig_other,fig_GUI);
-    delete(figures_del);
-end
-
-% check previous legend
-if handles.plot_hold == 1 && ishandle(2) == 1; % if plot hold is on, read current legend
-    old_leg = (findall(figure(2),'Type','Legend'));
-    if isempty(old_leg.String) == 0 % if previous legend is empty (no labels) don't assign new labels
-        fig_legend_entry = old_leg.String;
-    end
-elseif handles.plot_hold == 0; % if plot hold off, clear fig_legend_entry
-    clear fig_legend_entry
-end
-
-% Ignore baseline scans and post-contrast points
-
 %Sort slow injection parameters
 if SimParam.InjectionRate == 'slow'
+    %load('Cp_AIF_mM_HighRes.mat');
     load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
     SimParam.Cp_AIF_mM = Cp_AIF_mM;
+    %SimParam.tRes_InputAIF_s = 18.49;
     SimParam.tRes_InputAIF_s = 39.62; % original time resolution of AIFs
+    %SimParam.InputAIFDCENFrames = 69;
     SimParam.InputAIFDCENFrames = 32; % number of time points
     SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
 elseif SimParam.InjectionRate == 'fast'
