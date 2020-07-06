@@ -645,12 +645,9 @@ end
 
 %Sort slow injection parameters
 if SimParam.InjectionRate == 'slow'
-    %load('Cp_AIF_mM_HighRes.mat');
     load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
     SimParam.Cp_AIF_mM = Cp_AIF_mM;
-    %SimParam.tRes_InputAIF_s = 18.49;
     SimParam.tRes_InputAIF_s = 39.62; % original time resolution of AIFs
-    %SimParam.InputAIFDCENFrames = 69;
     SimParam.InputAIFDCENFrames = 32; % number of time points
     SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
 elseif SimParam.InjectionRate == 'fast'
@@ -1166,12 +1163,9 @@ end
 
 %Sort slow injection parameters
 if SimParam.InjectionRate == 'slow'
-    %load('Cp_AIF_mM_HighRes.mat');
-    load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
+     load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
     SimParam.Cp_AIF_mM = Cp_AIF_mM;
-    %SimParam.tRes_InputAIF_s = 18.49;
     SimParam.tRes_InputAIF_s = 39.62; % original time resolution of AIFs
-    %SimParam.InputAIFDCENFrames = 69;
     SimParam.InputAIFDCENFrames = 32; % number of time points
     SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
 elseif SimParam.InjectionRate == 'fast'
