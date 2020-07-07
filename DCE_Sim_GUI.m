@@ -155,7 +155,7 @@ handles.SimParam.SXLfit = 0;
 handles.acqParam.VFA_FA_1 = 2;
 handles.acqParam.VFA_FA_2 = 5;
 handles.acqParam.VFA_FA_3 = 12;
-handles.acqParam.T1_SNR = 319;
+handles.acqParam.T1_SNR = 318;
 
 set(handles.T1_acq_method,'value',3);
 set(handles.InjectionRate,'value',2);
@@ -606,15 +606,23 @@ end
 
 % Simulate T1 acquisiton
 [PhysParam.T1_blood_meas_s,temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_blood);
-[PhysParam.T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_tissue);
+    disp(['Simulated baseline T1 acquisitions:']);
+    disp(['Flip Angle error = ' num2str((100*SeqParam.FA_error)-100) ' %'])
+    
+    switch acqParam.T1_acq_method
+        case 'VFA' % if using VFA T1 acq, run N_repetition times to simulate T1 errors
+            for n = 1:SimParam.N_repetitions
+                [PhysParam.T1_tissue_meas_s(n,1),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method);
+            end
+        case {'Accurate','Assumed'}
+            [PhysParam.T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_tissue);
+    end
 
-disp(['Simulated baseline T1 acquisitions:']);
-disp(['Flip Angle error = ' num2str((100*SeqParam.FA_error)-100) ' %'])
-disp(['Actual blood T1 = ' num2str(PhysParam.T10_blood_s)])
-disp(['Measured blood T1 = ' num2str(PhysParam.T1_blood_meas_s)])
-disp(['Actual tissue T1 = ' num2str(PhysParam.T10_tissue_s)])
-disp(['Measured tissue T1 = ' num2str(PhysParam.T1_tissue_meas_s)])
-
+    disp(['Actual blood T1 = ' num2str(PhysParam.T10_blood_s)])
+    disp(['Measured blood T1 = ' num2str(PhysParam.T1_blood_meas_s)])
+    disp(['Actual tissue T1 = ' num2str(PhysParam.T10_tissue_s)])
+    disp(['Measured tissue T1 = ' num2str(PhysParam.T1_tissue_meas_s(1,1))])
+    
 % If B1 correction is on (for DCE) correct FA
 switch handles.acqParam.B1_correction
     case 'on'
@@ -642,16 +650,13 @@ elseif handles.plot_hold == 0; % if plot hold off, clear fig_legend_entry
 end
 
 % Ignore baseline scans and post-contrast points
-
+    SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
 %Sort slow injection parameters
 if SimParam.InjectionRate == 'slow'
     load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
     SimParam.Cp_AIF_mM = Cp_AIF_mM;
     SimParam.tRes_InputAIF_s = 39.62; % original time resolution of AIFs
     SimParam.InputAIFDCENFrames = 32; % number of time points
-    SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
-elseif SimParam.InjectionRate == 'fast'
-    SimParam.baselineScans = [3:5]; % datapoints to use for calculating base signal
 end
 
 SimParam.NIgnore = SimParam.NIgnore + max(SimParam.baselineScans); % Ignore baseline scans, AND no. of post-contrast points specified
@@ -735,7 +740,7 @@ switch Inj_Rate_opt
     case 3
         handles.SimParam.InjectionRate = 'fast';
         handles.SimParam.NIgnore = 3; % always ignores baseline scans, also ignores this input
-        t_start = 198;
+        t_start = 138;
         %t_start = 3*handles.SeqParam.t_res_sample_s+5; % set min inj delay to 3 pre-contrast sample points(+5s)
 end
 set(handles.NIgnore,'string',handles.SimParam.NIgnore);
@@ -975,15 +980,23 @@ end
 
 % Simulate T1 acquisiton
 [PhysParam.T1_blood_meas_s,temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_blood);
-[PhysParam.T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_tissue);
+    disp(['Simulated baseline T1 acquisitions:']);
+    disp(['Flip Angle error = ' num2str((100*SeqParam.FA_error)-100) ' %'])
+    
+    switch acqParam.T1_acq_method
+        case 'VFA' % if using VFA T1 acq, run N_repetition times to simulate T1 errors
+            for n = 1:SimParam.N_repetitions
+                [PhysParam.T1_tissue_meas_s(n,1),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method);
+            end
+        case {'Accurate','Assumed'}
+            [PhysParam.T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_tissue);
+    end
 
-disp(['Simulated baseline T1 acquisitions:']);
-disp(['Flip Angle error = ' num2str((100*SeqParam.FA_error)-100) ' %'])
-disp(['Actual blood T1 = ' num2str(PhysParam.T10_blood_s)])
-disp(['Measured blood T1 = ' num2str(PhysParam.T1_blood_meas_s)])
-disp(['Actual tissue T1 = ' num2str(PhysParam.T10_tissue_s)])
-disp(['Measured tissue T1 = ' num2str(PhysParam.T1_tissue_meas_s)])
-
+    disp(['Actual blood T1 = ' num2str(PhysParam.T10_blood_s)])
+    disp(['Measured blood T1 = ' num2str(PhysParam.T1_blood_meas_s)])
+    disp(['Actual tissue T1 = ' num2str(PhysParam.T10_tissue_s)])
+    disp(['Measured tissue T1 = ' num2str(PhysParam.T1_tissue_meas_s(1,1))])
+    
 % If B1 correction is on (for DCE) correct FA
 switch handles.acqParam.B1_correction
     case 'on'
@@ -1011,16 +1024,13 @@ elseif handles.plot_hold == 0; % if plot hold off, clear fig_legend_entry
 end
 
 % Ignore baseline scans and post-contrast points
-
+    SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
 %Sort slow injection parameters
 if SimParam.InjectionRate == 'slow'
     load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
     SimParam.Cp_AIF_mM = Cp_AIF_mM;
     SimParam.tRes_InputAIF_s = 39.62; % original time resolution of AIFs
     SimParam.InputAIFDCENFrames = 32; % number of time points
-    SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
-elseif SimParam.InjectionRate == 'fast'
-    SimParam.baselineScans = [3:5]; % datapoints to use for calculating base signal
 end
 
 SimParam.NIgnore = SimParam.NIgnore + max(SimParam.baselineScans); % Ignore baseline scans, AND no. of post-contrast points specified
@@ -1143,33 +1153,38 @@ if isempty('handles.assumed_T1_tissue');
     handles.assumed_T1_tissue = NaN;
 end
 
-
 % Simulate T1 acquisiton
 [PhysParam.T1_blood_meas_s,temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_blood);
-[PhysParam.T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_tissue);
+    disp(['Simulated baseline T1 acquisitions:']);
+    disp(['Flip Angle error = ' num2str((100*SeqParam.FA_error)-100) ' %'])
+    
+switch acqParam.T1_acq_method
+    case 'VFA' % if using VFA T1 acq, run N_repetition times to simulate T1 errors
+        for n = 1:SimParam.N_repetitions
+            [PhysParam.T1_tissue_meas_s(n,1),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method);
+        end
+    case {'Accurate','Assumed'}
+        [PhysParam.T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_tissue);
+    end
 
-disp(['Simulated baseline T1 acquisitions:']);
-disp(['Flip Angle error = ' num2str((100*SeqParam.FA_error)-100) ' %'])
-disp(['Actual blood T1 = ' num2str(PhysParam.T10_blood_s)])
-disp(['Measured blood T1 = ' num2str(PhysParam.T1_blood_meas_s)])
-disp(['Actual tissue T1 = ' num2str(PhysParam.T10_tissue_s)])
-disp(['Measured tissue T1 = ' num2str(PhysParam.T1_tissue_meas_s)])
-
+    disp(['Actual blood T1 = ' num2str(PhysParam.T10_blood_s)])
+    disp(['Measured blood T1 = ' num2str(PhysParam.T1_blood_meas_s)])
+    disp(['Actual tissue T1 = ' num2str(PhysParam.T10_tissue_s)])
+    disp(['Measured tissue T1 = ' num2str(PhysParam.T1_tissue_meas_s(1,1))])
+    
 % If B1 correction is on (for DCE) correct FA
 switch handles.acqParam.B1_correction
     case 'on'
         SeqParam.FA_error = 1;
 end
 
+    SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
 %Sort slow injection parameters
 if SimParam.InjectionRate == 'slow'
      load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
     SimParam.Cp_AIF_mM = Cp_AIF_mM;
     SimParam.tRes_InputAIF_s = 39.62; % original time resolution of AIFs
     SimParam.InputAIFDCENFrames = 32; % number of time points
-    SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
-elseif SimParam.InjectionRate == 'fast'
-    SimParam.baselineScans = [3:5]; % datapoints to use for calculating base signal
 end
 
 SimParam.NIgnore = SimParam.NIgnore + max(SimParam.baselineScans); % Ignore baseline scans, AND no. of post-contrast points specified

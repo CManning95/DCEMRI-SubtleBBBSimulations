@@ -37,7 +37,7 @@ switch T1_acq_method
         SI(acqParam.isIR==1) = deichmannFormula(S0,T1,acqParam.TR_s(acqParam.isIR==1),acqParam.TI_s(acqParam.isIR==1),0,pi*ones(1,NIR),acqParam.FA_true_rads(acqParam.isIR==1), ...
             acqParam.NReadout(acqParam.isIR==1),acqParam.PECentre(acqParam.isIR==1)); %signal of IR components
         
-        sigma_signal_noise = max(SI)/acqParam.T1_SNR; % standard deviation of noise
+        sigma_signal_noise = SI(2)/acqParam.T1_SNR; % standard deviation of noise
         T1_noise = sigma_signal_noise * randn(size(SI)); % random array of noise, same size as SI
         SI = SI + T1_noise; % add noise to signal
         

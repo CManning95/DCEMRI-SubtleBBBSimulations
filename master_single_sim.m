@@ -105,7 +105,12 @@ if SimParam.SXLfit == 1;
     Ct_fit_mM = mean(Ct_sample_mM,2);
     
 else
-    Ct_sample_mM = DCEFunc_Enh2Conc_SPGR(enh_tissue_sample_pct,ones(1,SimParam.N_repetitions)*PhysParam.T1_tissue_meas_s,SeqParam.TR_s,SeqParam.TE_s,ones(1,SimParam.N_repetitions)*SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode); 
+    if size(PhysParam.T1_tissue_meas_s) == 1; % if using Accurate/Assumed T1 acq, use same T1 for each iteration
+        T1_Enh2Conc_input = ones(1,SimParam.N_repetitions)*PhysParam.T1_tissue_meas_s;
+    else % if using VFA T1 acq, use different T1 for each iteration (it will be of size N_repetitions anyway)
+        T1_Enh2Conc_input = PhysParam.T1_tissue_meas_s';
+    end
+    Ct_sample_mM = DCEFunc_Enh2Conc_SPGR(enh_tissue_sample_pct,T1_Enh2Conc_input,SeqParam.TR_s,SeqParam.TE_s,ones(1,SimParam.N_repetitions)*SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode); 
     [PatlakResults, Ct_fit_mM] = DCEFunc_fitModel(SeqParam.t_res_sample_s,Ct_sample_mM,Cp_AIF_sample_mM,'PatlakFast',struct('NIgnore',SimParam.NIgnore));
 end
 
