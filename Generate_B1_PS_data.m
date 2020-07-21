@@ -9,7 +9,7 @@ addpath('DCE_Simulation_Functions');
     
 [PhysParam,DCESeqParam,SimParam,T1acqParam] = load_default_params;
 SimParam.water_exch_model = '2S1XA';
-SimParam.SXLfit = 0; % fit enhancements according to SXL method
+%SimParam.SXLfit = 1; % fit enhancements according to SXL method
 
 PS_range = linspace(SimParam.min_PS,SimParam.max_PS,10)'+1e-8;
 vP_fixed = PhysParam.vP_fixed;
@@ -66,7 +66,7 @@ PS_devs_VFA_fast(:,3) = std(PS_fit_lowkVFA_fast,0,1)'; % standard deviation at k
 %% Generate variable flow PS and vP - fast injection (exclude)
 [PhysParam,DCESeqParam,SimParam,T1acqParam] = load_default_params;
 SimParam.water_exch_model = '2S1XA';
-SimParam.SXLfit = 0; % fit enhancements according to SXL method
+%SimParam.SXLfit = 1; % fit enhancements according to SXL method
 SimParam.NIgnore = max(SimParam.baselineScans) + 3;
   
  for i_PS = 1:N_PS % Accurate T1 acquisition
@@ -118,12 +118,10 @@ PS_devs_VFA_exclude(:,3) = std(PS_fit_lowkVFA_exclude,0,1)'; % standard deviatio
 %% Generate B1 inhomogeneity figures - slow injection
 [PhysParam,DCESeqParam,SimParam,T1acqParam] = load_default_params;
 SimParam.water_exch_model = '2S1XA';
-SimParam.SXLfit = 0; % fit enhancements according to SXL method
+%SimParam.SXLfit = 1; % fit enhancements according to SXL method
 
  SimParam.t_start_s = 0;
  SimParam.InjectionRate = 'slow';
- SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
- SimParam.NIgnore = max(SimParam.baselineScans);
  
  load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
  SimParam.Cp_AIF_mM = Cp_AIF_mM;
@@ -200,7 +198,7 @@ errorbar(PS_range + 0.06, PS_means_VFA_fast(:,3) - PS_range, 1*PS_devs_VFA_fast(
 %errorbar(PS_range + 0.09, PS_means_VFA_fast(:,4) - PS_range, 1*PS_devs_VFA_fast(:,4),'LineWidth',1.3,'Color',Colour4); hold on;
 ylabel('fitted PS error (x10^{-4} min^{-1} )');
 xlim([0 max(PS_range)]);
-ylim([-4 4]);
+ylim([-2 2]);
 legend({'Accurate T_1_0 and DCE','T_1_0 and DCE uncorrected (k=1.3)','T_1_0 and DCE uncorrected (k=0.7)'},'Location','best')
 legend('boxoff')
 

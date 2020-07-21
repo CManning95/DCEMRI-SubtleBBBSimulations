@@ -9,16 +9,16 @@ addpath('DCE_Simulation_Functions');
 
 [PhysParam,DCESeqParam,SimParam,T1acqParam] = load_default_params;
 SimParam.water_exch_model = '2S1XA'; % water exchange model to generate signals
-SimParam.SXLfit = 0; % fit enhancements according to SXL method
+%SimParam.SXLfit = 1; % fit enhancements according to SXL method
 
 PS_range = linspace(SimParam.min_PS,SimParam.max_PS,10)'+1e-8;
 vP_fixed = PhysParam.vP_fixed;
 N_PS = size(PS_range,1); %range sizes to test
-Delay_ranges = [0 10 20]; % Injection delay ranges
+Delay_ranges = [0 6 12]; % Injection delay ranges
 
 %% Generate variable jitter PS - fast injection
 for i = 1:size(Delay_ranges,2);
-     SimParam.t_start_s = 198 + Delay_ranges(i);
+     SimParam.t_start_s = 138 + Delay_ranges(i);
      for i_PS = 1:N_PS
          PhysParam.vP = vP_fixed(1);
          PhysParam.PS_perMin = PS_range(i_PS);
@@ -33,7 +33,7 @@ end
   SimParam.NIgnore = max(SimParam.baselineScans) + 3;
   
  for i = 1:size(Delay_ranges,2);
-     SimParam.t_start_s = 198 + Delay_ranges(i);
+     SimParam.t_start_s = 138 + Delay_ranges(i);
      for i_PS = 1:N_PS
          PhysParam.vP = vP_fixed(1);
          PhysParam.PS_perMin = PS_range(i_PS);
@@ -47,7 +47,6 @@ end
  %% Generate variable jitter PS - slow injection
  SimParam.t_start_s = 0;
  SimParam.InjectionRate = 'slow';
- SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
  SimParam.NIgnore = max(SimParam.baselineScans);
  
  load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
@@ -93,8 +92,8 @@ errorbar(PS_range + 0.06, PS_means_jitter_fast(:,3) - PS_range, 1*PS_devs_jitter
 ylabel('fitted PS error (x10^{-4} min^{-1} )');
 title('Bolus injection');
 xlim([0 max(PS_range)]);
-ylim([-4 4]);
-legend({'No delay','+ 2 s','+ 4 s'},'Location','best')
+ylim([-2 2]);
+legend({'No delay','+ 6 s','+ 12 s'},'Location','best')
 legend('boxoff')
 
 ax = gca;

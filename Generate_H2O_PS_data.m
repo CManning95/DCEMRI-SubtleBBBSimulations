@@ -60,7 +60,6 @@ PS_devs_H2O_slow = NaN(10,3);
     %% Sim water exchange with Patlak fitting (slow injection)
     SimParam.InjectionRate = 'slow';
     SimParam.t_start_s = 0;
-    SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
     SimParam.NIgnore = max(SimParam.baselineScans);
     
     load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
@@ -86,7 +85,6 @@ PS_devs_H2O_slow = NaN(10,3);
     SimParam.water_exch_model = '2S1XA';
     SimParam.SXLfit = 1;
      
-
     for i = 1:size(kbe_ranges,2);
         PhysParam.kbe_perS = kbe_ranges(i);
         for i_PS = 1:N_PS
@@ -117,7 +115,6 @@ PS_devs_H2O_slow = NaN(10,3);
     %% Sim water exchange with SXL fitting (slow injection)
     SimParam.InjectionRate = 'slow';
     SimParam.t_start_s = 0;
-    SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
     SimParam.NIgnore = max(SimParam.baselineScans);
     
     load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
@@ -174,7 +171,7 @@ errorbar(PS_range + 0.06, PS_means_H2OPatlak_fast(:,3) - PS_range, 1*PS_devs_H2O
 ylabel('fitted PS error (x10^{-4} min^{-1} )');
 title('Bolus injection');
 xlim([0 max(PS_range)]);
-ylim([-5 5]);
+ylim([-2 2]);
 legend({'k_{be} = 1.375 s^{-1}','k_{be} = 2.75 s^{-1}','k_{be} = 5.5 s^{-1}'},'Location','best')
 legend('boxoff')
 
