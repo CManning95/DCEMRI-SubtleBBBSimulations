@@ -4,7 +4,7 @@ function varargout = DCE_Sim_GUI(varargin)
 % Will assess various physiological and technical DCE parameters for PS
 % and vP accuracy
 
-% Last Modified by GUIDE v2.5 23-Jun-2020 16:18:32
+% Last Modified by GUIDE v2.5 05-Aug-2020 12:02:40
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -145,11 +145,12 @@ set(handles.max_vP,'String', handles.SimParam.max_vP);
 set(handles.venous_delay_s,'string',handles.SimParam.venous_delay_s);
 set(handles.t_start,'string',t_start);
 
-handles.acqParam.T1_acq_method = 'Accurate';
+handles.acqParam.T1_acq_method = 'VFA';
 handles.SimParam.InjectionRate = 'slow';
 handles.SimParam.syn_model = '2CXM';
 handles.SimParam.water_exch_model = 'FXL';
 handles.acqParam.B1_correction = 'off';
+handles.acqParam.T10_B1_correction = 'off';
 handles.SimParam.Plot_extra_figs = 0;
 handles.SimParam.SXLfit = 0;
 handles.acqParam.VFA_FA_1 = 2;
@@ -157,11 +158,12 @@ handles.acqParam.VFA_FA_2 = 5;
 handles.acqParam.VFA_FA_3 = 12;
 handles.acqParam.T1_SNR = 318;
 
-set(handles.T1_acq_method,'value',3);
+set(handles.T1_acq_method,'value',2);
 set(handles.InjectionRate,'value',2);
 set(handles.syn_model, 'value',2);
 set(handles.water_exch_model, 'value',2);
 set(handles.B1_correction, 'value',0);
+set(handles.T10_B1_Correction, 'value',0);
 set(handles.Plot_extra_figs,'value',0);
 handles.SXLfit,'value',0;
 set(handles.VFA_FA_1,'string',handles.acqParam.VFA_FA_1);
@@ -243,11 +245,12 @@ set(handles.max_vP,'String', handles.SimParam.max_vP);
 set(handles.venous_delay_s,'string',handles.SimParam.venous_delay_s);
 set(handles.t_start,'string',t_start);
 
-handles.acqParam.T1_acq_method = 'Accurate';
+handles.acqParam.T1_acq_method = 'VFA';
 handles.SimParam.InjectionRate = 'slow';
 handles.SimParam.syn_model = '2CXM';
 handles.SimParam.water_exch_model = 'FXL';
 handles.acqParam.B1_correction = 'off';
+handles.acqParam.T10_B1_correction = 'off';
 handles.SimParam.Plot_extra_figs = 0;
 handles.SimParam.SXLfit = 0;
 handles.acqParam.VFA_FA_1 = 2;
@@ -255,11 +258,12 @@ handles.acqParam.VFA_FA_2 = 5;
 handles.acqParam.VFA_FA_3 = 12;
 handles.acqParam.T1_SNR = 170;
 
-set(handles.T1_acq_method,'value',3);
+set(handles.T1_acq_method,'value',2);
 set(handles.InjectionRate,'value',2);
 set(handles.syn_model, 'value',2);
 set(handles.water_exch_model, 'value',2);
 set(handles.B1_correction, 'value',0);
+set(handles.T10_B1_Correction, 'value',0);
 set(handles.Plot_extra_figs,'value',0);
 set(handles.SXLfit,'value',0);
 set(handles.VFA_FA_1,'string',handles.acqParam.VFA_FA_1);
@@ -579,6 +583,14 @@ SeqParam = handles.SeqParam;
 SimParam = handles.SimParam;
 acqParam = handles.acqParam;
 
+% ranges of PS to test for fixed vP
+PS_range = linspace(SimParam.min_PS,SimParam.max_PS,10)'+1e-8;
+vP_fixed = PhysParam.vP_fixed; %vP for NAWM, Heye et al. 2016 
+
+%range sizes
+N_PS = size(PS_range,1);
+PS_fit_1 = nan(SimParam.N_repetitions,N_PS);
+
 %hard code T2s0 values (as sims are independent of T2)
 PhysParam.T2s0_blood_s = 0.191;
 PhysParam.T2s0_tissue_s = 0.050;
@@ -588,7 +600,12 @@ VFA_FA_array = [acqParam.VFA_FA_1 acqParam.VFA_FA_2 acqParam.VFA_FA_3]; % collat
 acqParam.isFit = [1 1 1]; % Which acquisitions to fit
 acqParam.TR_s = [0.0054 0.0054 0.0054]; % TR of acquisitions
 acqParam.FA_nom_rads = VFA_FA_array*2*(pi/360); % Nominal FA in rads
-acqParam.FA_true_rads = SeqParam.FA_error * acqParam.FA_nom_rads; % True FA in rads
+switch acqParam.T10_B1_correction
+    case 'off'
+        acqParam.FA_true_rads = SeqParam.FA_error * acqParam.FA_nom_rads; % True T1 FA
+    case 'on'
+        acqParam.FA_true_rads = acqParam.FA_nom_rads; % corrects T1 FA
+end
 acqParam.isIR = [0 0 0]; % indicates which are IR-SPGR
 acqParam.TI_s = [NaN NaN NaN]; % Inversion times
 acqParam.PECentre = [NaN NaN NaN]; % indicates time of centre of k-space
@@ -607,22 +624,25 @@ end
 % Simulate T1 acquisiton
 [PhysParam.T1_blood_meas_s,temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_blood);
     disp(['Simulated baseline T1 acquisitions:']);
-    disp(['Flip Angle error = ' num2str((100*SeqParam.FA_error)-100) ' %'])
-    
+    disp(['Flip Angle error = ' num2str((100*SeqParam.FA_error)-100) ' %']);
+    disp(['Actual tissue T1 = ' num2str(PhysParam.T10_tissue_s)])
+
     switch acqParam.T1_acq_method
-        case 'VFA' % if using VFA T1 acq, run N_repetition times to simulate T1 errors
-            for n = 1:SimParam.N_repetitions
-                [PhysParam.T1_tissue_meas_s(n,1),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method);
+        case 'VFA' % if using VFA T1 acq, run N_repetition*n_PS times to simulate T1 errors
+            for m = 1:N_PS
+                for n = 1:SimParam.N_repetitions
+                    [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method);
+                end
             end
+            disp(['Actual tissue T1 = ' num2str(PhysParam.T10_tissue_s)])
+            disp(['Mean tissue T1 error = ' num2str(mean(mean(abs(100 - (PhysParam.T10_tissue_s./T1_tissue_meas_s)*100)))) ' %'])
         case {'Accurate','Assumed'}
-            [PhysParam.T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_tissue);
+            [T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_tissue);
+            T1_tissue_meas_s = repmat(T1_tissue_meas_s,1,N_PS); % each PS needs a T1 value in single_sim
+            disp([]);
+            
     end
 
-    disp(['Actual blood T1 = ' num2str(PhysParam.T10_blood_s)])
-    disp(['Measured blood T1 = ' num2str(PhysParam.T1_blood_meas_s)])
-    disp(['Actual tissue T1 = ' num2str(PhysParam.T10_tissue_s)])
-    disp(['Measured tissue T1 = ' num2str(PhysParam.T1_tissue_meas_s(1,1))])
-    
 % If B1 correction is on (for DCE) correct FA
 switch handles.acqParam.B1_correction
     case 'on'
@@ -666,15 +686,9 @@ SeqParam.NPoints = round(SeqParam.t_acq_s/SeqParam.t_res_sample_s); % Number of 
 SeqParam.FA_meas_deg = SeqParam.FA_nom_deg; % For single sim
 SeqParam.FA_true_deg = SeqParam.FA_error*SeqParam.FA_nom_deg; % Actual FA experienced by tissue/blood
 
-% ranges of PS to test for fixed vP
-PS_range = linspace(SimParam.min_PS,SimParam.max_PS,10)'+1e-8;
-vP_fixed = PhysParam.vP_fixed; %vP for NAWM, Heye et al. 2016 
-
-%range sizes
-N_PS = size(PS_range,1);
-PS_fit_1 = nan(SimParam.N_repetitions,N_PS);
 
 for i_PS = 1:N_PS
+    PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
     PhysParam.vP = vP_fixed(1);
     PhysParam.PS_perMin = PS_range(i_PS);
     [temp, PS_fit_1(:,i_PS)] = master_single_sim(PhysParam,SeqParam,SimParam);
@@ -716,7 +730,7 @@ ylabel('fitted PS error (x10^{-4} min^{-1} )');
 % elseif strcmp(SimParam.InjectionRate,'fast') == 1 && SimParam.NIgnore <= 3
 %     ylim([-3.2 3.2]);
 % end
-
+ylim([-2 2]);
 %plot legend (if there are entries)
 if exist('fig_legend_entry') ~= 0;
     if isa(fig_legend_entry,'cell') == 1
@@ -740,7 +754,7 @@ switch Inj_Rate_opt
     case 3
         handles.SimParam.InjectionRate = 'fast';
         handles.SimParam.NIgnore = 3; % always ignores baseline scans, also ignores this input
-        t_start = 138;
+        t_start = 119;
         %t_start = 3*handles.SeqParam.t_res_sample_s+5; % set min inj delay to 3 pre-contrast sample points(+5s)
 end
 set(handles.NIgnore,'string',handles.SimParam.NIgnore);
@@ -878,7 +892,7 @@ t_start = str2double(get(hObject,'String'));
 if isnan(t_start) == 1 && strcmp(handles.SimParam.InjectionRate,'slow') == 1;
     set(hObject,'string',0)
 elseif isnan(t_start) == 1 && strcmp(handles.SimParam.InjectionRate,'fast') == 1;
-    set(hObject,'string',3*handles.SeqParam.t_res_sample_s + 5)
+    set(hObject,'string',119)
 end
 
 handles.SimParam.t_start_s = t_start;
@@ -952,22 +966,34 @@ SeqParam = handles.SeqParam;
 SimParam = handles.SimParam;
 acqParam = handles.acqParam;
 
+% ranges of PS to test for fixed vP
+vP_range = linspace(SimParam.min_vP,SimParam.max_vP,10)'+1e-8;
+PS_fixed = PhysParam.PS_fixed; 
+
+%range sizes
+N_vP = size(vP_range,1);
+vP_fit_1 = nan(SimParam.N_repetitions,N_vP);
+
 %hard code T2s0 values (as sims are independent of T2)
 PhysParam.T2s0_blood_s = 0.191;
 PhysParam.T2s0_tissue_s = 0.050;
 
 % Parameters to simulate a T1 acquisition
-VFA_FA_array = [acqParam.VFA_FA_1 acqParam.VFA_FA_2 acqParam.VFA_FA_3];
+VFA_FA_array = [acqParam.VFA_FA_1 acqParam.VFA_FA_2 acqParam.VFA_FA_3]; % collate VFA flip angles
 acqParam.isFit = [1 1 1]; % Which acquisitions to fit
 acqParam.TR_s = [0.0054 0.0054 0.0054]; % TR of acquisitions
 acqParam.FA_nom_rads = VFA_FA_array*2*(pi/360); % Nominal FA in rads
-acqParam.FA_true_rads = SeqParam.FA_error * acqParam.FA_nom_rads; % True FA in rads
+switch acqParam.T10_B1_correction
+    case 'off'
+        acqParam.FA_true_rads = SeqParam.FA_error * acqParam.FA_nom_rads; % True T1 FA
+    case 'on'
+        acqParam.FA_true_rads = acqParam.FA_nom_rads; % corrects T1 FA
+end
 acqParam.isIR = [0 0 0]; % indicates which are IR-SPGR
 acqParam.TI_s = [NaN NaN NaN]; % Inversion times
 acqParam.PECentre = [NaN NaN NaN]; % indicates time of centre of k-space
 acqParam.NReadout = [160 160 160]; % number of readout pulses (Siemens - number of slices)
 acqParam.NTry = 1; % Fitting attempts
-acqParam.T1_SNR = inf; % SNR of T1 acquisition signals
 
 if isempty('handles.assumed_T1_blood');
     handles.assumed_T1_blood = NaN;
@@ -975,27 +1001,30 @@ end
 
 if isempty('handles.assumed_T1_tissue');
     handles.assumed_T1_tissue = NaN;
-end
 
+end
 
 % Simulate T1 acquisiton
 [PhysParam.T1_blood_meas_s,temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_blood);
     disp(['Simulated baseline T1 acquisitions:']);
-    disp(['Flip Angle error = ' num2str((100*SeqParam.FA_error)-100) ' %'])
-    
-    switch acqParam.T1_acq_method
-        case 'VFA' % if using VFA T1 acq, run N_repetition times to simulate T1 errors
-            for n = 1:SimParam.N_repetitions
-                [PhysParam.T1_tissue_meas_s(n,1),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method);
-            end
-        case {'Accurate','Assumed'}
-            [PhysParam.T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_tissue);
-    end
-
-    disp(['Actual blood T1 = ' num2str(PhysParam.T10_blood_s)])
-    disp(['Measured blood T1 = ' num2str(PhysParam.T1_blood_meas_s)])
+    disp(['Flip Angle error = ' num2str((100*SeqParam.FA_error)-100) ' %']);
     disp(['Actual tissue T1 = ' num2str(PhysParam.T10_tissue_s)])
-    disp(['Measured tissue T1 = ' num2str(PhysParam.T1_tissue_meas_s(1,1))])
+
+    switch acqParam.T1_acq_method
+        case 'VFA' % if using VFA T1 acq, run N_repetition*n_PS times to simulate T1 errors
+            for m = 1:N_vP
+                for n = 1:SimParam.N_repetitions
+                    [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method);
+                end
+            end
+            disp(['Actual tissue T1 = ' num2str(PhysParam.T10_tissue_s)])
+            disp(['Mean tissue T1 error = ' num2str(mean(mean(abs(100 - (PhysParam.T10_tissue_s./T1_tissue_meas_s)*100)))) ' %'])
+        case {'Accurate','Assumed'}
+            [T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_tissue);
+            T1_tissue_meas_s = repmat(T1_tissue_meas_s,1,N_vP); % each PS needs a T1 value in single_sim
+            disp([]);
+            
+    end
     
 % If B1 correction is on (for DCE) correct FA
 switch handles.acqParam.B1_correction
@@ -1040,15 +1069,9 @@ SeqParam.NPoints = round(SeqParam.t_acq_s/SeqParam.t_res_sample_s); % Number of 
 SeqParam.FA_meas_deg = SeqParam.FA_nom_deg; % For single sim
 SeqParam.FA_true_deg = SeqParam.FA_error*SeqParam.FA_nom_deg; % Actual FA experienced by tissue/blood
 
-% ranges of PS to test for fixed vP
-vP_range = linspace(SimParam.min_vP,SimParam.max_vP,10)'+1e-8;
-PS_fixed = PhysParam.PS_fixed; 
-
-%range sizes
-N_vP = size(vP_range,1);
-vP_fit_1 = nan(SimParam.N_repetitions,N_vP);
 
 for i_vP = 1:N_vP
+    PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
     PhysParam.PS_perMin = PS_fixed(1);
     PhysParam.vP = vP_range(i_vP);
     [vP_fit_1(:,i_vP),temp] = master_single_sim(PhysParam,SeqParam,SimParam);
@@ -1134,11 +1157,17 @@ PhysParam.T2s0_blood_s = 0.191;
 PhysParam.T2s0_tissue_s = 0.050;
 
 % Parameters to simulate a T1 acquisition
-VFA_FA_array = [acqParam.VFA_FA_1 acqParam.VFA_FA_2 acqParam.VFA_FA_3];
+% Parameters to simulate a T1 acquisition
+VFA_FA_array = [acqParam.VFA_FA_1 acqParam.VFA_FA_2 acqParam.VFA_FA_3]; % collate VFA flip angles
 acqParam.isFit = [1 1 1]; % Which acquisitions to fit
 acqParam.TR_s = [0.0054 0.0054 0.0054]; % TR of acquisitions
 acqParam.FA_nom_rads = VFA_FA_array*2*(pi/360); % Nominal FA in rads
-acqParam.FA_true_rads = SeqParam.FA_error * acqParam.FA_nom_rads; % True FA in rads
+switch acqParam.T10_B1_correction
+    case 'off'
+        acqParam.FA_true_rads = SeqParam.FA_error * acqParam.FA_nom_rads; % True T1 FA
+    case 'on'
+        acqParam.FA_true_rads = acqParam.FA_nom_rads; % corrects T1 FA
+end
 acqParam.isIR = [0 0 0]; % indicates which are IR-SPGR
 acqParam.TI_s = [NaN NaN NaN]; % Inversion times
 acqParam.PECentre = [NaN NaN NaN]; % indicates time of centre of k-space
@@ -1151,26 +1180,27 @@ end
 
 if isempty('handles.assumed_T1_tissue');
     handles.assumed_T1_tissue = NaN;
+
 end
 
 % Simulate T1 acquisiton
 [PhysParam.T1_blood_meas_s,temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_blood);
     disp(['Simulated baseline T1 acquisitions:']);
-    disp(['Flip Angle error = ' num2str((100*SeqParam.FA_error)-100) ' %'])
+    disp(['Flip Angle error = ' num2str((100*SeqParam.FA_error)-100) ' %']);
+    disp(['Actual tissue T1 = ' num2str(PhysParam.T10_tissue_s)])
     
-switch acqParam.T1_acq_method
-    case 'VFA' % if using VFA T1 acq, run N_repetition times to simulate T1 errors
-        for n = 1:SimParam.N_repetitions
-            [PhysParam.T1_tissue_meas_s(n,1),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method);
-        end
-    case {'Accurate','Assumed'}
-        [PhysParam.T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_tissue);
+    switch acqParam.T1_acq_method
+        case 'VFA' % if using VFA T1 acq, run N_repetition*n_PS times to simulate T1 errors
+                for n = 1:SimParam.N_repetitions
+                    [T1_tissue_meas_s(n,1),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method);
+                end
+            disp(['Actual tissue T1 = ' num2str(PhysParam.T10_tissue_s)])
+            disp(['Mean tissue T1 error = ' num2str((mean(abs(100 - (PhysParam.T10_tissue_s./T1_tissue_meas_s)*100)))) ' %'])
+        case {'Accurate','Assumed'}
+            [T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_tissue);
     end
 
-    disp(['Actual blood T1 = ' num2str(PhysParam.T10_blood_s)])
-    disp(['Measured blood T1 = ' num2str(PhysParam.T1_blood_meas_s)])
-    disp(['Actual tissue T1 = ' num2str(PhysParam.T10_tissue_s)])
-    disp(['Measured tissue T1 = ' num2str(PhysParam.T1_tissue_meas_s(1,1))])
+    PhysParam.T1_tissue_meas_s = T1_tissue_meas_s;
     
 % If B1 correction is on (for DCE) correct FA
 switch handles.acqParam.B1_correction
@@ -1311,3 +1341,14 @@ function T1acq_SNR_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+% --- Executes on button press in T10_B1_Correction.
+function T10_B1_Correction_Callback(hObject, eventdata, handles)
+T10_B1_correction = get(handles.T10_B1_Correction, 'Value');
+switch T10_B1_correction
+    case 0
+        handles.acqParam.T10_B1_correction = 'off';
+    case 1
+        handles.acqParam.T10_B1_correction = 'on';
+end
+guidata(hObject, handles);

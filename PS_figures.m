@@ -103,7 +103,7 @@ errorbar(PS_range + 0.06, PS_means_VFA_fast(:,3) - PS_range, 1*PS_devs_VFA_fast(
 ylabel('fitted PS error (x10^{-4} min^{-1} )');
 xlim([0 max(PS_range)]);
 ylim([-2 2]);
-legend({'Accurate T_1_0 and DCE','T_1_0 and DCE uncorrected (k=1.3)','T_1_0 and DCE uncorrected (k=0.7)'},'Location','best')
+legend({'B1 corrected','T_1_0 and DCE uncorrected (k=1.3)','T_1_0 and DCE uncorrected (k=0.7)'},'Location','best')
 legend('boxoff')
 xlabel(['True PS (x10^{-4} min^{-1} )']);
 

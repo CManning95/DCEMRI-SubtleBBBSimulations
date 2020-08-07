@@ -95,10 +95,10 @@ end
 
 timeElapsed=toc;
 
-if rand<0.01 %randomly plot data to check it's working
-    figure(1),plot(1:sum(isFit),y,'ko',1:sum(isFit),modelFit,'b-'); xlim([0 NScans+1]);
-    title({['Initial coefficients: ' num2str(x0)] ['Fitted coefficients: ' num2str(x(bestIdx,:))] ['Time elapsed: ' num2str(timeElapsed)] ['Exit flag: ' num2str(exitFlag) ' RSq: ' num2str(RSq)] ['Evaluations: ' num2str(out{bestIdx}.funcCount)]});
-    pause(0.1);
-end
+% if rand<0.01 %randomly plot data to check it's working
+%     figure(1),plot(1:sum(isFit),y,'ko',1:sum(isFit),modelFit,'b-'); xlim([0 NScans+1]);
+%     title({['Initial coefficients: ' num2str(x0)] ['Fitted coefficients: ' num2str(x(bestIdx,:))] ['Time elapsed: ' num2str(timeElapsed)] ['Exit flag: ' num2str(exitFlag) ' RSq: ' num2str(RSq)] ['Evaluations: ' num2str(out{bestIdx}.funcCount)]});
+%     pause(0.1);
+% end
 
 end

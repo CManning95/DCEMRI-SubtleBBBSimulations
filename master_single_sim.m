@@ -37,7 +37,7 @@ switch SimParam.InjectionRate
         t_AIF_input_s = ((1:1:SimParam.InputAIFDCENFrames) * (SimParam.tRes_InputAIF_s)) - (SimParam.tRes_InputAIF_s/2).'; % Assume concentration is measured at centre of acquisition
         initial_timepoints_full_s = (0:SimParam.t_res_full_s:(SeqParam.t_acq_s - SimParam.t_start_s)).'; % full range of upsampled time points (subtract additional pre-injection delay from end of AIF)
         Cp_AIF_mM = interp1(t_AIF_input_s,SimParam.Cp_AIF_mM,initial_timepoints_full_s,'spline','extrap'); % interpolate AIF to high temporal resolution
-        Cp_AIF_mM(1:(3.5/SimParam.InputAIFDCENFrames)*size(initial_timepoints_full_s)) = 0; %Set all pre-contrast points to zero (as interpolation produces non-zero pre contrast values)
+        Cp_AIF_mM(1:(2.5/SimParam.InputAIFDCENFrames)*size(initial_timepoints_full_s)) = 0; %Set all pre-contrast points to zero (as interpolation produces non-zero pre contrast values)
         % adding zeroes to start for injection delay
         t_preContrast_s=fliplr(SimParam.t_start_s-SimParam.t_res_full_s/2:-SimParam.t_res_full_s:0).'; %pre-injection time points (calculate backwards to zero, then reverse, so that time interval is constant)
         Cp_AIF_mM=[zeros(size(t_preContrast_s)) ; Cp_AIF_mM]; % add pre-contrast concentration values (zeros)
@@ -148,7 +148,11 @@ if SimParam.Plot_extra_figs == 1;
     legend({'c_c_p','c_e_e_s','c_e_v'}, 'Location', 'northeastoutside','Fontsize',10)
     subplot(3,2,6)
     plot(timepoints_full_s,enh_tissue_pct,'k:'); hold on;
-    errorbar(t_sample,mean(enh_tissue_sample_pct,2),1*std(enh_tissue_sample_pct,0,2),'.');
+    if SimParam.SXLfit == 1;
+        errorbar(t_sample,mean(enhModelFit_pct,2),1*std(enhModelFit_pct,0,2),'.');
+    else
+        errorbar(t_sample,mean(enh_tissue_sample_pct,2),1*std(enh_tissue_sample_pct,0,2),'.');
+    end
     title('tissue enhancement');
     ylabel('enh tissue / %');
     xlabel('time (s)')

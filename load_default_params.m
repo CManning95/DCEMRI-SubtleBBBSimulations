@@ -35,18 +35,21 @@ SimParam.SNR = 230; % signal to noise ratio for NAWM
 SimParam.drift_pctPerMin = 0; % signal drift
 SimParam.min_PS = 0 * 1e-4; % minimum PS to test vP
 SimParam.max_PS = 5 * 1e-4; % maximum PS to test vP
+SimParam.min_vP = 0.01; % minimum vP to test PS (vP range from Leenders 1990)
+SimParam.max_vP = 0.02; % maximum vP to test PS
+
 SimParam.venous_delay_s = 6; % delay of measured VIF compared to AIF
-SimParam.t_start_s = 138; % injection delay in seconds
+SimParam.t_start_s = 119; % injection delay in seconds
 SimParam.InjectionRate = 'fast'; % Speed of injection (slow or fast)
 SimParam.syn_model = '2CXM'; % model to simulate contrast leakage
-SimParam.water_exch_model = 'FXL'; % water exchange model to generate signals
+SimParam.water_exch_model = '2S1XA'; % water exchange model to generate signals
 SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
 SimParam.NIgnore = max(SimParam.baselineScans); % number of post-contrast points to exclude (always uses 3 points for baseline signal)
 SimParam.SXLfit = 0; % fit enhancements according to SXL method
 SimParam.Plot_extra_figs = 0; % plot figures of extra data for each simulation
 
 %% T1 acquisition parameters
-T1acqParam.T1_acq_method = 'Accurate';  
+T1acqParam.T1_acq_method = 'VFA';  
 T1acqParam.isFit = [1 1 1]; % which acquisitions to fit
 T1acqParam.TR_s = [0.0054 0.0054 0.0054]; % repetition times for T1 acqusition
 T1acqParam.FA_nom_rads = [2 5 12] *2*(pi/360); % nominal flip angles for T1 acquisition
@@ -56,18 +59,14 @@ T1acqParam.TI_s = [NaN NaN NaN]; % Inversion times for T1 acquisition (for HIFI)
 T1acqParam.PECentre = [NaN NaN NaN]; % indicates time of centre of k-space
 T1acqParam.NReadout = [160 160 160]; % number of readout pulses (Siemens - number of slices)
 T1acqParam.NTry = 1; % fitting attempts
-T1acqParam.T1_SNR = inf;
+T1acqParam.T1_SNR = 318;
+T1acqParam.FA_error_meas = DCESeqParam.FA_error;
 
-[PhysParam.T1_blood_meas_s,temp,T1acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
-[PhysParam.T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
 
 if isnan(T1acqParam.FA_error_meas) == 0;
     DCESeqParam.FA_meas_deg = DCESeqParam.FA_nom_deg * T1acqParam.FA_error_meas; % measured flip angle
 else
     DCESeqParam.FA_meas_deg = DCESeqParam.FA_nom_deg;
 end
-
-
-
 
 end
