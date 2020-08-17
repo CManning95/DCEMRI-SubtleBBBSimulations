@@ -20,8 +20,6 @@ N_PS = size(PS_range,1); %range sizes to test
 N_vP = size(vP_range,1); %range sizes to test
 Fp_ranges = [11 8.25 5.5]; % Plasma flow ranges
 
-
-
 %% Generate variable Fp PS graphs
  SimParam.InjectionRate = 'fast';
  
@@ -206,7 +204,6 @@ title('Bolus injection');
 xlim([0 max(PS_range)+0.12]);
 ylim([-2 2]);
 
-
 ax = gca;
 ax.FontSize = 9;
 
@@ -219,7 +216,7 @@ errorbar(PS_range + 0.12, PS_means_Fp_exclude(:,3) - PS_range, 1*PS_devs_Fp_excl
 title('Bolus (with exclusion)');
 xlabel(['True PS (x10^{-4} min^{-1} )']);
 xlim([0 max(PS_range)+0.12]);
-ylim([-1 1]);
+ylim([-2 2]);
 
 ax = gca;
 ax.FontSize = 9;
@@ -233,7 +230,7 @@ errorbar(PS_range + 0.12, PS_means_Fp_slow(:,3) - PS_range, 1*PS_devs_Fp_slow(:,
 title('Slow injection');
 xlabel(['True PS (x10^{-4} min^{-1} )']);
 xlim([0 max(PS_range)+0.12]);
-ylim([-1 1]);
+ylim([-2 2]);
 
 ax = gca;
 ax.FontSize = 9;
@@ -247,7 +244,7 @@ errorbar(PS_range + 0.12, PS_means_Fp_slow_exclude(:,3) - PS_range, 1*PS_devs_Fp
 title('Slow (with exclusion)');
 xlabel(['True PS (x10^{-4} min^{-1} )']);
 xlim([0 max(PS_range)+0.12]);
-ylim([-1 1]);
+ylim([-2 2]);
 
 ax = gca;
 ax.FontSize = 9;
@@ -260,7 +257,7 @@ errorbar(vP_range + 0.26, vP_means_Fp_fast(:,3) - vP_range, 1*vP_devs_Fp_fast(:,
 ylabel('fitted v_p error (x10^{-3})');
 xlabel(['True v_p (x10^{-3})']);
 xlim([min(vP_range) max(vP_range)+0.26]);
-ylim([-4 4]);
+ylim([-2 2]);
 legend({'F_p = 11 ml 100g^{-1}min^{-1}','F_p = 8.25 ml 100g^{-1}min^{-1}','F_p = 5.5 ml 100g^{-1}min^{-1}'},'Location','best')
 legend('boxoff')
 

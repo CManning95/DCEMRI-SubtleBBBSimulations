@@ -148,7 +148,7 @@ set(handles.t_start,'string',t_start);
 handles.acqParam.T1_acq_method = 'VFA';
 handles.SimParam.InjectionRate = 'slow';
 handles.SimParam.syn_model = '2CXM';
-handles.SimParam.water_exch_model = 'FXL';
+handles.SimParam.water_exch_model = '2S1XA';
 handles.acqParam.B1_correction = 'off';
 handles.acqParam.T10_B1_correction = 'off';
 handles.SimParam.Plot_extra_figs = 0;
@@ -161,7 +161,7 @@ handles.acqParam.T1_SNR = 318;
 set(handles.T1_acq_method,'value',2);
 set(handles.InjectionRate,'value',2);
 set(handles.syn_model, 'value',2);
-set(handles.water_exch_model, 'value',2);
+set(handles.water_exch_model, 'value',4);
 set(handles.B1_correction, 'value',0);
 set(handles.T10_B1_Correction, 'value',0);
 set(handles.Plot_extra_figs,'value',0);
@@ -248,7 +248,7 @@ set(handles.t_start,'string',t_start);
 handles.acqParam.T1_acq_method = 'VFA';
 handles.SimParam.InjectionRate = 'slow';
 handles.SimParam.syn_model = '2CXM';
-handles.SimParam.water_exch_model = 'FXL';
+handles.SimParam.water_exch_model = '2S1XA';
 handles.acqParam.B1_correction = 'off';
 handles.acqParam.T10_B1_correction = 'off';
 handles.SimParam.Plot_extra_figs = 0;
@@ -261,7 +261,7 @@ handles.acqParam.T1_SNR = 170;
 set(handles.T1_acq_method,'value',2);
 set(handles.InjectionRate,'value',2);
 set(handles.syn_model, 'value',2);
-set(handles.water_exch_model, 'value',2);
+set(handles.water_exch_model, 'value',4);
 set(handles.B1_correction, 'value',0);
 set(handles.T10_B1_Correction, 'value',0);
 set(handles.Plot_extra_figs,'value',0);
@@ -634,20 +634,13 @@ end
                     [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method);
                 end
             end
-            disp(['Actual tissue T1 = ' num2str(PhysParam.T10_tissue_s)])
-            disp(['Mean tissue T1 error = ' num2str(mean(mean(abs(100 - (PhysParam.T10_tissue_s./T1_tissue_meas_s)*100)))) ' %'])
+            disp(['Mean tissue T1 error = ' num2str(mean(mean(abs(100 - (T1_tissue_meas_s./PhysParam.T10_tissue_s)*100)))) ' %'])
         case {'Accurate','Assumed'}
             [T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_tissue);
             T1_tissue_meas_s = repmat(T1_tissue_meas_s,1,N_PS); % each PS needs a T1 value in single_sim
             disp([]);
             
     end
-
-% If B1 correction is on (for DCE) correct FA
-switch handles.acqParam.B1_correction
-    case 'on'
-        SeqParam.FA_error = 1;
-end
 
 % Check previous legend, clear figures if plot hold is off
 if handles.plot_hold == 0; % delete previous figures if plot hold is off
@@ -682,9 +675,17 @@ end
 SimParam.NIgnore = SimParam.NIgnore + max(SimParam.baselineScans); % Ignore baseline scans, AND no. of post-contrast points specified
 
 %derive some additional parameters
+
 SeqParam.NPoints = round(SeqParam.t_acq_s/SeqParam.t_res_sample_s); % Number of smapled data points
-SeqParam.FA_meas_deg = SeqParam.FA_nom_deg; % For single sim
 SeqParam.FA_true_deg = SeqParam.FA_error*SeqParam.FA_nom_deg; % Actual FA experienced by tissue/blood
+switch handles.acqParam.B1_correction
+    case 'on'
+        SeqParam.FA_meas_deg = SeqParam.FA_true_deg; % If B1 correction is on (for DCE) correct FA
+    case 'off'
+        SeqParam.FA_meas_deg = SeqParam.FA_nom_deg;
+end
+
+
 
 
 for i_PS = 1:N_PS
@@ -722,15 +723,8 @@ PS_devs_1 = PS_devs_1 * 1e4;
 errorbar(PS_range, PS_means_1(:,1) - PS_range, 1*PS_devs_1(:,1),'LineWidth',1.3);
 xlabel('True PS (x10^{-4} min^{-1} )');
 ylabel('fitted PS error (x10^{-4} min^{-1} )');
-% xlim([0 max(PS_range)]);
-% if strcmp(SimParam.InjectionRate,'slow') == 1 % zoom in on y axis if slow injection
-%     ylim([-1.6 1.6])
-% elseif strcmp(SimParam.InjectionRate,'fast') == 1 && SimParam.NIgnore >= 4 % zoom in on y axis if excluding points
-%     ylim([-1.6 1.6])
-% elseif strcmp(SimParam.InjectionRate,'fast') == 1 && SimParam.NIgnore <= 3
-%     ylim([-3.2 3.2]);
-% end
-ylim([-2 2]);
+xlim([0 max(PS_range)]);
+%ylim([-2 2]);
 %plot legend (if there are entries)
 if exist('fig_legend_entry') ~= 0;
     if isa(fig_legend_entry,'cell') == 1
@@ -1103,14 +1097,8 @@ vP_devs_1 = vP_devs_1 * 1e3;
 errorbar(vP_range, vP_means_1(:,1) - vP_range, 1*vP_devs_1(:,1),'LineWidth',1.3);
 xlabel('True vP (x10^{-3})');
 ylabel('fitted vP error (x10^{-3})');
-xlim([0 max(vP_range)]);
-if strcmp(SimParam.InjectionRate,'slow') == 1 % zoom in on y axis if slow injection
-    ylim([-3 3])
-elseif strcmp(SimParam.InjectionRate,'fast') == 1 && SimParam.NIgnore >= 4 % zoom in on y axis if excluding points
-    ylim([-3 3])
-elseif strcmp(SimParam.InjectionRate,'fast') == 1 && SimParam.NIgnore <= 3
-    ylim([-6 6]);
-end
+xlim([min(vP_range) max(vP_range)]);
+%ylim([-2 2]);
 
 %plot legend
 if exist('fig_legend_entry') ~= 0;

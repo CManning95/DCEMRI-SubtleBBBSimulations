@@ -195,7 +195,7 @@ errorbar(PS_range + 0.06, PS_means_H2O_SXL(:,2) - PS_range, 1*PS_devs_H2O_SXL(:,
 errorbar(PS_range + 0.12, PS_means_H2O_SXL(:,3) - PS_range, 1*PS_devs_H2O_SXL(:,3),'LineWidth',1.3,'Color',Colour3);
 title('Bolus (SXL fitting)');
 xlim([0 max(PS_range)+0.12]);
-ylim([-2.5 2.5]);
+ylim([-2 2]);
 
 ax = gca;
 ax.FontSize = 9;
@@ -208,7 +208,7 @@ errorbar(PS_range + 0.06, PS_means_H2O_slow(:,2) - PS_range, 1*PS_devs_H2O_slow(
 errorbar(PS_range + 0.12, PS_means_H2O_slow(:,3) - PS_range, 1*PS_devs_H2O_slow(:,3),'LineWidth',1.3,'Color',Colour3);
 title('Slow (FXL fitting)');
 xlim([0 max(PS_range)+0.12]);
-ylim([-2.5 2.5]);
+ylim([-2 2]);
 
 ax = gca;
 ax.FontSize = 9;
@@ -221,7 +221,7 @@ errorbar(PS_range + 0.06, PS_means_H2O_slow_SXL(:,2) - PS_range, 1*PS_devs_H2O_s
 errorbar(PS_range + 0.12, PS_means_H2O_slow_SXL(:,3) - PS_range, 1*PS_devs_H2O_slow_SXL(:,3),'LineWidth',1.3,'Color',Colour3);
 title('Slow (SXL fitting)');
 xlim([0 max(PS_range)+0.12]);
-ylim([-2.5 2.5]);
+ylim([-2 2]);
 
 ax = gca;
 ax.FontSize = 9;
@@ -235,7 +235,7 @@ errorbar(vP_range + 0.26, vP_means_H2O_fast(:,3) - vP_range, 1*vP_devs_H2O_fast(
 xlabel(['True v_p (x10^{-3})']);
 ylabel('fitted v_p error (x10^{-3})');
 xlim([min(vP_range) max(vP_range)+0.26]);
-ylim([-12 12]);
+ylim([-10 10]);
 
 ax = gca;
 ax.FontSize = 9;
@@ -248,7 +248,7 @@ errorbar(vP_range + 0.13, vP_means_H2O_SXL(:,2) - vP_range, 1*vP_devs_H2O_SXL(:,
 errorbar(vP_range + 0.26, vP_means_H2O_SXL(:,3) - vP_range, 1*vP_devs_H2O_SXL(:,3),'LineWidth',1.3,'Color',Colour3);
 xlim([min(vP_range) max(vP_range)+0.26]);
 xlabel(['True v_p (x10^{-3})']);
-ylim([-2.5 2.5]);
+ylim([-5 5]);
 
 ax = gca;
 ax.FontSize = 9;
@@ -261,7 +261,7 @@ errorbar(vP_range + 0.13, vP_means_H2O_slow(:,2) - vP_range, 1*vP_devs_H2O_slow(
 errorbar(vP_range + 0.26, vP_means_H2O_slow(:,3) - vP_range, 1*vP_devs_H2O_slow(:,3),'LineWidth',1.3,'Color',Colour3);
 xlim([min(vP_range) max(vP_range)+0.26]);
 xlabel(['True v_p (x10^{-3})']);
-ylim([-4 4]);
+ylim([-5 5]);
 
 ax = gca;
 ax.FontSize = 9;
@@ -274,7 +274,7 @@ errorbar(vP_range + 0.13, vP_means_H2O_slow_SXL(:,2) - vP_range, 1*vP_devs_H2O_s
 errorbar(vP_range + 0.26, vP_means_H2O_slow_SXL(:,3) - vP_range, 1*vP_devs_H2O_slow_SXL(:,3),'LineWidth',1.3,'Color',Colour3);
 xlim([min(vP_range) max(vP_range)+0.26]);
 xlabel(['True v_p (x10^{-3})']);
-ylim([-2.5 2.5]);
+ylim([-5 5]);
 
 ax = gca;
 ax.FontSize = 9;

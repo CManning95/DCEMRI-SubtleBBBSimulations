@@ -29,7 +29,7 @@ DCESeqParam.FA_error = 1; % k value (flip angle error)
 DCESeqParam.FA_true_deg = DCESeqParam.FA_error*DCESeqParam.FA_nom_deg; % true flip angle
 
 %% Simulation parameters
-SimParam.N_repetitions = 1000; % repetitions at each PS or vP (to quantify effects of noise)
+SimParam.N_repetitions = 50; % repetitions at each PS or vP (to quantify effects of noise)
 SimParam.t_res_full_s = 0.1; % generated temporal resolution of simulations
 SimParam.SNR = 230; % signal to noise ratio for NAWM
 SimParam.drift_pctPerMin = 0; % signal drift
@@ -61,12 +61,6 @@ T1acqParam.NReadout = [160 160 160]; % number of readout pulses (Siemens - numbe
 T1acqParam.NTry = 1; % fitting attempts
 T1acqParam.T1_SNR = 318;
 T1acqParam.FA_error_meas = DCESeqParam.FA_error;
-
-
-if isnan(T1acqParam.FA_error_meas) == 0;
-    DCESeqParam.FA_meas_deg = DCESeqParam.FA_nom_deg * T1acqParam.FA_error_meas; % measured flip angle
-else
-    DCESeqParam.FA_meas_deg = DCESeqParam.FA_nom_deg;
-end
+DCESeqParam.FA_meas_deg = DCESeqParam.FA_nom_deg;
 
 end
