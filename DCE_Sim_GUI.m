@@ -77,8 +77,8 @@ function initialise_DCE_NAWM_MSS3(handles)
 handles.PhysParam.Hct = 0.42;
 handles.PhysParam.vE = 0.2;
 handles.PhysParam.FP_mlPer100gPerMin = 11;
-handles.PhysParam.T10_blood_s = 1.901;
-handles.PhysParam.T10_tissue_s = 0.917;
+handles.PhysParam.T10_blood_s = 1.9;
+handles.PhysParam.T10_tissue_s = 0.92;
 handles.PhysParam.S0_blood = 100;
 handles.PhysParam.S0_tissue = 100;
 handles.PhysParam.kbe_perS = 2.75;
@@ -177,8 +177,8 @@ function initialise_DCE_scGM_MSS3(handles)
 handles.PhysParam.Hct = 0.42;
 handles.PhysParam.vE = 0.2;
 handles.PhysParam.FP_mlPer100gPerMin = 31;
-handles.PhysParam.T10_blood_s = 1.901;
-handles.PhysParam.T10_tissue_s = 1.212;
+handles.PhysParam.T10_blood_s = 1.9;
+handles.PhysParam.T10_tissue_s = 1.21;
 handles.PhysParam.S0_blood = 100;
 handles.PhysParam.S0_tissue = 100;
 handles.PhysParam.kbe_perS = 2.65;
@@ -612,13 +612,14 @@ acqParam.PECentre = [NaN NaN NaN]; % indicates time of centre of k-space
 acqParam.NReadout = [160 160 160]; % number of readout pulses (Siemens - number of slices)
 acqParam.NTry = 1; % Fitting attempts
 
-if isempty('handles.assumed_T1_blood');
-    handles.assumed_T1_blood = NaN;
-end
-
-if isempty('handles.assumed_T1_tissue');
-    handles.assumed_T1_tissue = NaN;
-
+if strcmp(acqParam.T1_acq_method,'Assumed') == 0;
+    if isempty('handles.assumed_T1_blood');
+        handles.assumed_T1_blood = NaN;
+    end
+    
+    if isempty('handles.assumed_T1_tissue');
+        handles.assumed_T1_tissue = NaN;
+    end
 end
 
 % Simulate T1 acquisiton
@@ -630,6 +631,7 @@ switch acqParam.T1_acq_method
     case 'VFA' % if using VFA T1 acq, run N_repetition*n_PS times to simulate T1 errors
         for m = 1:N_PS
             for n = 1:SimParam.N_repetitions
+                [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_blood);
                 [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method);
             end
         end
@@ -637,12 +639,9 @@ switch acqParam.T1_acq_method
     case {'Accurate','Assumed'}
         [T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_tissue);
         T1_tissue_meas_s = repmat(T1_tissue_meas_s,1,N_PS); % each PS needs a T1 value in single_sim
-        disp([]);
-        
+        disp([]);     
 end
-
-acqParam.T1_SNR = inf; % T1 acquisition for blood is essentially accurate
-[PhysParam.T1_blood_meas_s,temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_blood);
+PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
 
 % Check previous legend, clear figures if plot hold is off
 if handles.plot_hold == 0; % delete previous figures if plot hold is off
@@ -933,8 +932,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-
 function PS_fixed_Callback(hObject, eventdata, handles)
 PS_fixed = str2double(get(hObject,'String'));
 if isnan(PS_fixed)
@@ -987,38 +984,38 @@ acqParam.PECentre = [NaN NaN NaN]; % indicates time of centre of k-space
 acqParam.NReadout = [160 160 160]; % number of readout pulses (Siemens - number of slices)
 acqParam.NTry = 1; % Fitting attempts
 
-if isempty('handles.assumed_T1_blood');
-    handles.assumed_T1_blood = NaN;
+if strcmp(acqParam.T1_acq_method,'Assumed') == 0;
+    if isempty('handles.assumed_T1_blood');
+        handles.assumed_T1_blood = NaN;
+    end
+    
+    if isempty('handles.assumed_T1_tissue');
+        handles.assumed_T1_tissue = NaN;
+        
+    end
 end
-
-if isempty('handles.assumed_T1_tissue');
-    handles.assumed_T1_tissue = NaN;
-
-end
-
 % Simulate T1 acquisiton
     disp(['Simulated baseline T1 acquisitions:']);
     disp(['Flip Angle error = ' num2str((100*SeqParam.FA_error)-100) ' %']);
     disp(['Actual tissue T1 = ' num2str(PhysParam.T10_tissue_s)])
 
-    switch acqParam.T1_acq_method
-        case 'VFA' % if using VFA T1 acq, run N_repetition*n_PS times to simulate T1 errors
-            for m = 1:N_vP
-                for n = 1:SimParam.N_repetitions
-                    [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method);
-                end
+   switch acqParam.T1_acq_method
+    case 'VFA' % if using VFA T1 acq, run N_repetition*n_PS times to simulate T1 errors
+        for m = 1:N_vP
+            for n = 1:SimParam.N_repetitions
+                [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_blood);
+                [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method);
             end
-            disp(['Actual tissue T1 = ' num2str(PhysParam.T10_tissue_s)])
-            disp(['Mean tissue T1 error = ' num2str(mean(mean(abs(100 - (PhysParam.T10_tissue_s./T1_tissue_meas_s)*100)))) ' %'])
-        case {'Accurate','Assumed'}
-            [T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_tissue);
-            T1_tissue_meas_s = repmat(T1_tissue_meas_s,1,N_vP); % each PS needs a T1 value in single_sim
-            disp([]);
-            
-    end
-    
-acqParam.T1_SNR = inf;
-[PhysParam.T1_blood_meas_s,temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_blood);
+        end
+        disp(['Mean tissue T1 error = ' num2str(mean(mean(abs(100 - (T1_tissue_meas_s./PhysParam.T10_tissue_s)*100)))) ' %'])
+    case {'Accurate','Assumed'}
+        [T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_tissue);
+        T1_tissue_meas_s = repmat(T1_tissue_meas_s,1,N_vP); % each PS needs a T1 value in single_sim
+        disp([]);
+        
+   end
+PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
+
 % Check previous legend, clear figures if plot hold is off
 if handles.plot_hold == 0; % delete previous figures if plot hold is off
     fig_GUI = findall(0,'type','figure','Tag','figure1'); %Keeps GUI open
@@ -1159,13 +1156,15 @@ acqParam.PECentre = [NaN NaN NaN]; % indicates time of centre of k-space
 acqParam.NReadout = [160 160 160]; % number of readout pulses (Siemens - number of slices)
 acqParam.NTry = 1; % Fitting attempts
 
-if isempty('handles.assumed_T1_blood');
-    handles.assumed_T1_blood = NaN;
-end
-
-if isempty('handles.assumed_T1_tissue');
-    handles.assumed_T1_tissue = NaN;
-
+if strcmp(acqParam.T1_acq_method,'Assumed') == 0;
+    if isempty('handles.assumed_T1_blood');
+        handles.assumed_T1_blood = NaN;
+    end
+    
+    if isempty('handles.assumed_T1_tissue');
+        handles.assumed_T1_tissue = NaN;
+        
+    end
 end
 
 % Simulate T1 acquisiton
@@ -1176,17 +1175,17 @@ end
     switch acqParam.T1_acq_method
         case 'VFA' % if using VFA T1 acq, run N_repetition*n_PS times to simulate T1 errors
                 for n = 1:SimParam.N_repetitions
+                    [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_blood);
                     [T1_tissue_meas_s(n,1),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method);
                 end
             disp(['Actual tissue T1 = ' num2str(PhysParam.T10_tissue_s)])
             disp(['Mean tissue T1 error = ' num2str((mean(abs(100 - (PhysParam.T10_tissue_s./T1_tissue_meas_s)*100)))) ' %'])
         case {'Accurate','Assumed'}
+            [T1_blood_meas_s,temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_blood);
             [T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_tissue);
     end
-    
+    PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
     PhysParam.T1_tissue_meas_s = T1_tissue_meas_s;
-    acqParam.T1_SNR = inf;
-    [PhysParam.T1_blood_meas_s,temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_blood);
     SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
 %Sort slow injection parameters
 if SimParam.InjectionRate == 'slow'
@@ -1197,7 +1196,6 @@ if SimParam.InjectionRate == 'slow'
 end
 
 SimParam.NIgnore = SimParam.NIgnore + max(SimParam.baselineScans); % Ignore baseline scans, AND no. of post-contrast points specified
-
 SeqParam.NPoints = round(SeqParam.t_acq_s/SeqParam.t_res_sample_s); % Number of smapled data points
 SeqParam.FA_true_deg = SeqParam.FA_error*SeqParam.FA_nom_deg; % Actual FA experienced by tissue/blood
 switch handles.acqParam.B1_correction

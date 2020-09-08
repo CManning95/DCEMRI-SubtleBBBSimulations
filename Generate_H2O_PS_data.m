@@ -24,12 +24,14 @@ kbe_ranges = [1.375 2.75 5.5];
 
 %% Sim water exchange with Patlak fitting (fast injection, Patlak fit)
 % T1 acquisition
-[PhysParam.T1_blood_meas_s,temp,T1acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+acqParam.T1_SNR = 318;
 for m = 1:N_PS
     for n = 1:SimParam.N_repetitions
+        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
+PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
 
     for i = 1:size(kbe_ranges,2);
         PhysParam.kbe_perS = kbe_ranges(i);
@@ -55,6 +57,15 @@ end
 
     %% Sim water exchange with Patlak fitting (fast injection, SXL fit)
  SimParam.SXLfit = 1; % fit enhancements according to SXL method
+ 
+ acqParam.T1_SNR = 318;
+for m = 1:N_PS
+    for n = 1:SimParam.N_repetitions
+        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+        [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
+    end
+end
+PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
     
     for i = 1:size(kbe_ranges,2);
         PhysParam.kbe_perS = kbe_ranges(i);
@@ -88,6 +99,15 @@ end
     SimParam.tRes_InputAIF_s = 39.62; % original time resolution of AIFs
     SimParam.InputAIFDCENFrames = 32; % number of time points
     
+    acqParam.T1_SNR = 318;
+for m = 1:N_PS
+    for n = 1:SimParam.N_repetitions
+        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+        [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
+    end
+end
+PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
+
     for i = 1:size(kbe_ranges,2);
         PhysParam.kbe_perS = kbe_ranges(i);
         for i_PS = 1:N_PS
@@ -112,7 +132,16 @@ end
     
     %% Sim water exchange (slow injection, SXL fit)
     SimParam.SXLfit = 1;
-     
+    
+     acqParam.T1_SNR = 318;
+for m = 1:N_PS
+    for n = 1:SimParam.N_repetitions
+        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+        [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
+    end
+end
+PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
+
     for i = 1:size(kbe_ranges,2);
         PhysParam.kbe_perS = kbe_ranges(i);
         for i_PS = 1:N_PS

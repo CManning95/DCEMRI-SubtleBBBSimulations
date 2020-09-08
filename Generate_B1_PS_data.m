@@ -26,19 +26,22 @@ for k = 1:size(k_values,2)
     DCESeqParam.FA_error = k_values(k);
     T1acqParam.FA_true_rads = DCESeqParam.FA_error * T1acqParam.FA_nom_rads; % derive actual flip angles for T1 acquisition
     DCESeqParam.FA_true_deg = DCESeqParam.FA_error*DCESeqParam.FA_meas_deg; % true flip angle
-    [PhysParam.T1_blood_meas_s,temp,T1acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
     DCESeqParam.FA_meas_deg = DCESeqParam.FA_nom_deg;
+    acqParam.T1_SNR = 318;
     
     for i_PS = 1:N_PS % Accurate T1 acquisition
         for n = 1:SimParam.N_repetitions
+            [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
             [T1_tissue_meas_s(n,i_PS),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
         end
+        PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
         PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
         PhysParam.vP = vP_fixed(1);
         PhysParam.PS_perMin = PS_range(i_PS);
         [temp, PS_fit_fast(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
     end
     for i_vP = 1:N_vP
+        PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
          PhysParam.PS = PS_fixed(1);
          PhysParam.vP = vP_range(i_vP);
@@ -65,19 +68,26 @@ for k = 1:size(k_values,2)
     DCESeqParam.FA_error = k_values(k);
     T1acqParam.FA_true_rads = DCESeqParam.FA_error * T1acqParam.FA_nom_rads; % derive actual flip angles for T1 acquisition
     DCESeqParam.FA_true_deg = DCESeqParam.FA_error * DCESeqParam.FA_nom_deg; % true flip angle
-    [PhysParam.T1_blood_meas_s,temp,T1acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+    for n = 1:SimParam.N_repetitions
+        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas(n,1),temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+    end
+    PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
+    T1acqParam.FA_error_meas = mean(acqParam.FA_error_meas,1);
     DCESeqParam.FA_meas_deg = T1acqParam.FA_error_meas * DCESeqParam.FA_nom_deg;
+    acqParam.T1_SNR = 318;
     
     for i_PS = 1:N_PS % Accurate T1 acquisition
         for n = 1:SimParam.N_repetitions
             [T1_tissue_meas_s(n,i_PS),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
         end
+        PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
         PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
         PhysParam.vP = vP_fixed(1);
         PhysParam.PS_perMin = PS_range(i_PS);
         [temp, PS_fit_fast_corrected(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
     end
     for i_vP = 1:N_vP
+        PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
          PhysParam.PS = PS_fixed(1);
          PhysParam.vP = vP_range(i_vP);
@@ -107,19 +117,22 @@ SimParam.NIgnore = max(SimParam.baselineScans) + 3;
      DCESeqParam.FA_error = k_values(k);
      T1acqParam.FA_true_rads = DCESeqParam.FA_error * T1acqParam.FA_nom_rads; % derive actual flip angles for T1 acquisition
      DCESeqParam.FA_true_deg = DCESeqParam.FA_error * DCESeqParam.FA_nom_deg; % true flip angle
-     [PhysParam.T1_blood_meas_s,temp,T1acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
      DCESeqParam.FA_meas_deg = DCESeqParam.FA_nom_deg;
+     acqParam.T1_SNR = 318;
      
      for i_PS = 1:N_PS % Accurate T1 measurement
          for n = 1:SimParam.N_repetitions
+             [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
              [T1_tissue_meas_s(n,i_PS),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
          end
+         PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
          PhysParam.vP = vP_fixed(1);
          PhysParam.PS_perMin = PS_range(i_PS);
          [temp, PS_fit_slow(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
      end
      for i_vP = 1:N_vP
+         PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
          PhysParam.PS = PS_fixed(1);
          PhysParam.vP = vP_range(i_vP);
@@ -147,20 +160,26 @@ for k = 1:size(k_values,2)
     DCESeqParam.FA_error = k_values(k);
     T1acqParam.FA_true_rads = DCESeqParam.FA_error * T1acqParam.FA_nom_rads; % derive actual flip angles for T1 acquisition
     DCESeqParam.FA_true_deg = DCESeqParam.FA_error * DCESeqParam.FA_nom_deg; % true flip angle
-    [PhysParam.T1_blood_meas_s,temp,T1acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
-    [PhysParam.T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
+    for n = 1:SimParam.N_repetitions
+        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas(n,1),temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+    end
+    PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
+    T1acqParam.FA_error_meas = mean(acqParam.FA_error_meas,1);
     DCESeqParam.FA_meas_deg = T1acqParam.FA_error_meas*DCESeqParam.FA_nom_deg;
+    acqParam.T1_SNR = 318;
     
     for i_PS = 1:N_PS % Accurate T1 acquisition
          for n = 1:SimParam.N_repetitions
              [T1_tissue_meas_s(n,i_PS),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
          end
+        PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
         PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
         PhysParam.vP = vP_fixed(1);
         PhysParam.PS_perMin = PS_range(i_PS);
         [temp, PS_fit_slow_corrected(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);    
     end
     for i_vP = 1:N_vP
+         PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
          PhysParam.PS = PS_fixed(1);
          PhysParam.vP = vP_range(i_vP);
@@ -195,10 +214,10 @@ vP_devs_B1_slow = vP_devs_B1_slow * 1e3;
 vP_devs_B1_fast_corrected = vP_devs_B1_fast_corrected * 1e3;
 vP_devs_B1_slow_corrected = vP_devs_B1_slow_corrected * 1e3;
 
-%  save('PS_means_B1','PS_means_B1_fast','PS_means_B1_slow','PS_means_B1_fast_corrected','PS_means_B1_slow_corrected')
-%  save('PS_devs_B1','PS_devs_B1_fast','PS_devs_B1_slow','PS_devs_B1_fast_corrected','PS_devs_B1_slow_corrected')
-%  save('vP_means_B1','vP_means_B1_fast','vP_means_B1_slow','vP_means_B1_fast_corrected','vP_means_B1_slow_corrected')
-%  save('vP_devs_B1','vP_devs_B1_fast','vP_devs_B1_slow','vP_devs_B1_fast_corrected','vP_devs_B1_slow_corrected')
+ save('PS_means_B1','PS_means_B1_fast','PS_means_B1_slow','PS_means_B1_fast_corrected','PS_means_B1_slow_corrected')
+ save('PS_devs_B1','PS_devs_B1_fast','PS_devs_B1_slow','PS_devs_B1_fast_corrected','PS_devs_B1_slow_corrected')
+ save('vP_means_B1','vP_means_B1_fast','vP_means_B1_slow','vP_means_B1_fast_corrected','vP_means_B1_slow_corrected')
+ save('vP_devs_B1','vP_devs_B1_fast','vP_devs_B1_slow','vP_devs_B1_fast_corrected','vP_devs_B1_slow_corrected')
 %%
 Colour1  = [0 0.447 0.741 0.5];
 Colour2 = [0.85 0.325 0.098 0.5];

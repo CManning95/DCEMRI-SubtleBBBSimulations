@@ -21,12 +21,14 @@ N_vP = size(vP_range,1); %range sizes to test
 Delay_ranges = [0 4 8 12]; % Injection delay ranges
 
 % T1 acquisition
-[PhysParam.T1_blood_meas_s,temp,T1acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+acqParam.T1_SNR = 318;
 for m = 1:N_PS
     for n = 1:SimParam.N_repetitions
+        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
+PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
 
 %% Generate variable jitter PS - fast injection
 for i = 1:size(Delay_ranges,2);
@@ -59,6 +61,16 @@ end
  SimParam.tRes_InputAIF_s = 39.62; % original time resolution of AIFs
  SimParam.InputAIFDCENFrames = 32; % number of time points
  
+ % T1 acquisition
+acqParam.T1_SNR = 318;
+for m = 1:N_PS
+    for n = 1:SimParam.N_repetitions
+        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+        [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
+    end
+end
+PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
+
    for i = 1:size(Delay_ranges,2);
       SimParam.t_start_s = Delay_ranges(i);
       for i_PS = 1:N_PS

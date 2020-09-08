@@ -72,7 +72,7 @@ switch mode
         conc_mM(:,:) = -log((exp(R10*TR_s).*(enhancementPct - 100*cos(FA) - enhancementPct.*exp(R10*TR_s) + 100))./(100*exp(R10*TR_s) + enhancementPct.*cos(FA) - 100*exp(R10*TR_s).*cos(FA) - enhancementPct.*exp(R10*TR_s).*cos(FA)))/(TR_s*r1_permMperS);
         %conc_mM(imag(conc_mM)~=0 | isinf(conc_mM) | conc_mM<-0.1 | conc_mM>8 ) = nan; %constrain in same way as numeric version
         conc_mM(imag(conc_mM)~=0 | isinf(conc_mM)) = nan; %no constraint
-    
+        
     otherwise
         error('Mode not recognised.');
 end

@@ -79,39 +79,38 @@ SI_tissue_drifted = SI_tissue.*(1+drift); % apply drift to tissue signal
 %% add noise to downsampled tissue signal
 SI_tissue_sample = repmat(SI_tissue_sample,1,SimParam.N_repetitions); %generate multiple copies so that noise effects can be simulated
 sigma_signal_noise = SI_tissue(1)/SimParam.SNR; % standard deviation of noise
-signal_noise = sigma_signal_noise * randn(size(SI_tissue_sample)); % random array of noise, same size as SI_tissue_sample
-SI_tissue_sample_noisy = SI_tissue_sample + signal_noise; % add noise to sampled signal
+tissue_signal_noise = sigma_signal_noise * randn(size(SI_tissue_sample)); % random array of noise, same size as SI_tissue_sample
+SI_tissue_sample_noisy = SI_tissue_sample + tissue_signal_noise; % add noise to sampled signal
 
 %% Calculate sampled AIF and tissue enhancements from sampled signal
 enh_AIF_sample_pct = DCEFunc_Sig2Enh(SI_AIF_sample,SimParam.baselineScans); % sampled AIF signal enhancement percentages
 enh_tissue_sample_pct = DCEFunc_Sig2Enh(SI_tissue_sample_noisy,SimParam.baselineScans); % sampled tissue signal enhancement percentages
 
+%% Sort measured T1 input for concentration calculations
+if size(PhysParam.T1_tissue_meas_s) == 1; % if using Accurate/Assumed T1 acq, use same T1 for each iteration
+    T1_tissue_Enh2Conc_input = ones(1,SimParam.N_repetitions)*PhysParam.T1_tissue_meas_s;
+else % if using VFA T1 acq, use different T1 for each iteration (it will be of size N_repetitions anyway)
+    T1_tissue_Enh2Conc_input = PhysParam.T1_tissue_meas_s';
+end
 %% Calculate sampled AIF and tissue concentrations using enhancements at sampling points (note we use "measured" FA and T1 values to allow for possible errors)
 if SeqParam.r2_per_mM_per_s == 0;
     mode = 'analytical';
 else
     mode = 'numeric';
 end
-Cp_AIF_sample_mM = (1/(1-PhysParam.Hct))*DCEFunc_Enh2Conc_SPGR(enh_AIF_sample_pct,PhysParam.T1_blood_meas_s,SeqParam.TR_s,SeqParam.TE_s,SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode);
-
+Cp_AIF_sample_mM = ((1/(1-PhysParam.Hct))*DCEFunc_Enh2Conc_SPGR(enh_AIF_sample_pct,PhysParam.T1_blood_meas_s,SeqParam.TR_s,SeqParam.TE_s,SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode));
 
 %% Fit enhancement curves using SXL fitting method or Patlak model
-if size(PhysParam.T1_tissue_meas_s) == 1; % if using Accurate/Assumed T1 acq, use same T1 for each iteration
-    T1_Enh2Conc_input = ones(1,SimParam.N_repetitions)*PhysParam.T1_tissue_meas_s;
-else % if using VFA T1 acq, use different T1 for each iteration (it will be of size N_repetitions anyway)
-    T1_Enh2Conc_input = PhysParam.T1_tissue_meas_s';
-end
-
 if SimParam.SXLfit == 1;
     opts.init_vP = 0.0001; % initial vP value to test for SXL fitting
     opts.init_PS_perMin = 1e-8; % initial PS value to test for SXL fitting
     opts.NIgnore = SimParam.NIgnore;
-    [PatlakResults, enhModelFit_pct] = DCEFunc_fitPatlak_waterEx(SeqParam.t_res_sample_s,enh_tissue_sample_pct,Cp_AIF_sample_mM,PhysParam.Hct,T1_Enh2Conc_input,PhysParam.T1_blood_meas_s,SeqParam.TR_s,SeqParam.TE_s,ones(1,SimParam.N_repetitions)*SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,opts);
+    [PatlakResults, enhModelFit_pct] = DCEFunc_fitPatlak_waterEx(SeqParam.t_res_sample_s,enh_tissue_sample_pct,Cp_AIF_sample_mM,PhysParam.Hct,T1_tissue_Enh2Conc_input,PhysParam.T1_blood_meas_s,SeqParam.TR_s,SeqParam.TE_s,ones(1,SimParam.N_repetitions)*SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,opts);
     Ct_sample_mM = PatlakResults.Ct_SXL_mM;
     Ct_fit_mM = mean(Ct_sample_mM,2);
     
 else
-    Ct_sample_mM = DCEFunc_Enh2Conc_SPGR(enh_tissue_sample_pct,T1_Enh2Conc_input,SeqParam.TR_s,SeqParam.TE_s,ones(1,SimParam.N_repetitions)*SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode); 
+    Ct_sample_mM = DCEFunc_Enh2Conc_SPGR(enh_tissue_sample_pct,T1_tissue_Enh2Conc_input,SeqParam.TR_s,SeqParam.TE_s,ones(1,SimParam.N_repetitions)*SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode); 
     [PatlakResults, Ct_fit_mM] = DCEFunc_fitModel(SeqParam.t_res_sample_s,Ct_sample_mM,Cp_AIF_sample_mM,'PatlakFast',struct('NIgnore',SimParam.NIgnore));
 end
 
@@ -167,6 +166,7 @@ if SimParam.Plot_extra_figs == 1;
     xlabel('time (s)');
     %ylim([min(Ct_sample_mM(:,1)) max(Ct_sample_mM(:,1))]);
     pause(0.01)
+
 end
 vP_fit = PatlakResults.vP;
 PS_fit_perMin = PatlakResults.PS_perMin;

@@ -24,13 +24,14 @@ Fp_ranges = [11 8.25 5.5]; % Plasma flow ranges
  SimParam.InjectionRate = 'fast';
  
  % T1 acquisition
-[PhysParam.T1_blood_meas_s,temp,T1acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+ acqParam.T1_SNR = 318;
 for m = 1:N_PS
     for n = 1:SimParam.N_repetitions
+        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
-
+PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
  for i = 1:size(Fp_ranges,2) % Generate variable flow data
      PhysParam.FP_mlPer100gPerMin = Fp_ranges(i);
      for i_PS = 1:N_PS
@@ -53,18 +54,19 @@ end
      vP_devs_Fp_fast(:,i) = std(vP_fit_Fp_fast,0,1)'; % standard deviation for each vP - flow
  end
  
- % Exclude
+ %% Exclude
  SimParam.InjectionRate = 'fast';
  SimParam.NIgnore = max(SimParam.baselineScans) + 3;
 
  % T1 acquisition
-[PhysParam.T1_blood_meas_s,temp,T1acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+acqParam.T1_SNR = 318;
 for m = 1:N_PS
     for n = 1:SimParam.N_repetitions
+        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
-
+PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
  for i = 1:size(Fp_ranges,2) % Generate variable flow data
      PhysParam.FP_mlPer100gPerMin = Fp_ranges(i);
      for i_PS = 1:N_PS
@@ -87,7 +89,7 @@ end
      vP_devs_Fp_exclude(:,i) = std(vP_fit_Fp_exclude,0,1)'; % standard deviation for each vP - flow
  end 
  
- %slow injection
+ %% slow injection
  SimParam.InjectionRate = 'slow';
  SimParam.t_start_s = 0;
  SimParam.NIgnore = max(SimParam.baselineScans);
@@ -97,13 +99,14 @@ end
  SimParam.InputAIFDCENFrames = 32; % number of time points
  
   % T1 acquisition
-[PhysParam.T1_blood_meas_s,temp,T1acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+acqParam.T1_SNR = 318;  
 for m = 1:N_PS
     for n = 1:SimParam.N_repetitions
+        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
-
+PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
  for i = 1:size(Fp_ranges,2)
      PhysParam.FP_mlPer100gPerMin = Fp_ranges(i);
      for i_PS = 1:N_PS
@@ -126,17 +129,18 @@ end
      vP_devs_Fp_slow(:,i) = std(vP_fit_Fp_slow,0,1)'; % standard deviation for each PS at high flow
  end
 
- % slow injection with exclusion
+%% slow injection with exclusion
  SimParam.NIgnore = max(SimParam.baselineScans) + 3;
  
    % T1 acquisition
-[PhysParam.T1_blood_meas_s,temp,T1acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+acqParam.T1_SNR = 318;
 for m = 1:N_PS
     for n = 1:SimParam.N_repetitions
+        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
-
+PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
  for i = 1:size(Fp_ranges,2)
      PhysParam.FP_mlPer100gPerMin = Fp_ranges(i);
      for i_PS = 1:N_PS
