@@ -25,23 +25,20 @@ N_vP = size(vP_range,1); %range sizes to test
 for k = 1:size(k_values,2)
     DCESeqParam.FA_error = k_values(k);
     T1acqParam.FA_true_rads = DCESeqParam.FA_error * T1acqParam.FA_nom_rads; % derive actual flip angles for T1 acquisition
-    DCESeqParam.FA_true_deg = DCESeqParam.FA_error * DCESeqParam.FA_meas_deg; % true flip angle
+    DCESeqParam.FA_true_deg = DCESeqParam.FA_error * DCESeqParam.FA_nom_deg; % true flip angle
+    [PhysParam.T1_blood_meas_s,temp,T1acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
     DCESeqParam.FA_meas_deg = DCESeqParam.FA_nom_deg;
-    acqParam.T1_SNR = 318;
     
     for i_PS = 1:N_PS % Accurate T1 acquisition
         for n = 1:SimParam.N_repetitions
-            [T1_blood_meas_s(n,i_PS),temp,acqParam.FA_error_meas(n,i_PS),temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
             [T1_tissue_meas_s(n,i_PS),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
         end
-        PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_PS);
         PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
         PhysParam.vP = vP_fixed(1);
         PhysParam.PS_perMin = PS_range(i_PS);
         [temp, PS_fit_fast(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
     end
     for i_vP = 1:N_vP
-         PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_vP);
          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
          PhysParam.PS = PS_fixed(1);
          PhysParam.vP = vP_range(i_vP);
@@ -55,32 +52,23 @@ for k = 1:size(k_values,2)
     vP_devs_B1_fast(:,k) = std(vP_fit_fast,0,1)'; % standard deviation for each vP
 end
 %% B1 inhomogeneity figures (fast injection - B1 corrected)
-[PhysParam,DCESeqParam,SimParam,T1acqParam] = load_default_params;
-SimParam.SXLfit = 1; % fit enhancements according to SXL method
-SimParam.NIgnore = max(SimParam.baselineScans) + 3;
-
 for k = 1:size(k_values,2)
     DCESeqParam.FA_error = k_values(k);
-    T1acqParam.FA_true_rads = DCESeqParam.FA_error * T1acqParam.FA_nom_rads; % derive actual flip angles for T1 acquisition
-    DCESeqParam.FA_true_deg = DCESeqParam.FA_error * DCESeqParam.FA_meas_deg; % true flip angle
-    % Set nominal FA values to true to replicate correction
-    T1acqParam.FA_nom_rads = T1acqParam.FA_true_rads; 
+    T1acqParam.FA_true_rads = T1acqParam.FA_nom_rads; % derive actual flip angles for T1 acquisition
+    DCESeqParam.FA_true_deg = DCESeqParam.FA_error * DCESeqParam.FA_nom_deg; % true flip angle
+    [PhysParam.T1_blood_meas_s,temp,T1acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
     DCESeqParam.FA_meas_deg = DCESeqParam.FA_true_deg;
-    acqParam.T1_SNR = 318;
     
     for i_PS = 1:N_PS % Accurate T1 acquisition
         for n = 1:SimParam.N_repetitions
-            [T1_blood_meas_s(n,i_PS),temp,acqParam.FA_error_meas(n,i_PS),temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
             [T1_tissue_meas_s(n,i_PS),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
         end
-        PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_PS);
         PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
         PhysParam.vP = vP_fixed(1);
         PhysParam.PS_perMin = PS_range(i_PS);
         [temp, PS_fit_fast_corrected(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
     end
     for i_vP = 1:N_vP
-         PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_vP);
          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
          PhysParam.PS = PS_fixed(1);
          PhysParam.vP = vP_range(i_vP);
@@ -94,7 +82,7 @@ for k = 1:size(k_values,2)
     vP_devs_B1_fast_corrected(:,k) = std(vP_fit_fast_corrected,0,1)'; % standard deviation for each vP
 end
 
-%% Generate variable PS and vP - slow injection
+%% Generate variable flow PS and vP - slow injection
 [PhysParam,DCESeqParam,SimParam,T1acqParam] = load_default_params;
 SimParam.SXLfit = 1; % fit enhancements according to SXL method
 SimParam.NIgnore = max(SimParam.baselineScans) + 3;
@@ -110,22 +98,19 @@ SimParam.NIgnore = max(SimParam.baselineScans) + 3;
      DCESeqParam.FA_error = k_values(k);
      T1acqParam.FA_true_rads = DCESeqParam.FA_error * T1acqParam.FA_nom_rads; % derive actual flip angles for T1 acquisition
      DCESeqParam.FA_true_deg = DCESeqParam.FA_error * DCESeqParam.FA_nom_deg; % true flip angle
+     [PhysParam.T1_blood_meas_s,temp,T1acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
      DCESeqParam.FA_meas_deg = DCESeqParam.FA_nom_deg;
-     acqParam.T1_SNR = 318;
      
      for i_PS = 1:N_PS % Accurate T1 measurement
          for n = 1:SimParam.N_repetitions
-             [T1_blood_meas_s(n,i_PS),temp,acqParam.FA_error_meas(n,i_PS),temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
              [T1_tissue_meas_s(n,i_PS),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
          end
-         PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_PS);
          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
          PhysParam.vP = vP_fixed(1);
          PhysParam.PS_perMin = PS_range(i_PS);
          [temp, PS_fit_slow(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
      end
      for i_vP = 1:N_vP
-         PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_vP);
          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
          PhysParam.PS = PS_fixed(1);
          PhysParam.vP = vP_range(i_vP);
@@ -140,38 +125,24 @@ SimParam.NIgnore = max(SimParam.baselineScans) + 3;
  end
 
 %% Generate B1 inhomogeneity figures - (slow injection - B1 corrected)
-[PhysParam,DCESeqParam,SimParam,T1acqParam] = load_default_params;
-SimParam.SXLfit = 1; % fit enhancements according to SXL method
-SimParam.NIgnore = max(SimParam.baselineScans) + 3;
- SimParam.t_start_s = 0;
- SimParam.InjectionRate = 'slow';
- 
- load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
- SimParam.Cp_AIF_mM = Cp_AIF_mM;
- SimParam.tRes_InputAIF_s = 39.62; % original time resolution of AIFs
- SimParam.InputAIFDCENFrames = 32; % number of time points
 for k = 1:size(k_values,2)
+
     DCESeqParam.FA_error = k_values(k);
-    T1acqParam.FA_true_rads = DCESeqParam.FA_error * T1acqParam.FA_nom_rads; % derive actual flip angles for T1 acquisition
+    T1acqParam.FA_true_rads =  T1acqParam.FA_nom_rads; % derive actual flip angles for T1 acquisition
     DCESeqParam.FA_true_deg = DCESeqParam.FA_error * DCESeqParam.FA_nom_deg; % true flip angle
-    % Set nominal FA values to true to replicate correction
-    T1acqParam.FA_nom_rads = T1acqParam.FA_true_rads; 
+    [PhysParam.T1_blood_meas_s,temp,T1acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
     DCESeqParam.FA_meas_deg = DCESeqParam.FA_true_deg;
-    acqParam.T1_SNR = 318;
     
     for i_PS = 1:N_PS % Accurate T1 acquisition
          for n = 1:SimParam.N_repetitions
-             [T1_blood_meas_s(n,i_PS),temp,acqParam.FA_error_meas(n,i_PS),temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
              [T1_tissue_meas_s(n,i_PS),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
          end
-        PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_PS);
         PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
         PhysParam.vP = vP_fixed(1);
         PhysParam.PS_perMin = PS_range(i_PS);
         [temp, PS_fit_slow_corrected(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);    
     end
     for i_vP = 1:N_vP
-         PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_PS);
          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
          PhysParam.PS = PS_fixed(1);
          PhysParam.vP = vP_range(i_vP);
@@ -206,10 +177,10 @@ vP_devs_B1_slow = vP_devs_B1_slow * 1e3;
 vP_devs_B1_fast_corrected = vP_devs_B1_fast_corrected * 1e3;
 vP_devs_B1_slow_corrected = vP_devs_B1_slow_corrected * 1e3;
 
- save('PS_means_B1','PS_means_B1_fast','PS_means_B1_slow','PS_means_B1_fast_corrected','PS_means_B1_slow_corrected')
- save('PS_devs_B1','PS_devs_B1_fast','PS_devs_B1_slow','PS_devs_B1_fast_corrected','PS_devs_B1_slow_corrected')
- save('vP_means_B1','vP_means_B1_fast','vP_means_B1_slow','vP_means_B1_fast_corrected','vP_means_B1_slow_corrected')
- save('vP_devs_B1','vP_devs_B1_fast','vP_devs_B1_slow','vP_devs_B1_fast_corrected','vP_devs_B1_slow_corrected')
+%  save('PS_means_B1','PS_means_B1_fast','PS_means_B1_slow','PS_means_B1_fast_corrected','PS_means_B1_slow_corrected')
+%  save('PS_devs_B1','PS_devs_B1_fast','PS_devs_B1_slow','PS_devs_B1_fast_corrected','PS_devs_B1_slow_corrected')
+%  save('vP_means_B1','vP_means_B1_fast','vP_means_B1_slow','vP_means_B1_fast_corrected','vP_means_B1_slow_corrected')
+%  save('vP_devs_B1','vP_devs_B1_fast','vP_devs_B1_slow','vP_devs_B1_fast_corrected','vP_devs_B1_slow_corrected')
 %%
 Colour1  = [0 0.447 0.741 0.5];
 Colour2 = [0.85 0.325 0.098 0.5];
@@ -305,12 +276,12 @@ ylim([-2 2]);
 set(gcf, 'units', 'centimeters','Position', [5 5 28 15]);
 
 annotation(figure(1),'textbox',[0.084 0.935 0.05 0.045],'String','a. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.290 0.935 0.06 0.045],'String','b. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.494 0.935 0.06 0.045],'String','c. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.702 0.935 0.06 0.045],'String','d. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.084 0.460 0.06 0.045],'String','a. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
+annotation(figure(1),'textbox',[0.290 0.935 0.06 0.045],'String','a. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
+annotation(figure(1),'textbox',[0.494 0.935 0.06 0.045],'String','a. iii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
+annotation(figure(1),'textbox',[0.702 0.935 0.06 0.045],'String','a. iv','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
+annotation(figure(1),'textbox',[0.084 0.460 0.06 0.045],'String','b. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
 annotation(figure(1),'textbox',[0.290 0.460 0.06 0.045],'String','b. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.494 0.460 0.06 0.045],'String','c. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.702 0.460 0.06 0.045],'String','d. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
+annotation(figure(1),'textbox',[0.494 0.460 0.06 0.045],'String','b. iii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
+annotation(figure(1),'textbox',[0.702 0.460 0.06 0.045],'String','b. iv','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
 set(gcf, 'units', 'centimeters','PaperPosition', [0 0 25 15]);    % can be bigger than screen 
-print(gcf, 'B1_figure.png', '-dpng', '-r300' );   %save file as PNG w/ 300dpi
+%print(gcf, 'B1_figure.png', '-dpng', '-r300' );   %save file as PNG w/ 300dpi

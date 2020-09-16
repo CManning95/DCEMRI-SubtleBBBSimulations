@@ -24,22 +24,23 @@ Delay_ranges = [0 4 8 12]; % Injection delay ranges
 acqParam.T1_SNR = 318;
 for m = 1:N_PS
     for n = 1:SimParam.N_repetitions
-        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+        [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
-PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
 
 %% Generate variable jitter PS - fast injection
 for i = 1:size(Delay_ranges,2);
      SimParam.t_start_s = 119 + Delay_ranges(i);
      for i_PS = 1:N_PS
+         PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_PS);
          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
          PhysParam.vP = vP_fixed(1);
          PhysParam.PS_perMin = PS_range(i_PS);
          [temp, PS_fit_jitter_fast(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
      end
      for i_vP = 1:N_vP
+         PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_vP);
          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
          PhysParam.PS = PS_fixed(1);
          PhysParam.vP = vP_range(i_vP);
@@ -65,7 +66,7 @@ end
 acqParam.T1_SNR = 318;
 for m = 1:N_PS
     for n = 1:SimParam.N_repetitions
-        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+        [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
@@ -74,12 +75,14 @@ PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
    for i = 1:size(Delay_ranges,2);
       SimParam.t_start_s = Delay_ranges(i);
       for i_PS = 1:N_PS
+          PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_PS);
           PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
           PhysParam.vP = vP_fixed(1);
           PhysParam.PS_perMin = PS_range(i_PS);
           [temp, PS_fit_jitter_slow(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
       end
       for i_vP = 1:N_vP
+          PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_vP);
          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
          PhysParam.PS = PS_fixed(1);
          PhysParam.vP = vP_range(i_vP);
@@ -175,8 +178,8 @@ ax = gca;
 ax.FontSize = 9;
 
 annotation(figure(1),'textbox',[0.064 0.935 0.07 0.045],'String','a. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.488 0.935 0.07 0.045],'String','a. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.064 0.460 0.07 0.045],'String','b. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
+annotation(figure(1),'textbox',[0.488 0.935 0.07 0.045],'String','b. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
+annotation(figure(1),'textbox',[0.064 0.460 0.07 0.045],'String','a. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
 annotation(figure(1),'textbox',[0.488 0.460 0.07 0.045],'String','b. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
 set(gcf, 'units', 'centimeters','Position', [5 5 18 15]);
 set(gcf, 'units', 'centimeters','PaperPosition', [0 0 15 15]);    % can be bigger than screen 

@@ -27,20 +27,22 @@ Fp_ranges = [11 8.25 5.5]; % Plasma flow ranges
  acqParam.T1_SNR = 318;
 for m = 1:N_PS
     for n = 1:SimParam.N_repetitions
-        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+        [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
-PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
+
  for i = 1:size(Fp_ranges,2) % Generate variable flow data
      PhysParam.FP_mlPer100gPerMin = Fp_ranges(i);
      for i_PS = 1:N_PS
+         PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_PS);
          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
          PhysParam.vP = vP_fixed(1);
          PhysParam.PS_perMin = PS_range(i_PS);
          [temp, PS_fit_Fp_fast(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
      end
      for i_vP = 1:N_vP
+         PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_vP);
          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
          PhysParam.PS = PS_fixed(1);
          PhysParam.vP = vP_range(i_vP);
@@ -62,20 +64,22 @@ PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
 acqParam.T1_SNR = 318;
 for m = 1:N_PS
     for n = 1:SimParam.N_repetitions
-        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+        [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
-PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
+
  for i = 1:size(Fp_ranges,2) % Generate variable flow data
      PhysParam.FP_mlPer100gPerMin = Fp_ranges(i);
      for i_PS = 1:N_PS
+         PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_PS);
          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
          PhysParam.vP = vP_fixed(1);
          PhysParam.PS_perMin = PS_range(i_PS);
          [temp, PS_fit_Fp_exclude(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
      end
      for i_vP = 1:N_vP
+         PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_vP);
          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
          PhysParam.PS = PS_fixed(1);
          PhysParam.vP = vP_range(i_vP);
@@ -102,20 +106,22 @@ PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
 acqParam.T1_SNR = 318;  
 for m = 1:N_PS
     for n = 1:SimParam.N_repetitions
-        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+        [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
-PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
+
  for i = 1:size(Fp_ranges,2)
      PhysParam.FP_mlPer100gPerMin = Fp_ranges(i);
      for i_PS = 1:N_PS
+         PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_PS);
          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
          PhysParam.vP = vP_fixed(1);
          PhysParam.PS_perMin = PS_range(i_PS);
          [temp, PS_fit_Fp_slow(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
      end
      for i_vP = 1:N_vP
+         PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_vP);
          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
          PhysParam.PS = PS_fixed(1);
          PhysParam.vP = vP_range(i_vP);
@@ -136,20 +142,22 @@ PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
 acqParam.T1_SNR = 318;
 for m = 1:N_PS
     for n = 1:SimParam.N_repetitions
-        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+        [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
-PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
+
  for i = 1:size(Fp_ranges,2)
      PhysParam.FP_mlPer100gPerMin = Fp_ranges(i);
      for i_PS = 1:N_PS
+         PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_PS);
          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
          PhysParam.vP = vP_fixed(1);
          PhysParam.PS_perMin = PS_range(i_PS);
          [temp, PS_fit_Fp_slow_exclude(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
      end
      for i_vP = 1:N_vP
+         PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_vP);
          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
          PhysParam.PS = PS_fixed(1);
          PhysParam.vP = vP_range(i_vP);
@@ -306,12 +314,12 @@ ax.FontSize = 9;
 set(gcf, 'units', 'centimeters','Position', [5 5 28 15]);
 
 annotation(figure(1),'textbox',[0.084 0.935 0.05 0.045],'String','a. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.288 0.935 0.06 0.045],'String','a. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.492 0.935 0.06 0.045],'String','a. iii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.696 0.935 0.06 0.045],'String','a. iv','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.084 0.460 0.06 0.045],'String','b. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
+annotation(figure(1),'textbox',[0.288 0.935 0.06 0.045],'String','b. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
+annotation(figure(1),'textbox',[0.492 0.935 0.06 0.045],'String','c. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
+annotation(figure(1),'textbox',[0.696 0.935 0.06 0.045],'String','d. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
+annotation(figure(1),'textbox',[0.084 0.460 0.06 0.045],'String','a. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
 annotation(figure(1),'textbox',[0.288 0.460 0.06 0.045],'String','b. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.492 0.460 0.06 0.045],'String','b. iii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.696 0.460 0.06 0.045],'String','b. iv','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
+annotation(figure(1),'textbox',[0.492 0.460 0.06 0.045],'String','c. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
+annotation(figure(1),'textbox',[0.696 0.460 0.06 0.045],'String','d. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
 set(gcf, 'units', 'centimeters','PaperPosition', [0 0 25 15]);    % can be bigger than screen 
 print(gcf, 'Fp_figure.png', '-dpng', '-r300' );   %save file as PNG w/ 300dpi

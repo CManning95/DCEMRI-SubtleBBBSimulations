@@ -27,21 +27,22 @@ kbe_ranges = [1.375 2.75 5.5];
 acqParam.T1_SNR = 318;
 for m = 1:N_PS
     for n = 1:SimParam.N_repetitions
-        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+        [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
-PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
 
     for i = 1:size(kbe_ranges,2);
         PhysParam.kbe_perS = kbe_ranges(i);
         for i_PS = 1:N_PS
+            PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_PS);
             PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
             PhysParam.vP = vP_fixed(1);
             PhysParam.PS_perMin = PS_range(i_PS);
             [temp, PS_fit_2S1X_fast(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
         end
         for i_vP = 1:N_vP
+            PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_vP);
             PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
             PhysParam.PS = PS_fixed(1);
             PhysParam.vP = vP_range(i_vP);
@@ -61,21 +62,22 @@ PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
  acqParam.T1_SNR = 318;
 for m = 1:N_PS
     for n = 1:SimParam.N_repetitions
-        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+        [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
-PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
-    
+  
     for i = 1:size(kbe_ranges,2);
         PhysParam.kbe_perS = kbe_ranges(i);
         for i_PS = 1:N_PS
+            PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_PS);
             PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
             PhysParam.vP = vP_fixed(1);
             PhysParam.PS_perMin = PS_range(i_PS);
             [temp, PS_fit_2S1X_SXL(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
         end
         for i_vP = 1:N_vP
+            PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_vP);
             PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
             PhysParam.PS = PS_fixed(1);
             PhysParam.vP = vP_range(i_vP);
@@ -102,21 +104,22 @@ PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
     acqParam.T1_SNR = 318;
 for m = 1:N_PS
     for n = 1:SimParam.N_repetitions
-        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+        [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
-PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
 
     for i = 1:size(kbe_ranges,2);
         PhysParam.kbe_perS = kbe_ranges(i);
         for i_PS = 1:N_PS
+            PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_PS);
             PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
             PhysParam.vP = vP_fixed(1);
             PhysParam.PS_perMin = PS_range(i_PS);
             [temp, PS_fit_2S1X_slow(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
         end
         for i_vP = 1:N_vP
+            PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_vP);
             PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
             PhysParam.PS = PS_fixed(1);
             PhysParam.vP = vP_range(i_vP);
@@ -140,17 +143,18 @@ for m = 1:N_PS
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
-PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
 
     for i = 1:size(kbe_ranges,2);
         PhysParam.kbe_perS = kbe_ranges(i);
         for i_PS = 1:N_PS
+            PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_PS);
             PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
             PhysParam.vP = vP_fixed(1);
             PhysParam.PS_perMin = PS_range(i_PS);
             [temp, PS_fit_2S1X_slow_SXL(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
         end
         for i_vP = 1:N_vP
+            PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_vP);
             PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
             PhysParam.PS = PS_fixed(1);
             PhysParam.vP = vP_range(i_vP);
@@ -174,10 +178,10 @@ PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
     PS_devs_H2O_SXL = PS_devs_H2O_SXL * 1e4;
     PS_devs_H2O_slow = PS_devs_H2O_slow * 1e4;
     PS_devs_H2O_slow_SXL = PS_devs_H2O_slow_SXL * 1e4;
-    save('PS_means_H2O','PS_means_H2O_fast','PS_means_H2O_SXL',...
-        'PS_means_H2O_slow','PS_means_H2O_slow_SXL');
-    save('PS_devs_H2O','PS_devs_H2O_fast','PS_devs_H2O_SXL',...
-        'PS_devs_H2O_slow','PS_devs_H2O_slow_SXL');
+%     save('PS_means_H2O','PS_means_H2O_fast','PS_means_H2O_SXL',...
+%         'PS_means_H2O_slow','PS_means_H2O_slow_SXL');
+%     save('PS_devs_H2O','PS_devs_H2O_fast','PS_devs_H2O_SXL',...
+%         'PS_devs_H2O_slow','PS_devs_H2O_slow_SXL');
     
     vP_range = vP_range * 1e3;
     vP_means_H2O_fast = vP_means_H2O_fast * 1e3;
@@ -188,10 +192,10 @@ PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
     vP_devs_H2O_SXL = vP_devs_H2O_SXL * 1e3;
     vP_devs_H2O_slow = vP_devs_H2O_slow * 1e3;
     vP_devs_H2O_slow_SXL = vP_devs_H2O_slow_SXL * 1e3;
-    save('vP_means_H2O','vP_means_H2O_fast','vP_means_H2O_SXL',...
-        'vP_means_H2O_slow','vP_means_H2O_slow_SXL');
-    save('vP_devs_H2O','vP_devs_H2O_fast','vP_devs_H2O_SXL',...
-        'vP_devs_H2O_slow','vP_devs_H2O_slow_SXL');
+%     save('vP_means_H2O','vP_means_H2O_fast','vP_means_H2O_SXL',...
+%         'vP_means_H2O_slow','vP_means_H2O_slow_SXL');
+%     save('vP_devs_H2O','vP_devs_H2O_fast','vP_devs_H2O_SXL',...
+%        'vP_devs_H2O_slow','vP_devs_H2O_slow_SXL');
 
 Colour1  = [0 0.447 0.741 0.5];
 Colour2 = [0.85 0.325 0.098 0.5];
@@ -310,12 +314,12 @@ ax.FontSize = 9;
 set(gcf, 'units', 'centimeters','Position', [5 5 28 15]);
 
 annotation(figure(2),'textbox',[0.084 0.935 0.05 0.045],'String','a. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(2),'textbox',[0.288 0.935 0.06 0.045],'String','a. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(2),'textbox',[0.492 0.935 0.06 0.045],'String','a. iii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(2),'textbox',[0.696 0.935 0.06 0.045],'String','a. iv','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(2),'textbox',[0.084 0.460 0.06 0.045],'String','b. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
+annotation(figure(2),'textbox',[0.288 0.935 0.06 0.045],'String','b. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
+annotation(figure(2),'textbox',[0.492 0.935 0.06 0.045],'String','c. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
+annotation(figure(2),'textbox',[0.696 0.935 0.06 0.045],'String','d. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
+annotation(figure(2),'textbox',[0.084 0.460 0.06 0.045],'String','a. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
 annotation(figure(2),'textbox',[0.288 0.460 0.06 0.045],'String','b. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(2),'textbox',[0.492 0.460 0.06 0.045],'String','b. iii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(2),'textbox',[0.696 0.460 0.06 0.045],'String','b. iv','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
+annotation(figure(2),'textbox',[0.492 0.460 0.06 0.045],'String','c. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
+annotation(figure(2),'textbox',[0.696 0.460 0.06 0.045],'String','d. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
 set(gcf, 'units', 'centimeters','PaperPosition', [0 0 25 15]);    % can be bigger than screen 
 print(gcf, 'H2O_figure.png', '-dpng', '-r300' );   %save file as PNG w/ 300dpi

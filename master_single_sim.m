@@ -1,4 +1,4 @@
-function[vP_fit,PS_fit_perMin]=master_single_sim(PhysParam,SeqParam,SimParam)
+function[vP_fit,PS_fit_perMin]=test_master_single_sim(PhysParam,SeqParam,SimParam)
 % Master single simulation for a ROI to assess Patlak for BBB permeability
 % vP_fit = fitted vP
 % PS_fit_perMin = fitted PS
@@ -77,6 +77,7 @@ SI_tissue_drifted = SI_tissue.*(1+drift); % apply drift to tissue signal
 [temp,SI_tissue_sample] = DCEFunc_downSample(timepoints_full_s,SI_tissue_drifted,SeqParam.t_res_sample_s,'nearestPoint');
 
 %% add noise to downsampled tissue signal
+SI_AIF_sample = repmat(SI_AIF_sample,1,SimParam.N_repetitions);
 SI_tissue_sample = repmat(SI_tissue_sample,1,SimParam.N_repetitions); %generate multiple copies so that noise effects can be simulated
 sigma_signal_noise = SI_tissue(1)/SimParam.SNR; % standard deviation of noise
 tissue_signal_noise = sigma_signal_noise * randn(size(SI_tissue_sample)); % random array of noise, same size as SI_tissue_sample
@@ -86,32 +87,40 @@ SI_tissue_sample_noisy = SI_tissue_sample + tissue_signal_noise; % add noise to 
 enh_AIF_sample_pct = DCEFunc_Sig2Enh(SI_AIF_sample,SimParam.baselineScans); % sampled AIF signal enhancement percentages
 enh_tissue_sample_pct = DCEFunc_Sig2Enh(SI_tissue_sample_noisy,SimParam.baselineScans); % sampled tissue signal enhancement percentages
 
-%% Sort measured T1 input for concentration calculations
+%% Sort measured T1 and FA input for concentration calculations
 if size(PhysParam.T1_tissue_meas_s) == 1; % if using Accurate/Assumed T1 acq, use same T1 for each iteration
-    T1_tissue_Enh2Conc_input = ones(1,SimParam.N_repetitions)*PhysParam.T1_tissue_meas_s;
+    T1_blood_Enh2Conc_input = ones(1,SimParam.N_repetitions)*PhysParam.T1_blood_meas_s;
+    T1_tissue_Enh2Conc_input = ones(1,SimParam.N_repetitions)*PhysParam.T1_tissue_meas_s;   
 else % if using VFA T1 acq, use different T1 for each iteration (it will be of size N_repetitions anyway)
+    T1_blood_Enh2Conc_input = PhysParam.T1_blood_meas_s';
     T1_tissue_Enh2Conc_input = PhysParam.T1_tissue_meas_s';
 end
+if size(SeqParam.FA_meas_deg) == 1;
+    FA_meas_input = (ones(1,SimParam.N_repetitions)*SeqParam.FA_meas_deg);
+else
+    FA_meas_input = SeqParam.FA_meas_deg';
+end
+    
 %% Calculate sampled AIF and tissue concentrations using enhancements at sampling points (note we use "measured" FA and T1 values to allow for possible errors)
 if SeqParam.r2_per_mM_per_s == 0;
     mode = 'analytical';
 else
     mode = 'numeric';
 end
-Cp_AIF_sample_mM = ((1/(1-PhysParam.Hct))*DCEFunc_Enh2Conc_SPGR(enh_AIF_sample_pct,PhysParam.T1_blood_meas_s,SeqParam.TR_s,SeqParam.TE_s,SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode));
+Cp_AIF_sample_mM = ((1/(1-PhysParam.Hct))*DCEFunc_Enh2Conc_SPGR(enh_AIF_sample_pct,T1_blood_Enh2Conc_input,SeqParam.TR_s,SeqParam.TE_s,FA_meas_input,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode));
 
 %% Fit enhancement curves using SXL fitting method or Patlak model
 if SimParam.SXLfit == 1;
     opts.init_vP = 0.0001; % initial vP value to test for SXL fitting
     opts.init_PS_perMin = 1e-8; % initial PS value to test for SXL fitting
     opts.NIgnore = SimParam.NIgnore;
-    [PatlakResults, enhModelFit_pct] = DCEFunc_fitPatlak_waterEx(SeqParam.t_res_sample_s,enh_tissue_sample_pct,Cp_AIF_sample_mM,PhysParam.Hct,T1_tissue_Enh2Conc_input,PhysParam.T1_blood_meas_s,SeqParam.TR_s,SeqParam.TE_s,ones(1,SimParam.N_repetitions)*SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,opts);
+    [PatlakResults, enhModelFit_pct] = DCEFunc_fitPatlak_waterEx(SeqParam.t_res_sample_s,enh_tissue_sample_pct,Cp_AIF_sample_mM,PhysParam.Hct,T1_tissue_Enh2Conc_input,T1_blood_Enh2Conc_input,SeqParam.TR_s,SeqParam.TE_s,FA_meas_input,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,opts);
     Ct_sample_mM = PatlakResults.Ct_SXL_mM;
     Ct_fit_mM = mean(Ct_sample_mM,2);
     
 else
-    Ct_sample_mM = DCEFunc_Enh2Conc_SPGR(enh_tissue_sample_pct,T1_tissue_Enh2Conc_input,SeqParam.TR_s,SeqParam.TE_s,ones(1,SimParam.N_repetitions)*SeqParam.FA_meas_deg,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode); 
-    [PatlakResults, Ct_fit_mM] = DCEFunc_fitModel(SeqParam.t_res_sample_s,Ct_sample_mM,Cp_AIF_sample_mM,'PatlakFast',struct('NIgnore',SimParam.NIgnore));
+    Ct_sample_mM = DCEFunc_Enh2Conc_SPGR(enh_tissue_sample_pct,T1_tissue_Enh2Conc_input,SeqParam.TR_s,SeqParam.TE_s,FA_meas_input,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode); 
+    [PatlakResults, Ct_fit_mM] = DCEFunc_fitModel(SeqParam.t_res_sample_s,Ct_sample_mM,Cp_AIF_sample_mM,'PatlakFastMultiAIF',struct('NIgnore',SimParam.NIgnore));
 end
 
 %% plot results
@@ -119,12 +128,14 @@ if SimParam.Plot_extra_figs == 1;
     figure(1); set(gcf,'Units','normalized','outerposition',[0 0 1 1]);
     suptitle(['v_p=' num2str(PhysParam.vP) ', PS (per Min)=' num2str(PhysParam.PS_perMin) ', Fp = ' num2str(PhysParam.FP_mlPer100gPerMin) ', model = ' SimParam.water_exch_model]);
     subplot(3,2,1)
-    plot(timepoints_full_s,meas_AIF_mM,'k-',timepoints_full_s,Cp_AIF_mM,'r-',t_sample,Cp_AIF_sample_mM,'bx',timepoints_full_s,c_cp_mM,'m:');
+    plot(timepoints_full_s,meas_AIF_mM,'k-',timepoints_full_s,Cp_AIF_mM,'r-',timepoints_full_s,c_cp_mM,'m:'); hold on;
+    errorbar(t_sample,mean(Cp_AIF_sample_mM,2),1*std(Cp_AIF_sample_mM,0,2),'.');
     title(['AIF Conc (\deltat=' num2str(SimParam.t_res_full_s) ')']);
     ylabel('C_p (AIF) / mMol');
     legend({'VIF', 'AIF','sampled VIF','c_c_p'}, 'Location', 'northeastoutside','Fontsize',10)
     subplot(3,2,3)
-    plot(timepoints_full_s,enh_AIF_pct,'k-',t_sample,enh_AIF_sample_pct,'bx')
+    plot(timepoints_full_s,enh_AIF_pct,'k-'); hold on;
+    errorbar(t_sample,mean(enh_AIF_sample_pct,2),1*std(enh_AIF_sample_pct,0,2),'.');
     title('VIF enhancement');
     ylabel('enh / %');
     legend({'VIF enh %','sampled VIF enh %'},'Location','northeastoutside','Fontsize',10)

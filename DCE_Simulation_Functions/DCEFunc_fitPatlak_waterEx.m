@@ -1,4 +1,4 @@
-function [PKP, enhModelFit_pct]=DCEFunc_fitPatlak_waterEx(tRes_s,enh_pct,Cp_AIF_mM,Hct,T10_tissue_all_s,T10_blood_s,TR_s,TE_s,FA_all_deg,r1_permMperS,r2s_permMperS,opts)
+function [PKP, enhModelFit_pct]=DCEFunc_fitPatlak_waterEx(tRes_s,enh_pct,Cp_AIF_input_mM,Hct,T10_tissue_all_s,T10_blood_input_s,TR_s,TE_s,FA_all_deg,r1_permMperS,r2s_permMperS,opts)
 % Fit concentration curve using model to generate pharmacokinetic
 % parameters. At present, only the Patlak model is supported but other
 % models may be added on request.
@@ -38,7 +38,14 @@ T2s0_tissue_s=1; %nominal value (value does not affect enhancement)
 for iSeries=1:N %loop through different time series (e.g. voxels or ROIs)
     if sum(isnan(enh_pct(:,iSeries))) > 0; continue; end % skip concentration profiles containing one or more NaNs
     
-    %% set T10_tissue and FA, which may be different for each time series
+    %% set T10 and FA, which may be different for each time series
+    if size(Cp_AIF_input_mM,2) == N % if multiple AIFs, loop through series
+        T10_blood_s = T10_blood_input_s(1,iSeries); 
+        Cp_AIF_mM = Cp_AIF_input_mM(:,iSeries);
+    else % only a single AIF
+        T10_blood_s = T10_blood_input_s;
+        Cp_AIF_mM = Cp_AIF_sample_mM;
+    end
     T10_tissue_s=T10_tissue_all_s(1,iSeries);
     FA_deg=FA_all_deg(1,iSeries);
     
@@ -81,5 +88,7 @@ end
     end
 
 end
+
+
 
 

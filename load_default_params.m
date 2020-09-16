@@ -4,9 +4,9 @@ function [PhysParam,DCESeqParam,SimParam,T1acqParam] = load_default_params
 PhysParam.Hct = 0.42; % Haematocrit
 PhysParam.vE = 0.2; % EES volume fraction
 PhysParam.FP_mlPer100gPerMin = 11; % Plasma flow
-PhysParam.T10_blood_s = 1.901; % baseline T1 blood
-PhysParam.T10_tissue_s = 0.917; % baseline T1 tissue (NAWM)
-PhysParam.T2s0_blood_s = 0.191; % baseline T2* blood
+PhysParam.T10_blood_s = 1.90; % baseline T1 blood
+PhysParam.T10_tissue_s = 0.92; % baseline T1 tissue (NAWM)
+PhysParam.T2s0_blood_s = 0.19; % baseline T2* blood
 PhysParam.T2s0_tissue_s = 0.050; % baseline T2* tissue
 PhysParam.S0_blood = 100; % baseline signal blood
 PhysParam.S0_tissue = 100; % baseline signal tissue
@@ -29,7 +29,7 @@ DCESeqParam.FA_error = 1; % k value (flip angle error)
 DCESeqParam.FA_true_deg = DCESeqParam.FA_error*DCESeqParam.FA_nom_deg; % true flip angle
 
 %% Simulation parameters
-SimParam.N_repetitions = 50; % repetitions at each PS or vP (to quantify effects of noise)
+SimParam.N_repetitions = 1000; % repetitions at each PS or vP (to quantify effects of noise)
 SimParam.t_res_full_s = 0.1; % generated temporal resolution of simulations
 SimParam.SNR = 230; % signal to noise ratio for NAWM
 SimParam.drift_pctPerMin = 0; % signal drift
