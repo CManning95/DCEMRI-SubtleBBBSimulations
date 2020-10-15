@@ -61,15 +61,15 @@ c_ev_mM=PhysParam.vE*c_ees_mM / (PhysParam.vE+vI); %total extravascular Gd local
 drift = ((SimParam.drift_pctPerMin/100)/(60))*timepoints_full_s; %fractional signal change due to drift at each synthetic data time point, relative to time zero
 
 % generate synthetic 'measured' AIF signal at full set of timepoints (assuming fast water exchange within blood - i.e. between red blood cells/plasma)
-enh_AIF_pct = DCEFunc_Conc2Enh_SPGR((1-PhysParam.Hct)*(meas_AIF_mM),PhysParam.T10_blood_s, SeqParam.TR_s, SeqParam.TE_s, SeqParam.FA_true_deg, SeqParam.r1_per_mM_per_s, SeqParam.r2_per_mM_per_s); % percentage enhancement of AIF signal
-SI_AIF = DCEFunc_getSPGRSignal(PhysParam.S0_blood, PhysParam.T10_blood_s, PhysParam.T2s0_blood_s, SeqParam.TR_s, SeqParam.TE_s, SeqParam.FA_true_deg) * (1+enh_AIF_pct/100); % AIF signal
+enh_AIF_pct = DCEFunc_Conc2Enh_SPGR((1-PhysParam.Hct)*(meas_AIF_mM),PhysParam.T10_blood_s, SeqParam.TR_s, SeqParam.TE_s, SeqParam.blood_FA_true_deg, SeqParam.r1_per_mM_per_s, SeqParam.r2_per_mM_per_s); % percentage enhancement of AIF signal
+SI_AIF = DCEFunc_getSPGRSignal(PhysParam.S0_blood, PhysParam.T10_blood_s, PhysParam.T2s0_blood_s, SeqParam.TR_s, SeqParam.TE_s, SeqParam.blood_FA_true_deg) * (1+enh_AIF_pct/100); % AIF signal
 SI_AIF_drifted = SI_AIF.*(1+drift); % apply drift to AIF signal
 
 % generate synthetic tissue signal at full set of timepoints 
 % NB we need to use the local capillary concentration c_cp_mM here, NOT the AIF concentration Cp_AIF_mM
 enh_tissue_pct = H2OEx_Conc2Enh_SPGR(... % first calculate enhancement based on chosen compartmental relaxation model
-    (1-PhysParam.Hct)*c_cp_mM,c_ees_mM,V,p,T10_s.',PhysParam.T2s0_tissue_s,SeqParam.TR_s,SeqParam.TE_s,SeqParam.FA_true_deg,PhysParam.kbe_perS,PhysParam.kie_perS,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,SimParam.water_exch_model); % percentage enhancement in tissue signal
-SI_tissue = H2OEx_getSPGRSignal(M0,T10_s.',PhysParam.T2s0_tissue_s,SeqParam.TR_s,SeqParam.TE_s,SeqParam.FA_true_deg,PhysParam.kbe_perS,PhysParam.kie_perS,SimParam.water_exch_model) * (1+enh_tissue_pct/100); % tissue signal
+    (1-PhysParam.Hct)*c_cp_mM,c_ees_mM,V,p,T10_s.',PhysParam.T2s0_tissue_s,SeqParam.TR_s,SeqParam.TE_s,SeqParam.tissue_FA_true_deg,PhysParam.kbe_perS,PhysParam.kie_perS,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,SimParam.water_exch_model); % percentage enhancement in tissue signal
+SI_tissue = H2OEx_getSPGRSignal(M0,T10_s.',PhysParam.T2s0_tissue_s,SeqParam.TR_s,SeqParam.TE_s,SeqParam.tissue_FA_true_deg,PhysParam.kbe_perS,PhysParam.kie_perS,SimParam.water_exch_model) * (1+enh_tissue_pct/100); % tissue signal
 SI_tissue_drifted = SI_tissue.*(1+drift); % apply drift to tissue signal
 
 %% Downsample synthetic signal to generate measured signal
@@ -95,10 +95,12 @@ else % if using VFA T1 acq, use different T1 for each iteration (it will be of s
     T1_blood_Enh2Conc_input = PhysParam.T1_blood_meas_s';
     T1_tissue_Enh2Conc_input = PhysParam.T1_tissue_meas_s';
 end
-if size(SeqParam.FA_meas_deg) == 1;
-    FA_meas_input = (ones(1,SimParam.N_repetitions)*SeqParam.FA_meas_deg);
+if size(SeqParam.blood_FA_meas_deg) == 1;
+    FA_blood_meas_input = (ones(1,SimParam.N_repetitions)*SeqParam.blood_FA_meas_deg);
+    FA_tissue_meas_input = (ones(1,SimParam.N_repetitions)*SeqParam.tissue_FA_meas_deg);
 else
-    FA_meas_input = SeqParam.FA_meas_deg';
+    FA_blood_meas_input = SeqParam.blood_FA_meas_deg';
+    FA_tissue_meas_input = SeqParam.tissue_FA_meas_deg';
 end
     
 %% Calculate sampled AIF and tissue concentrations using enhancements at sampling points (note we use "measured" FA and T1 values to allow for possible errors)
@@ -107,19 +109,19 @@ if SeqParam.r2_per_mM_per_s == 0;
 else
     mode = 'numeric';
 end
-Cp_AIF_sample_mM = ((1/(1-PhysParam.Hct))*DCEFunc_Enh2Conc_SPGR(enh_AIF_sample_pct,T1_blood_Enh2Conc_input,SeqParam.TR_s,SeqParam.TE_s,FA_meas_input,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode));
+Cp_AIF_sample_mM = ((1/(1-PhysParam.Hct))*DCEFunc_Enh2Conc_SPGR(enh_AIF_sample_pct,T1_blood_Enh2Conc_input,SeqParam.TR_s,SeqParam.TE_s,FA_blood_meas_input,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode));
 
 %% Fit enhancement curves using SXL fitting method or Patlak model
 if SimParam.SXLfit == 1;
     opts.init_vP = 0.0001; % initial vP value to test for SXL fitting
     opts.init_PS_perMin = 1e-8; % initial PS value to test for SXL fitting
     opts.NIgnore = SimParam.NIgnore;
-    [PatlakResults, enhModelFit_pct] = DCEFunc_fitPatlak_waterEx(SeqParam.t_res_sample_s,enh_tissue_sample_pct,Cp_AIF_sample_mM,PhysParam.Hct,T1_tissue_Enh2Conc_input,T1_blood_Enh2Conc_input,SeqParam.TR_s,SeqParam.TE_s,FA_meas_input,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,opts);
+    [PatlakResults, enhModelFit_pct] = DCEFunc_fitPatlak_waterEx(SeqParam.t_res_sample_s,enh_tissue_sample_pct,Cp_AIF_sample_mM,PhysParam.Hct,T1_tissue_Enh2Conc_input,T1_blood_Enh2Conc_input,SeqParam.TR_s,SeqParam.TE_s,FA_tissue_meas_input,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,opts);
     Ct_sample_mM = PatlakResults.Ct_SXL_mM;
     Ct_fit_mM = mean(Ct_sample_mM,2);
     
 else
-    Ct_sample_mM = DCEFunc_Enh2Conc_SPGR(enh_tissue_sample_pct,T1_tissue_Enh2Conc_input,SeqParam.TR_s,SeqParam.TE_s,FA_meas_input,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode); 
+    Ct_sample_mM = DCEFunc_Enh2Conc_SPGR(enh_tissue_sample_pct,T1_tissue_Enh2Conc_input,SeqParam.TR_s,SeqParam.TE_s,FA_tissue_meas_input,SeqParam.r1_per_mM_per_s,SeqParam.r2_per_mM_per_s,mode); 
     [PatlakResults, Ct_fit_mM] = DCEFunc_fitModel(SeqParam.t_res_sample_s,Ct_sample_mM,Cp_AIF_sample_mM,'PatlakFastMultiAIF',struct('NIgnore',SimParam.NIgnore));
 end
 
