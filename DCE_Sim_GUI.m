@@ -691,7 +691,7 @@ end
 SimParam.NIgnore = SimParam.NIgnore + max(SimParam.baselineScans); % Ignore baseline scans, AND no. of post-contrast points specified
 
 %derive some additional parameters
-SeqParam.NPoints = round(SeqParam.t_acq_s/SeqParam.t_res_sample_s); % Number of smapled data points
+SeqParam.NPoints = round(SeqParam.t_acq_s/SeqParam.t_res_sample_s); % Number of sampled data points
 SeqParam.blood_FA_true_deg = SeqParam.blood_FA_error * SeqParam.FA_nom_deg; % Actual FA experienced by blood
 SeqParam.tissue_FA_true_deg = SeqParam.tissue_FA_error * SeqParam.FA_nom_deg; % Actual FA experienced by tissue
 switch handles.acqParam.B1_correction
@@ -1249,11 +1249,12 @@ end
 %Set PS value
 PhysParam.vP = PhysParam.vP_fixed_single;
 PhysParam.PS_perMin = PhysParam.PS_fixed_single;
-[temp, PS_fit_1] = master_single_sim(PhysParam,SeqParam,SimParam);
+[vP_fit_1, PS_fit_1] = master_single_sim(PhysParam,SeqParam,SimParam);
 
 CreateStruct.Interpreter = 'tex';
 CreateStruct.WindowStyle = 'modal';
-PS_msg = msgbox(['Mean PS = ' num2str(mean(PS_fit_1,2)*1e4) '(\pm ' num2str(1e4*1.96*std(PS_fit_1,0)) ') x 10^{-4} per min'], 'Single PS sim', CreateStruct);
+PS_msg = msgbox(['Mean PS = ' num2str(mean(PS_fit_1,2)*1e4) '(\pm ' num2str(1e4*std(PS_fit_1,0)) ') x 10^{-4} per min, mean v_p = '...
+    num2str(mean(vP_fit_1,2)*1e3) '(\pm ' num2str(1e3*std(vP_fit_1,0)) ')'], 'Single PS sim', CreateStruct);
 
 function vP_fixed_single_Callback(hObject, eventdata, handles)
 vP_fixed_single = str2double(get(hObject,'String'));

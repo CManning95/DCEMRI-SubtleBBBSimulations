@@ -25,8 +25,10 @@ DCESeqParam.r2_per_mM_per_s = 0; % T2 relaxivity of contrast agent
 DCESeqParam.NPoints = round(DCESeqParam.t_acq_s/DCESeqParam.t_res_sample_s); % number of sample points
 
 DCESeqParam.FA_nom_deg = 15; % nominal flip angle
-DCESeqParam.FA_error = 1; % k value (flip angle error)
-DCESeqParam.FA_true_deg = DCESeqParam.FA_error*DCESeqParam.FA_nom_deg; % true flip angle
+DCESeqParam.blood_FA_error = 1; % k value (flip angle error) for blood
+DCESeqParam.tissue_FA_error = 1; % k value (flip angle error) for tissue
+DCESeqParam.blood_FA_true_deg = DCESeqParam.blood_FA_error*DCESeqParam.FA_nom_deg; % true flip angle
+DCESeqParam.tissue_FA_true_deg = DCESeqParam.tissue_FA_error*DCESeqParam.FA_nom_deg; % true flip angle
 
 %% Simulation parameters
 SimParam.N_repetitions = 1000; % repetitions at each PS or vP (to quantify effects of noise)
@@ -52,15 +54,19 @@ SimParam.Plot_extra_figs = 0; % plot figures of extra data for each simulation
 T1acqParam.T1_acq_method = 'VFA';  
 T1acqParam.isFit = [1 1 1]; % which acquisitions to fit
 T1acqParam.TR_s = [0.0054 0.0054 0.0054]; % repetition times for T1 acqusition
-T1acqParam.FA_nom_rads = [2 5 12] *2*(pi/360); % nominal flip angles for T1 acquisition
-T1acqParam.FA_true_rads = DCESeqParam.FA_error * T1acqParam.FA_nom_rads; % derive actual flip angles for T1 acquisition
+T1acqParam.blood_FA_nom_rads = [2 5 12]*2*(pi/360); % Nominal FA in rads
+T1acqParam.tissue_FA_nom_rads = T1acqParam.blood_FA_nom_rads; % Nominal FA for blood and tissue is equal without correction
+T1acqParam.blood_FA_true_rads = DCESeqParam.blood_FA_error * T1acqParam.blood_FA_nom_rads; % derive actual flip angles for T1 acquisition
+T1acqParam.tissue_FA_true_rads = DCESeqParam.tissue_FA_error * T1acqParam.tissue_FA_nom_rads;
 T1acqParam.isIR = [0 0 0]; % indicates which are IR-SPGR
 T1acqParam.TI_s = [NaN NaN NaN]; % Inversion times for T1 acquisition (for HIFI)
 T1acqParam.PECentre = [NaN NaN NaN]; % indicates time of centre of k-space
 T1acqParam.NReadout = [160 160 160]; % number of readout pulses (Siemens - number of slices)
 T1acqParam.NTry = 1; % fitting attempts
 T1acqParam.T1_SNR = 318;
-T1acqParam.FA_error_meas = DCESeqParam.FA_error;
-DCESeqParam.FA_meas_deg = DCESeqParam.FA_nom_deg;
+T1acqParam.blood_FA_error_meas = DCESeqParam.blood_FA_error;
+T1acqParam.tissue_FA_error_meas = DCESeqParam.tissue_FA_error;
+DCESeqParam.blood_FA_meas_deg = DCESeqParam.FA_nom_deg;
+DCESeqParam.tissue_FA_meas_deg = DCESeqParam.FA_nom_deg;
 
 end

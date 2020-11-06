@@ -27,7 +27,11 @@ kbe_ranges = [1.375 2.75 5.5];
 acqParam.T1_SNR = 318;
 for m = 1:N_PS
     for n = 1:SimParam.N_repetitions
+        T1acqParam.FA_true_rads = T1acqParam.blood_FA_true_rads;  % Seperate FA_true and FA_nom for blood and tissue
+        T1acqParam.FA_nom_rads = T1acqParam.blood_FA_nom_rads;
         [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+        T1acqParam.FA_true_rads = T1acqParam.tissue_FA_true_rads; % Seperate FA_true and FA_nom for blood and tissue
+        T1acqParam.FA_nom_rads = T1acqParam.tissue_FA_nom_rads;
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
@@ -55,18 +59,22 @@ end
         vP_means_H2O_fast(:,i) = mean(vP_fit_2S1X_fast,1)'; % add mean for each PS for 2S1X
         vP_devs_H2O_fast(:,i) = std(vP_fit_2S1X_fast,0,1)'; % add standard deviation for 2S1X
     end
-
+    
     %% Sim water exchange with Patlak fitting (fast injection, SXL fit)
- SimParam.SXLfit = 1; % fit enhancements according to SXL method
- 
- acqParam.T1_SNR = 318;
-for m = 1:N_PS
-    for n = 1:SimParam.N_repetitions
-        [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
-        [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
+    SimParam.SXLfit = 1; % fit enhancements according to SXL method
+    
+    acqParam.T1_SNR = 318;
+    for m = 1:N_PS
+        for n = 1:SimParam.N_repetitions
+            T1acqParam.FA_true_rads = T1acqParam.blood_FA_true_rads;  % Seperate FA_true and FA_nom for blood and tissue
+            T1acqParam.FA_nom_rads = T1acqParam.blood_FA_nom_rads;
+            [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+            T1acqParam.FA_true_rads = T1acqParam.tissue_FA_true_rads; % Seperate FA_true and FA_nom for blood and tissue
+            T1acqParam.FA_nom_rads = T1acqParam.tissue_FA_nom_rads;
+            [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
+        end
     end
-end
-  
+    
     for i = 1:size(kbe_ranges,2);
         PhysParam.kbe_perS = kbe_ranges(i);
         for i_PS = 1:N_PS
@@ -102,13 +110,17 @@ end
     SimParam.InputAIFDCENFrames = 32; % number of time points
     
     acqParam.T1_SNR = 318;
-for m = 1:N_PS
-    for n = 1:SimParam.N_repetitions
-        [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
-        [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
+    for m = 1:N_PS
+        for n = 1:SimParam.N_repetitions
+            T1acqParam.FA_true_rads = T1acqParam.blood_FA_true_rads;  % Seperate FA_true and FA_nom for blood and tissue
+            T1acqParam.FA_nom_rads = T1acqParam.blood_FA_nom_rads;
+            [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+            T1acqParam.FA_true_rads = T1acqParam.tissue_FA_true_rads; % Seperate FA_true and FA_nom for blood and tissue
+            T1acqParam.FA_nom_rads = T1acqParam.tissue_FA_nom_rads;
+            [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
+        end
     end
-end
-
+    
     for i = 1:size(kbe_ranges,2);
         PhysParam.kbe_perS = kbe_ranges(i);
         for i_PS = 1:N_PS
@@ -136,14 +148,18 @@ end
     %% Sim water exchange (slow injection, SXL fit)
     SimParam.SXLfit = 1;
     
-     acqParam.T1_SNR = 318;
-for m = 1:N_PS
-    for n = 1:SimParam.N_repetitions
-        [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
-        [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
+    acqParam.T1_SNR = 318;
+    for m = 1:N_PS
+        for n = 1:SimParam.N_repetitions
+            T1acqParam.FA_true_rads = T1acqParam.blood_FA_true_rads;  % Seperate FA_true and FA_nom for blood and tissue
+            T1acqParam.FA_nom_rads = T1acqParam.blood_FA_nom_rads;
+            [T1_blood_meas_s(n,1),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+            T1acqParam.FA_true_rads = T1acqParam.tissue_FA_true_rads; % Seperate FA_true and FA_nom for blood and tissue
+            T1acqParam.FA_nom_rads = T1acqParam.tissue_FA_nom_rads;
+            [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
+        end
     end
-end
-
+    
     for i = 1:size(kbe_ranges,2);
         PhysParam.kbe_perS = kbe_ranges(i);
         for i_PS = 1:N_PS
@@ -178,10 +194,10 @@ end
     PS_devs_H2O_SXL = PS_devs_H2O_SXL * 1e4;
     PS_devs_H2O_slow = PS_devs_H2O_slow * 1e4;
     PS_devs_H2O_slow_SXL = PS_devs_H2O_slow_SXL * 1e4;
-%     save('PS_means_H2O','PS_means_H2O_fast','PS_means_H2O_SXL',...
-%         'PS_means_H2O_slow','PS_means_H2O_slow_SXL');
-%     save('PS_devs_H2O','PS_devs_H2O_fast','PS_devs_H2O_SXL',...
-%         'PS_devs_H2O_slow','PS_devs_H2O_slow_SXL');
+    save('PS_means_H2O','PS_means_H2O_fast','PS_means_H2O_SXL',...
+        'PS_means_H2O_slow','PS_means_H2O_slow_SXL');
+    save('PS_devs_H2O','PS_devs_H2O_fast','PS_devs_H2O_SXL',...
+        'PS_devs_H2O_slow','PS_devs_H2O_slow_SXL');
     
     vP_range = vP_range * 1e3;
     vP_means_H2O_fast = vP_means_H2O_fast * 1e3;
@@ -192,134 +208,117 @@ end
     vP_devs_H2O_SXL = vP_devs_H2O_SXL * 1e3;
     vP_devs_H2O_slow = vP_devs_H2O_slow * 1e3;
     vP_devs_H2O_slow_SXL = vP_devs_H2O_slow_SXL * 1e3;
-%     save('vP_means_H2O','vP_means_H2O_fast','vP_means_H2O_SXL',...
-%         'vP_means_H2O_slow','vP_means_H2O_slow_SXL');
-%     save('vP_devs_H2O','vP_devs_H2O_fast','vP_devs_H2O_SXL',...
-%        'vP_devs_H2O_slow','vP_devs_H2O_slow_SXL');
+    save('vP_means_H2O','vP_means_H2O_fast','vP_means_H2O_SXL',...
+        'vP_means_H2O_slow','vP_means_H2O_slow_SXL');
+    save('vP_devs_H2O','vP_devs_H2O_fast','vP_devs_H2O_SXL',...
+       'vP_devs_H2O_slow','vP_devs_H2O_slow_SXL');
 
 Colour1  = [0 0.447 0.741 0.5];
 Colour2 = [0.85 0.325 0.098 0.5];
 Colour3 = [0.929 0.694 0.125 0.5];
 
 %% Plot figures        
-figure(2)
+figure(1)
 
 subplot(2,4,1)
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(PS_range, PS_means_H2O_fast(:,1) - PS_range, 1*PS_devs_H2O_fast(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(PS_range + 0.06, PS_means_H2O_fast(:,2) - PS_range, 1*PS_devs_H2O_fast(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(PS_range + 0.12, PS_means_H2O_fast(:,3) - PS_range, 1*PS_devs_H2O_fast(:,3),'LineWidth',1.3,'Color',Colour3);
-ylabel('fitted PS error (x10^{-4} min^{-1} )');
-title('Bolus (FXL fitting)');
+errorbar(PS_range, PS_means_H2O_fast(:,1) - PS_range, 1*PS_devs_H2O_fast(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(PS_range + 0.06, PS_means_H2O_fast(:,2) - PS_range, 1*PS_devs_H2O_fast(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(PS_range + 0.12, PS_means_H2O_fast(:,3) - PS_range, 1*PS_devs_H2O_fast(:,3),'LineWidth',1.1,'Color',Colour3);
+ylabel('fitted {\itPS} error (x10^{-4} min^{-1} )','FontSize',8);
+xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
+title('Bolus (FXL fitting)','FontSize',8);
 xlim([0 max(PS_range)+0.12]);
 ylim([-5 5]);
-legend({'k_{be} = 1.375 s^{-1}','k_{be} = 2.75 s^{-1}','k_{be} = 5.5 s^{-1}'},'Location','best')
+legend({'k_{be} = 1.375 s^{-1}','k_{be} = 2.75 s^{-1}','k_{be} = 5.5 s^{-1}'},'Location','best','FontSize',6)
 legend('boxoff')
-
-ax = gca;
-ax.FontSize = 9;
 
 subplot(2,4,3)
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(PS_range, PS_means_H2O_SXL(:,1) - PS_range, 1*PS_devs_H2O_SXL(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(PS_range + 0.06, PS_means_H2O_SXL(:,2) - PS_range, 1*PS_devs_H2O_SXL(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(PS_range + 0.12, PS_means_H2O_SXL(:,3) - PS_range, 1*PS_devs_H2O_SXL(:,3),'LineWidth',1.3,'Color',Colour3);
-title('Bolus (SXL fitting)');
+errorbar(PS_range, PS_means_H2O_SXL(:,1) - PS_range, 1*PS_devs_H2O_SXL(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(PS_range + 0.06, PS_means_H2O_SXL(:,2) - PS_range, 1*PS_devs_H2O_SXL(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(PS_range + 0.12, PS_means_H2O_SXL(:,3) - PS_range, 1*PS_devs_H2O_SXL(:,3),'LineWidth',1.1,'Color',Colour3);
+title('Bolus (SXL fitting)','FontSize',8);
 xlim([0 max(PS_range)+0.12]);
 ylim([-2 2]);
-
-ax = gca;
-ax.FontSize = 9;
+xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 
 subplot(2,4,2)
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(PS_range, PS_means_H2O_slow(:,1) - PS_range, 1*PS_devs_H2O_slow(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(PS_range + 0.06, PS_means_H2O_slow(:,2) - PS_range, 1*PS_devs_H2O_slow(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(PS_range + 0.12, PS_means_H2O_slow(:,3) - PS_range, 1*PS_devs_H2O_slow(:,3),'LineWidth',1.3,'Color',Colour3);
-title('Slow (FXL fitting)');
+errorbar(PS_range, PS_means_H2O_slow(:,1) - PS_range, 1*PS_devs_H2O_slow(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(PS_range + 0.06, PS_means_H2O_slow(:,2) - PS_range, 1*PS_devs_H2O_slow(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(PS_range + 0.12, PS_means_H2O_slow(:,3) - PS_range, 1*PS_devs_H2O_slow(:,3),'LineWidth',1.1,'Color',Colour3);
+title('Slow (FXL fitting)','FontSize',8);
+xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 xlim([0 max(PS_range)+0.12]);
 ylim([-2 2]);
-
-ax = gca;
-ax.FontSize = 9;
 
 subplot(2,4,4)
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(PS_range, PS_means_H2O_slow_SXL(:,1) - PS_range, 1*PS_devs_H2O_slow_SXL(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(PS_range + 0.06, PS_means_H2O_slow_SXL(:,2) - PS_range, 1*PS_devs_H2O_slow_SXL(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(PS_range + 0.12, PS_means_H2O_slow_SXL(:,3) - PS_range, 1*PS_devs_H2O_slow_SXL(:,3),'LineWidth',1.3,'Color',Colour3);
-title('Slow (SXL fitting)');
+errorbar(PS_range, PS_means_H2O_slow_SXL(:,1) - PS_range, 1*PS_devs_H2O_slow_SXL(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(PS_range + 0.06, PS_means_H2O_slow_SXL(:,2) - PS_range, 1*PS_devs_H2O_slow_SXL(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(PS_range + 0.12, PS_means_H2O_slow_SXL(:,3) - PS_range, 1*PS_devs_H2O_slow_SXL(:,3),'LineWidth',1.1,'Color',Colour3);
+title('Slow (SXL fitting)','FontSize',8);
+xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 xlim([0 max(PS_range)+0.12]);
 ylim([-2 2]);
-
-ax = gca;
-ax.FontSize = 9;
 
 subplot(2,4,5)
 
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(vP_range, vP_means_H2O_fast(:,1) - vP_range, 1*vP_devs_H2O_fast(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(vP_range + 0.13, vP_means_H2O_fast(:,2) - vP_range, 1*vP_devs_H2O_fast(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(vP_range + 0.26, vP_means_H2O_fast(:,3) - vP_range, 1*vP_devs_H2O_fast(:,3),'LineWidth',1.3,'Color',Colour3);
-xlabel(['True v_p (x10^{-3})']);
-ylabel('fitted v_p error (x10^{-3})');
+errorbar(vP_range, vP_means_H2O_fast(:,1) - vP_range, 1*vP_devs_H2O_fast(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(vP_range + 0.13, vP_means_H2O_fast(:,2) - vP_range, 1*vP_devs_H2O_fast(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(vP_range + 0.26, vP_means_H2O_fast(:,3) - vP_range, 1*vP_devs_H2O_fast(:,3),'LineWidth',1.1,'Color',Colour3);
+xlabel('True {\itv_p} (x10^{-3})','FontSize',8);
+ylabel('fitted {\itv_p} error (x10^{-3})','FontSize',8);
 xlim([min(vP_range) max(vP_range)+0.26]);
-ylim([-10 10]);
-
-ax = gca;
-ax.FontSize = 9;
+ylim([-15 5]);
 
 subplot(2,4,7)
 
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(vP_range, vP_means_H2O_SXL(:,1) - vP_range, 1*vP_devs_H2O_SXL(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(vP_range + 0.13, vP_means_H2O_SXL(:,2) - vP_range, 1*vP_devs_H2O_SXL(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(vP_range + 0.26, vP_means_H2O_SXL(:,3) - vP_range, 1*vP_devs_H2O_SXL(:,3),'LineWidth',1.3,'Color',Colour3);
+errorbar(vP_range, vP_means_H2O_SXL(:,1) - vP_range, 1*vP_devs_H2O_SXL(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(vP_range + 0.13, vP_means_H2O_SXL(:,2) - vP_range, 1*vP_devs_H2O_SXL(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(vP_range + 0.26, vP_means_H2O_SXL(:,3) - vP_range, 1*vP_devs_H2O_SXL(:,3),'LineWidth',1.1,'Color',Colour3);
 xlim([min(vP_range) max(vP_range)+0.26]);
-xlabel(['True v_p (x10^{-3})']);
+xlabel('True {\itv_p} (x10^{-3})','FontSize',8);
 ylim([-5 5]);
-
-ax = gca;
-ax.FontSize = 9;
 
 subplot(2,4,6)
 
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(vP_range, vP_means_H2O_slow(:,1) - vP_range, 1*vP_devs_H2O_slow(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(vP_range + 0.13, vP_means_H2O_slow(:,2) - vP_range, 1*vP_devs_H2O_slow(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(vP_range + 0.26, vP_means_H2O_slow(:,3) - vP_range, 1*vP_devs_H2O_slow(:,3),'LineWidth',1.3,'Color',Colour3);
+errorbar(vP_range, vP_means_H2O_slow(:,1) - vP_range, 1*vP_devs_H2O_slow(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(vP_range + 0.13, vP_means_H2O_slow(:,2) - vP_range, 1*vP_devs_H2O_slow(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(vP_range + 0.26, vP_means_H2O_slow(:,3) - vP_range, 1*vP_devs_H2O_slow(:,3),'LineWidth',1.1,'Color',Colour3);
 xlim([min(vP_range) max(vP_range)+0.26]);
-xlabel(['True v_p (x10^{-3})']);
+xlabel('True {\itv_p} (x10^{-3})','FontSize',8);
 ylim([-5 5]);
-
-ax = gca;
-ax.FontSize = 9;
 
 subplot(2,4,8)
 
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(vP_range, vP_means_H2O_slow_SXL(:,1) - vP_range, 1*vP_devs_H2O_slow_SXL(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(vP_range + 0.13, vP_means_H2O_slow_SXL(:,2) - vP_range, 1*vP_devs_H2O_slow_SXL(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(vP_range + 0.26, vP_means_H2O_slow_SXL(:,3) - vP_range, 1*vP_devs_H2O_slow_SXL(:,3),'LineWidth',1.3,'Color',Colour3);
+errorbar(vP_range, vP_means_H2O_slow_SXL(:,1) - vP_range, 1*vP_devs_H2O_slow_SXL(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(vP_range + 0.13, vP_means_H2O_slow_SXL(:,2) - vP_range, 1*vP_devs_H2O_slow_SXL(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(vP_range + 0.26, vP_means_H2O_slow_SXL(:,3) - vP_range, 1*vP_devs_H2O_slow_SXL(:,3),'LineWidth',1.1,'Color',Colour3);
 xlim([min(vP_range) max(vP_range)+0.26]);
-xlabel(['True v_p (x10^{-3})']);
+xlabel('True {\itv_p} (x10^{-3})','FontSize',8);
 ylim([-5 5]);
 
-ax = gca;
-ax.FontSize = 9;
-set(gcf, 'units', 'centimeters','Position', [5 5 28 15]);
+set(gcf, 'units', 'centimeters','Position', [5 5 17.56 10.54]);
 
-annotation(figure(2),'textbox',[0.084 0.935 0.05 0.045],'String','a. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(2),'textbox',[0.288 0.935 0.06 0.045],'String','b. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(2),'textbox',[0.492 0.935 0.06 0.045],'String','c. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(2),'textbox',[0.696 0.935 0.06 0.045],'String','d. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(2),'textbox',[0.084 0.460 0.06 0.045],'String','a. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(2),'textbox',[0.288 0.460 0.06 0.045],'String','b. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(2),'textbox',[0.492 0.460 0.06 0.045],'String','c. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(2),'textbox',[0.696 0.460 0.06 0.045],'String','d. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-set(gcf, 'units', 'centimeters','PaperPosition', [0 0 25 15]);    % can be bigger than screen 
-print(gcf, 'H2O_figure.png', '-dpng', '-r300' );   %save file as PNG w/ 300dpi
+annotation(figure(1),'textbox',[0.072 0.948 0.05 0.045],'String','(A)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.279 0.948 0.06 0.045],'String','(B)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.485 0.948 0.06 0.045],'String','(C)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.691 0.948 0.06 0.045],'String','(D)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.072 0.476 0.06 0.045],'String','(E)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.279 0.476 0.06 0.045],'String','(F)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.485 0.476 0.06 0.045],'String','(G)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.691 0.476 0.06 0.045],'String','(H)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+
+set(gcf, 'units', 'centimeters','PaperPosition', [0 0 17.56 10.54]);    % can be bigger than screen
+print(gcf, 'Figure_2.png', '-dpng','-r1200');
+print(gcf, 'Figure_2.eps', '-depsc', '-r1200' );   %save file as eps w/ 1200dpi

@@ -24,7 +24,11 @@ Delay_ranges = [0 4 8 12]; % Injection delay ranges
 acqParam.T1_SNR = 318;
 for m = 1:N_PS
     for n = 1:SimParam.N_repetitions
+        T1acqParam.FA_true_rads = T1acqParam.blood_FA_true_rads;  % Seperate FA_true and FA_nom for blood and tissue
+        T1acqParam.FA_nom_rads = T1acqParam.blood_FA_nom_rads;
         [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+        T1acqParam.FA_true_rads = T1acqParam.tissue_FA_true_rads; % Seperate FA_true and FA_nom for blood and tissue
+        T1acqParam.FA_nom_rads = T1acqParam.tissue_FA_nom_rads;
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
@@ -63,16 +67,20 @@ end
  SimParam.InputAIFDCENFrames = 32; % number of time points
  
  % T1 acquisition
-acqParam.T1_SNR = 318;
-for m = 1:N_PS
-    for n = 1:SimParam.N_repetitions
-        [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
-        [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
-    end
-end
-PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
-
-   for i = 1:size(Delay_ranges,2);
+ acqParam.T1_SNR = 318;
+ for m = 1:N_PS
+     for n = 1:SimParam.N_repetitions
+         T1acqParam.FA_true_rads = T1acqParam.blood_FA_true_rads;  % Seperate FA_true and FA_nom for blood and tissue
+         T1acqParam.FA_nom_rads = T1acqParam.blood_FA_nom_rads;
+         [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+         T1acqParam.FA_true_rads = T1acqParam.tissue_FA_true_rads; % Seperate FA_true and FA_nom for blood and tissue
+         T1acqParam.FA_nom_rads = T1acqParam.tissue_FA_nom_rads;
+         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
+     end
+ end
+ PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
+ 
+ for i = 1:size(Delay_ranges,2);
       SimParam.t_start_s = Delay_ranges(i);
       for i_PS = 1:N_PS
           PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_PS);
@@ -83,16 +91,16 @@ PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
       end
       for i_vP = 1:N_vP
           PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_vP);
-         PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
-         PhysParam.PS = PS_fixed(1);
-         PhysParam.vP = vP_range(i_vP);
-         [vP_fit_jitter_slow(:,i_vP),temp] = master_single_sim(PhysParam,DCESeqParam,SimParam);
-     end
-      PS_means_jitter_slow(:,i) = mean(PS_fit_jitter_slow,1)'; % mean for each PS 
+          PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
+          PhysParam.PS = PS_fixed(1);
+          PhysParam.vP = vP_range(i_vP);
+          [vP_fit_jitter_slow(:,i_vP),temp] = master_single_sim(PhysParam,DCESeqParam,SimParam);
+      end
+      PS_means_jitter_slow(:,i) = mean(PS_fit_jitter_slow,1)'; % mean for each PS
       PS_devs_jitter_slow(:,i) = std(PS_fit_jitter_slow,0,1)'; % standard deviation for each PS
       vP_means_jitter_slow(:,i) = mean(vP_fit_jitter_slow,1)'; % mean for each vP
       vP_devs_jitter_slow(:,i) = std(vP_fit_jitter_slow,0,1)'; % standard deviation for each vP
-   end
+ end
 
 %% convert units, save results
 PS_range = PS_range * 1e4;
@@ -121,66 +129,57 @@ Colour4 = [0.4940 0.1840 0.5560 0.5];
 figure()
 subplot(2,2,1)
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(PS_range, PS_means_jitter_fast(:,1) - PS_range, 1*PS_devs_jitter_fast(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(PS_range + 0.06, PS_means_jitter_fast(:,2) - PS_range, 1*PS_devs_jitter_fast(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(PS_range + 0.12, PS_means_jitter_fast(:,3) - PS_range, 1*PS_devs_jitter_fast(:,3),'LineWidth',1.3,'Color',Colour3); hold on;
-errorbar(PS_range + 0.18, PS_means_jitter_fast(:,4) - PS_range, 1*PS_devs_jitter_fast(:,4),'LineWidth',1.3,'Color',Colour4);
-ylabel('fitted PS error (x10^{-4} min^{-1} )');
-xlabel(['True PS (x10^{-4} min^{-1} )']);
-title('Bolus injection');
+errorbar(PS_range, PS_means_jitter_fast(:,1) - PS_range, 1*PS_devs_jitter_fast(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(PS_range + 0.06, PS_means_jitter_fast(:,2) - PS_range, 1*PS_devs_jitter_fast(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(PS_range + 0.12, PS_means_jitter_fast(:,3) - PS_range, 1*PS_devs_jitter_fast(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
+errorbar(PS_range + 0.18, PS_means_jitter_fast(:,4) - PS_range, 1*PS_devs_jitter_fast(:,4),'LineWidth',1.1,'Color',Colour4);
+ylabel('fitted {\itPS} error (x10^{-4} min^{-1} )','FontSize',8);
+xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
+title('Bolus injection','FontSize',8);
 xlim([0 max(PS_range)]);
 ylim([-2 2]);
-legend({'No delay','+ 4 s','+ 8 s','+ 12 s'},'Location','best')
+legend({'No delay','+ 4 s','+ 8 s','+ 12 s'},'Location','best','FontSize',6)
 legend('boxoff')
-
-ax = gca;
-ax.FontSize = 9;
 
 subplot(2,2,2)
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(PS_range, PS_means_jitter_slow(:,1) - PS_range, 1*PS_devs_jitter_slow(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(PS_range + 0.06, PS_means_jitter_slow(:,2) - PS_range, 1*PS_devs_jitter_slow(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(PS_range + 0.12, PS_means_jitter_slow(:,3) - PS_range, 1*PS_devs_jitter_slow(:,3),'LineWidth',1.3,'Color',Colour3); hold on;
-errorbar(PS_range + 0.18, PS_means_jitter_slow(:,4) - PS_range, 1*PS_devs_jitter_slow(:,4),'LineWidth',1.3,'Color',Colour4);
+errorbar(PS_range, PS_means_jitter_slow(:,1) - PS_range, 1*PS_devs_jitter_slow(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(PS_range + 0.06, PS_means_jitter_slow(:,2) - PS_range, 1*PS_devs_jitter_slow(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(PS_range + 0.12, PS_means_jitter_slow(:,3) - PS_range, 1*PS_devs_jitter_slow(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
+errorbar(PS_range + 0.18, PS_means_jitter_slow(:,4) - PS_range, 1*PS_devs_jitter_slow(:,4),'LineWidth',1.1,'Color',Colour4);
 xlim([0 max(PS_range)]);
-title('Slow injection');
-xlabel(['True PS (x10^{-4} min^{-1} )']);
+title('Slow injection','FontSize',8);
+xlabel(['True {\itPS} (x10^{-4} min^{-1} )'],'FontSize',8);
 ylim([-2 2]);
-
-ax = gca;
-ax.FontSize = 9;
 
 subplot(2,2,3)
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(vP_range, vP_means_jitter_fast(:,1) - vP_range, 1*vP_devs_jitter_fast(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(vP_range + 0.13, vP_means_jitter_fast(:,2) - vP_range, 1*vP_devs_jitter_fast(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(vP_range + 0.26, vP_means_jitter_fast(:,3) - vP_range, 1*vP_devs_jitter_fast(:,3),'LineWidth',1.3,'Color',Colour3); hold on;
-errorbar(vP_range + 0.39, vP_means_jitter_fast(:,4) - vP_range, 1*vP_devs_jitter_fast(:,4),'LineWidth',1.3,'Color',Colour4);
-ylabel('fitted v_p error (x10^{-3})');
-xlabel(['True v_p (x10^{-3})']);
+errorbar(vP_range, vP_means_jitter_fast(:,1) - vP_range, 1*vP_devs_jitter_fast(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(vP_range + 0.13, vP_means_jitter_fast(:,2) - vP_range, 1*vP_devs_jitter_fast(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(vP_range + 0.26, vP_means_jitter_fast(:,3) - vP_range, 1*vP_devs_jitter_fast(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
+errorbar(vP_range + 0.39, vP_means_jitter_fast(:,4) - vP_range, 1*vP_devs_jitter_fast(:,4),'LineWidth',1.1,'Color',Colour4);
+ylabel('fitted {\itv_p} error (x10^{-3})','FontSize',8);
+xlabel('True {\itv_p} (x10^{-3})','FontSize',8);
 xlim([min(vP_range) max(vP_range)+0.26]);
 ylim([-2 2]);
-
-ax = gca;
-ax.FontSize = 9;
 
 subplot(2,2,4)
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
 errorbar(vP_range, vP_means_jitter_slow(:,1) - vP_range, 1*vP_devs_jitter_slow(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(vP_range + 0.13, vP_means_jitter_slow(:,2) - vP_range, 1*vP_devs_jitter_slow(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(vP_range + 0.26, vP_means_jitter_slow(:,3) - vP_range, 1*vP_devs_jitter_slow(:,3),'LineWidth',1.3,'Color',Colour3); hold on;
-errorbar(vP_range + 0.39, vP_means_jitter_slow(:,4) - vP_range, 1*vP_devs_jitter_slow(:,4),'LineWidth',1.3,'Color',Colour4);
+errorbar(vP_range + 0.13, vP_means_jitter_slow(:,2) - vP_range, 1*vP_devs_jitter_slow(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(vP_range + 0.26, vP_means_jitter_slow(:,3) - vP_range, 1*vP_devs_jitter_slow(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
+errorbar(vP_range + 0.39, vP_means_jitter_slow(:,4) - vP_range, 1*vP_devs_jitter_slow(:,4),'LineWidth',1.1,'Color',Colour4);
 xlim([min(vP_range) max(vP_range)+0.26]);
-xlabel(['True v_p (x10^{-3})']);
+xlabel('True {\itv_p} (x10^{-3})','FontSize',8);
 ylim([-2 2]);
 
-ax = gca;
-ax.FontSize = 9;
+set(gcf, 'units', 'centimeters','Position', [5 5 8.67 10.54]);
 
-annotation(figure(1),'textbox',[0.064 0.935 0.07 0.045],'String','a. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.488 0.935 0.07 0.045],'String','b. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.064 0.460 0.07 0.045],'String','a. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.488 0.460 0.07 0.045],'String','b. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-set(gcf, 'units', 'centimeters','Position', [5 5 18 15]);
-set(gcf, 'units', 'centimeters','PaperPosition', [0 0 15 15]);    % can be bigger than screen 
-print(gcf, 'Jitter_figure.png', '-dpng', '-r300' );   %save file as PNG w/ 300dpi
+annotation(figure(1),'textbox',[0.015 0.955 0.07 0.045],'String','(A)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.445 0.955 0.07 0.045],'String','(B)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.015 0.480 0.07 0.045],'String','(C)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.445 0.480 0.07 0.045],'String','(D)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+
+set(gcf, 'units', 'centimeters','PaperPosition', [0 0 8.67 10.54]);    % can be bigger than screen
+print(gcf, 'Figure_4.png', '-dpng','-r1200');
+print(gcf, 'Figure_4.eps', '-depsc', '-r1200' );   %save file as eps w/ 1200dpi

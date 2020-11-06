@@ -25,11 +25,15 @@ Fp_ranges = [11 8.25 5.5]; % Plasma flow ranges
  
  % T1 acquisition
  acqParam.T1_SNR = 318;
-for m = 1:N_PS
-    for n = 1:SimParam.N_repetitions
-        [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
-        [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
-    end
+ for m = 1:N_PS
+     for n = 1:SimParam.N_repetitions
+         T1acqParam.FA_true_rads = T1acqParam.blood_FA_true_rads;  % Seperate FA_true and FA_nom for blood and tissue
+         T1acqParam.FA_nom_rads = T1acqParam.blood_FA_nom_rads;
+         [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+         T1acqParam.FA_true_rads = T1acqParam.tissue_FA_true_rads; % Seperate FA_true and FA_nom for blood and tissue
+         T1acqParam.FA_nom_rads = T1acqParam.tissue_FA_nom_rads;
+         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
+     end
 end
 
  for i = 1:size(Fp_ranges,2) % Generate variable flow data
@@ -64,7 +68,11 @@ end
 acqParam.T1_SNR = 318;
 for m = 1:N_PS
     for n = 1:SimParam.N_repetitions
+        T1acqParam.FA_true_rads = T1acqParam.blood_FA_true_rads;  % Seperate FA_true and FA_nom for blood and tissue
+        T1acqParam.FA_nom_rads = T1acqParam.blood_FA_nom_rads;
         [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+        T1acqParam.FA_true_rads = T1acqParam.tissue_FA_true_rads; % Seperate FA_true and FA_nom for blood and tissue
+        T1acqParam.FA_nom_rads = T1acqParam.tissue_FA_nom_rads;
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
@@ -106,16 +114,20 @@ end
 acqParam.T1_SNR = 318;  
 for m = 1:N_PS
     for n = 1:SimParam.N_repetitions
+        T1acqParam.FA_true_rads = T1acqParam.blood_FA_true_rads;  % Seperate FA_true and FA_nom for blood and tissue
+        T1acqParam.FA_nom_rads = T1acqParam.blood_FA_nom_rads;
         [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+        T1acqParam.FA_true_rads = T1acqParam.tissue_FA_true_rads; % Seperate FA_true and FA_nom for blood and tissue
+        T1acqParam.FA_nom_rads = T1acqParam.tissue_FA_nom_rads;
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
 
- for i = 1:size(Fp_ranges,2)
-     PhysParam.FP_mlPer100gPerMin = Fp_ranges(i);
-     for i_PS = 1:N_PS
-         PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_PS);
-         PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
+for i = 1:size(Fp_ranges,2)
+    PhysParam.FP_mlPer100gPerMin = Fp_ranges(i);
+    for i_PS = 1:N_PS
+        PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_PS);
+        PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
          PhysParam.vP = vP_fixed(1);
          PhysParam.PS_perMin = PS_range(i_PS);
          [temp, PS_fit_Fp_slow(:,i_PS)] = master_single_sim(PhysParam,DCESeqParam,SimParam);
@@ -134,19 +146,23 @@ end
      vP_means_Fp_slow(:,i) = mean(vP_fit_Fp_slow,1)'; % mean for each PS at high flow
      vP_devs_Fp_slow(:,i) = std(vP_fit_Fp_slow,0,1)'; % standard deviation for each PS at high flow
  end
-
-%% slow injection with exclusion
+ 
+ %% slow injection with exclusion
  SimParam.NIgnore = max(SimParam.baselineScans) + 3;
  
-   % T1 acquisition
-acqParam.T1_SNR = 318;
-for m = 1:N_PS
-    for n = 1:SimParam.N_repetitions
-        [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
-        [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
-    end
-end
-
+ % T1 acquisition
+ acqParam.T1_SNR = 318;
+ for m = 1:N_PS
+     for n = 1:SimParam.N_repetitions
+         T1acqParam.FA_true_rads = T1acqParam.blood_FA_true_rads;  % Seperate FA_true and FA_nom for blood and tissue
+         T1acqParam.FA_nom_rads = T1acqParam.blood_FA_nom_rads;
+         [T1_blood_meas_s(n,m),temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,T1acqParam,T1acqParam.T1_acq_method);
+         T1acqParam.FA_true_rads = T1acqParam.tissue_FA_true_rads; % Seperate FA_true and FA_nom for blood and tissue
+         T1acqParam.FA_nom_rads = T1acqParam.tissue_FA_nom_rads;
+         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
+     end
+ end
+ 
  for i = 1:size(Fp_ranges,2)
      PhysParam.FP_mlPer100gPerMin = Fp_ranges(i);
      for i_PS = 1:N_PS
@@ -205,121 +221,96 @@ Colour2 = [0.85 0.325 0.098 0.5];
 Colour3 = [0.929 0.694 0.125 0.5];
 
 subplot(2,4,1)
-
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(PS_range, PS_means_Fp_fast(:,1) - PS_range, 1*PS_devs_Fp_fast(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(PS_range + 0.06, PS_means_Fp_fast(:,2) - PS_range, 1*PS_devs_Fp_fast(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(PS_range + 0.12, PS_means_Fp_fast(:,3) - PS_range, 1*PS_devs_Fp_fast(:,3),'LineWidth',1.3,'Color',Colour3);
-ylabel('fitted PS error (x10^{-4} min^{-1} )');
-xlabel(['True PS (x10^{-4} min^{-1} )']);
-title('Bolus injection');
+errorbar(PS_range, PS_means_Fp_fast(:,1) - PS_range, 1*PS_devs_Fp_fast(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(PS_range + 0.06, PS_means_Fp_fast(:,2) - PS_range, 1*PS_devs_Fp_fast(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(PS_range + 0.12, PS_means_Fp_fast(:,3) - PS_range, 1*PS_devs_Fp_fast(:,3),'LineWidth',1.1,'Color',Colour3);
+ylabel('fitted {\itPS} error (x10^{-4} min^{-1} )','FontSize',8);
+xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
+title('Bolus injection','FontSize',8);
 xlim([0 max(PS_range)+0.12]);
 ylim([-2 2]);
-
-ax = gca;
-ax.FontSize = 9;
 
 subplot(2,4,3)
-
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(PS_range, PS_means_Fp_exclude(:,1) - PS_range, 1*PS_devs_Fp_exclude(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(PS_range + 0.06, PS_means_Fp_exclude(:,2) - PS_range, 1*PS_devs_Fp_exclude(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(PS_range + 0.12, PS_means_Fp_exclude(:,3) - PS_range, 1*PS_devs_Fp_exclude(:,3),'LineWidth',1.3,'Color',Colour3);
-title('Bolus (with exclusion)');
-xlabel(['True PS (x10^{-4} min^{-1} )']);
+errorbar(PS_range, PS_means_Fp_exclude(:,1) - PS_range, 1*PS_devs_Fp_exclude(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(PS_range + 0.06, PS_means_Fp_exclude(:,2) - PS_range, 1*PS_devs_Fp_exclude(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(PS_range + 0.12, PS_means_Fp_exclude(:,3) - PS_range, 1*PS_devs_Fp_exclude(:,3),'LineWidth',1.1,'Color',Colour3);
+title('Bolus (w/ exclusion)','FontSize',8);
+xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 xlim([0 max(PS_range)+0.12]);
 ylim([-2 2]);
-
-ax = gca;
-ax.FontSize = 9;
 
 subplot(2,4,2)
-
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(PS_range, PS_means_Fp_slow(:,1) - PS_range, 1*PS_devs_Fp_slow(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(PS_range + 0.06, PS_means_Fp_slow(:,2) - PS_range, 1*PS_devs_Fp_slow(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(PS_range + 0.12, PS_means_Fp_slow(:,3) - PS_range, 1*PS_devs_Fp_slow(:,3),'LineWidth',1.3,'Color',Colour3);
-title('Slow injection');
-xlabel(['True PS (x10^{-4} min^{-1} )']);
+errorbar(PS_range, PS_means_Fp_slow(:,1) - PS_range, 1*PS_devs_Fp_slow(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(PS_range + 0.06, PS_means_Fp_slow(:,2) - PS_range, 1*PS_devs_Fp_slow(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(PS_range + 0.12, PS_means_Fp_slow(:,3) - PS_range, 1*PS_devs_Fp_slow(:,3),'LineWidth',1.1,'Color',Colour3);
+title('Slow injection','FontSize',8);
+xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 xlim([0 max(PS_range)+0.12]);
 ylim([-2 2]);
-
-ax = gca;
-ax.FontSize = 9;
 
 subplot(2,4,4)
-
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(PS_range, PS_means_Fp_slow_exclude(:,1) - PS_range, 1*PS_devs_Fp_slow_exclude(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(PS_range + 0.06, PS_means_Fp_slow_exclude(:,2) - PS_range, 1*PS_devs_Fp_slow_exclude(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(PS_range + 0.12, PS_means_Fp_slow_exclude(:,3) - PS_range, 1*PS_devs_Fp_slow_exclude(:,3),'LineWidth',1.3,'Color',Colour3);
-title('Slow (with exclusion)');
-xlabel(['True PS (x10^{-4} min^{-1} )']);
+errorbar(PS_range, PS_means_Fp_slow_exclude(:,1) - PS_range, 1*PS_devs_Fp_slow_exclude(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(PS_range + 0.06, PS_means_Fp_slow_exclude(:,2) - PS_range, 1*PS_devs_Fp_slow_exclude(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(PS_range + 0.12, PS_means_Fp_slow_exclude(:,3) - PS_range, 1*PS_devs_Fp_slow_exclude(:,3),'LineWidth',1.1,'Color',Colour3);
+title('Slow (w/ exclusion)','FontSize',8);
+xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 xlim([0 max(PS_range)+0.12]);
 ylim([-2 2]);
-
-ax = gca;
-ax.FontSize = 9;
 
 subplot(2,4,5);
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True v_p','HandleVisibility','off'); hold on;
-errorbar(vP_range, vP_means_Fp_fast(:,1) - vP_range, 1*vP_devs_Fp_fast(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(vP_range + 0.13, vP_means_Fp_fast(:,2) - vP_range, 1*vP_devs_Fp_fast(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(vP_range + 0.26, vP_means_Fp_fast(:,3) - vP_range, 1*vP_devs_Fp_fast(:,3),'LineWidth',1.3,'Color',Colour3);
-ylabel('fitted v_p error (x10^{-3})');
-xlabel(['True v_p (x10^{-3})']);
+errorbar(vP_range, vP_means_Fp_fast(:,1) - vP_range, 1*vP_devs_Fp_fast(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(vP_range + 0.13, vP_means_Fp_fast(:,2) - vP_range, 1*vP_devs_Fp_fast(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(vP_range + 0.26, vP_means_Fp_fast(:,3) - vP_range, 1*vP_devs_Fp_fast(:,3),'LineWidth',1.1,'Color',Colour3);
+ylabel('fitted {\itv_p} error (x10^{-3})','FontSize',8);
+xlabel('True {\itv_p} (x10^{-3})','FontSize',8);
 xlim([min(vP_range) max(vP_range)+0.26]);
-ylim([-2 2]);
-legend({'F_p = 11 ml 100g^{-1}min^{-1}','F_p = 8.25 ml 100g^{-1}min^{-1}','F_p = 5.5 ml 100g^{-1}min^{-1}'},'Location','best')
+ylim([-5 5]);
+legend({'{\itF_p} = 11 ml 100g^{-1}min^{-1}','{\itF_p} = 8.25 ml 100g^{-1}min^{-1}','{\itF_p} = 5.5 ml 100g^{-1}min^{-1}'},'Location','best','FontSize',4.8)
 legend('boxoff')
-
-ax = gca;
-ax.FontSize = 9;
 
 subplot(2,4,7);
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True v_p','HandleVisibility','off'); hold on;
-errorbar(vP_range, vP_means_Fp_exclude(:,1) - vP_range, 1*vP_devs_Fp_exclude(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(vP_range + 0.13, vP_means_Fp_exclude(:,2) - vP_range, 1*vP_devs_Fp_exclude(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(vP_range + 0.26, vP_means_Fp_exclude(:,3) - vP_range, 1*vP_devs_Fp_exclude(:,3),'LineWidth',1.3,'Color',Colour3);
+errorbar(vP_range, vP_means_Fp_exclude(:,1) - vP_range, 1*vP_devs_Fp_exclude(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(vP_range + 0.13, vP_means_Fp_exclude(:,2) - vP_range, 1*vP_devs_Fp_exclude(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(vP_range + 0.26, vP_means_Fp_exclude(:,3) - vP_range, 1*vP_devs_Fp_exclude(:,3),'LineWidth',1.1,'Color',Colour3);
 xlim([min(vP_range) max(vP_range)+0.26]);
-ylim([-2 2]);
-xlabel(['True v_p (x10^{-3})']);
-
-ax = gca;
-ax.FontSize = 9;
+ylim([-5 5]);
+xlabel('True {\itv_p} (x10^{-3})','FontSize',8);
 
 subplot(2,4,6);
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True v_p','HandleVisibility','off'); hold on;
-errorbar(vP_range, vP_means_Fp_slow(:,1) - vP_range, 1*vP_devs_Fp_slow(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(vP_range + 0.13, vP_means_Fp_slow(:,2) - vP_range, 1*vP_devs_Fp_slow(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(vP_range + 0.26, vP_means_Fp_slow(:,3) - vP_range, 1*vP_devs_Fp_slow(:,3),'LineWidth',1.3,'Color',Colour3);
+errorbar(vP_range, vP_means_Fp_slow(:,1) - vP_range, 1*vP_devs_Fp_slow(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(vP_range + 0.13, vP_means_Fp_slow(:,2) - vP_range, 1*vP_devs_Fp_slow(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(vP_range + 0.26, vP_means_Fp_slow(:,3) - vP_range, 1*vP_devs_Fp_slow(:,3),'LineWidth',1.1,'Color',Colour3);
 xlim([min(vP_range) max(vP_range)+0.26]);
-ylim([-2 2]);
-xlabel(['True v_p (x10^{-3})']);
-
-ax = gca;
-ax.FontSize = 9;
+ylim([-5 5]);
+xlabel('True {\itv_p} (x10^{-3})','FontSize',8);
 
 subplot(2,4,8);
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True v_p','HandleVisibility','off'); hold on;
-errorbar(vP_range, vP_means_Fp_slow_exclude(:,1) - vP_range, 1*vP_devs_Fp_slow_exclude(:,1),'LineWidth',1.3,'Color',Colour1); hold on;
-errorbar(vP_range + 0.13, vP_means_Fp_slow_exclude(:,2) - vP_range, 1*vP_devs_Fp_slow_exclude(:,2),'LineWidth',1.3,'Color',Colour2); hold on;
-errorbar(vP_range + 0.26, vP_means_Fp_slow_exclude(:,3) - vP_range, 1*vP_devs_Fp_slow_exclude(:,3),'LineWidth',1.3,'Color',Colour3);
+errorbar(vP_range, vP_means_Fp_slow_exclude(:,1) - vP_range, 1*vP_devs_Fp_slow_exclude(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(vP_range + 0.13, vP_means_Fp_slow_exclude(:,2) - vP_range, 1*vP_devs_Fp_slow_exclude(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(vP_range + 0.26, vP_means_Fp_slow_exclude(:,3) - vP_range, 1*vP_devs_Fp_slow_exclude(:,3),'LineWidth',1.1,'Color',Colour3);
 xlim([min(vP_range) max(vP_range)+0.26]);
-ylim([-2 2]);
-xlabel(['True v_p (x10^{-3})']);
+ylim([-5 5]);
+xlabel('True {\itv_p} (x10^{-3})','FontSize',8);
 
-ax = gca;
-ax.FontSize = 9;
-set(gcf, 'units', 'centimeters','Position', [5 5 28 15]);
+set(gcf, 'units', 'centimeters','Position', [5 5 17.56 10.54]);
 
-annotation(figure(1),'textbox',[0.084 0.935 0.05 0.045],'String','a. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.288 0.935 0.06 0.045],'String','b. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.492 0.935 0.06 0.045],'String','c. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.696 0.935 0.06 0.045],'String','d. i','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.084 0.460 0.06 0.045],'String','a. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.288 0.460 0.06 0.045],'String','b. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.492 0.460 0.06 0.045],'String','c. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-annotation(figure(1),'textbox',[0.696 0.460 0.06 0.045],'String','d. ii','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',11);
-set(gcf, 'units', 'centimeters','PaperPosition', [0 0 25 15]);    % can be bigger than screen 
-print(gcf, 'Fp_figure.png', '-dpng', '-r300' );   %save file as PNG w/ 300dpi
+annotation(figure(1),'textbox',[0.072 0.948 0.05 0.045],'String','(A)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.279 0.948 0.06 0.045],'String','(B)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.485 0.948 0.06 0.045],'String','(C)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.691 0.948 0.06 0.045],'String','(D)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.072 0.476 0.06 0.045],'String','(E)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.279 0.476 0.06 0.045],'String','(F)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.485 0.476 0.06 0.045],'String','(G)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.691 0.476 0.06 0.045],'String','(H)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+
+set(gcf, 'units', 'centimeters','PaperPosition', [0 0 17.56 10.54]);    % can be bigger than screen
+print(gcf, 'Figure_3.png', '-dpng','-r1200');
+print(gcf, 'Figure_3.eps', '-depsc', '-r1200' );   %save file as eps w/ 1200dpi
