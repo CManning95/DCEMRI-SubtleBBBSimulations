@@ -20,7 +20,7 @@ N_PS = size(PS_range,1); %range sizes to test
 N_vP = size(vP_range,1); %range sizes to test
 Fp_ranges = [11 8.25 5.5]; % Plasma flow ranges
 
-%% Generate variable Fp PS graphs
+%% Sim with fast injection, no EEDP
  SimParam.InjectionRate = 'fast';
  
  % T1 acquisition
@@ -35,7 +35,7 @@ Fp_ranges = [11 8.25 5.5]; % Plasma flow ranges
          [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
      end
 end
-
+% loop through PS and vP values, simulate
  for i = 1:size(Fp_ranges,2) % Generate variable flow data
      PhysParam.FP_mlPer100gPerMin = Fp_ranges(i);
      for i_PS = 1:N_PS
@@ -53,14 +53,14 @@ end
          [vP_fit_Fp_fast(:,i_vP),temp] = master_single_sim(PhysParam,DCESeqParam,SimParam);
      end
 
-     PS_means_Fp_fast(:,i) = mean(PS_fit_Fp_fast,1)'; % mean for each PS - flow
-     PS_devs_Fp_fast(:,i) = std(PS_fit_Fp_fast,0,1)'; % standard deviation for each PS - flow
+     PS_means_Fp_fast(:,i) = mean(PS_fit_Fp_fast,1)'; % mean for each PS
+     PS_devs_Fp_fast(:,i) = std(PS_fit_Fp_fast,0,1)'; % standard deviation for each PS
      
-     vP_means_Fp_fast(:,i) = mean(vP_fit_Fp_fast,1)'; % mean for each vP - flow
-     vP_devs_Fp_fast(:,i) = std(vP_fit_Fp_fast,0,1)'; % standard deviation for each vP - flow
+     vP_means_Fp_fast(:,i) = mean(vP_fit_Fp_fast,1)'; % mean for each vP
+     vP_devs_Fp_fast(:,i) = std(vP_fit_Fp_fast,0,1)'; % standard deviation for each vP
  end
  
- %% Exclude
+ %% Sim with fast injection, EEDP
  SimParam.InjectionRate = 'fast';
  SimParam.NIgnore = max(SimParam.baselineScans) + 3;
 
@@ -76,7 +76,7 @@ for m = 1:N_PS
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
-
+% loop through PS and vP values, simulate
  for i = 1:size(Fp_ranges,2) % Generate variable flow data
      PhysParam.FP_mlPer100gPerMin = Fp_ranges(i);
      for i_PS = 1:N_PS
@@ -93,15 +93,15 @@ end
          PhysParam.vP = vP_range(i_vP);
          [vP_fit_Fp_exclude(:,i_vP),temp] = master_single_sim(PhysParam,DCESeqParam,SimParam);
      end
-
-     PS_means_Fp_exclude(:,i) = mean(PS_fit_Fp_exclude,1)'; % mean for each PS - flow
-     PS_devs_Fp_exclude(:,i) = std(PS_fit_Fp_exclude,0,1)'; % standard deviation for each PS - flow
+% loop through PS and vP values, simulate
+     PS_means_Fp_exclude(:,i) = mean(PS_fit_Fp_exclude,1)'; % mean for each PS
+     PS_devs_Fp_exclude(:,i) = std(PS_fit_Fp_exclude,0,1)'; % standard deviation for each PS
      
-     vP_means_Fp_exclude(:,i) = mean(vP_fit_Fp_exclude,1)'; % mean for each vP - flow
-     vP_devs_Fp_exclude(:,i) = std(vP_fit_Fp_exclude,0,1)'; % standard deviation for each vP - flow
+     vP_means_Fp_exclude(:,i) = mean(vP_fit_Fp_exclude,1)'; % mean for each vP
+     vP_devs_Fp_exclude(:,i) = std(vP_fit_Fp_exclude,0,1)'; % standard deviation for each vP
  end 
  
- %% slow injection
+ %% Sim with slow injection, no EEDP
  SimParam.InjectionRate = 'slow';
  SimParam.t_start_s = 0;
  SimParam.NIgnore = max(SimParam.baselineScans);
@@ -122,7 +122,7 @@ for m = 1:N_PS
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
-
+% loop through PS and vP values, simulate
 for i = 1:size(Fp_ranges,2)
     PhysParam.FP_mlPer100gPerMin = Fp_ranges(i);
     for i_PS = 1:N_PS
@@ -140,14 +140,14 @@ for i = 1:size(Fp_ranges,2)
          [vP_fit_Fp_slow(:,i_vP),temp] = master_single_sim(PhysParam,DCESeqParam,SimParam);
      end
 
-     PS_means_Fp_slow(:,i) = mean(PS_fit_Fp_slow,1)'; % mean for each PS at high flow
-     PS_devs_Fp_slow(:,i) = std(PS_fit_Fp_slow,0,1)'; % standard deviation for each PS at high flow
+     PS_means_Fp_slow(:,i) = mean(PS_fit_Fp_slow,1)'; % mean for each PS
+     PS_devs_Fp_slow(:,i) = std(PS_fit_Fp_slow,0,1)'; % standard deviation for each PS
      
-     vP_means_Fp_slow(:,i) = mean(vP_fit_Fp_slow,1)'; % mean for each PS at high flow
-     vP_devs_Fp_slow(:,i) = std(vP_fit_Fp_slow,0,1)'; % standard deviation for each PS at high flow
+     vP_means_Fp_slow(:,i) = mean(vP_fit_Fp_slow,1)'; % mean for each vP
+     vP_devs_Fp_slow(:,i) = std(vP_fit_Fp_slow,0,1)'; % standard deviation for each vP
  end
  
- %% slow injection with exclusion
+%% Sim with slow injection, EEDP
  SimParam.NIgnore = max(SimParam.baselineScans) + 3;
  
  % T1 acquisition
@@ -162,7 +162,7 @@ for i = 1:size(Fp_ranges,2)
          [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
      end
  end
- 
+ % loop through PS and vP values, simulate
  for i = 1:size(Fp_ranges,2)
      PhysParam.FP_mlPer100gPerMin = Fp_ranges(i);
      for i_PS = 1:N_PS
@@ -180,11 +180,11 @@ for i = 1:size(Fp_ranges,2)
          [vP_fit_Fp_slow_exclude(:,i_vP),temp] = master_single_sim(PhysParam,DCESeqParam,SimParam);
      end
 
-     PS_means_Fp_slow_exclude(:,i) = mean(PS_fit_Fp_slow_exclude,1)'; % mean for each PS at high flow
-     PS_devs_Fp_slow_exclude(:,i) = std(PS_fit_Fp_slow_exclude,0,1)'; % standard deviation for each PS at high flow
+     PS_means_Fp_slow_exclude(:,i) = mean(PS_fit_Fp_slow_exclude,1)'; % mean for each PS
+     PS_devs_Fp_slow_exclude(:,i) = std(PS_fit_Fp_slow_exclude,0,1)'; % standard deviation for each PS 
      
-     vP_means_Fp_slow_exclude(:,i) = mean(vP_fit_Fp_slow_exclude,1)'; % mean for each PS at high flow
-     vP_devs_Fp_slow_exclude(:,i) = std(vP_fit_Fp_slow_exclude,0,1)'; % standard deviation for each PS at high flow
+     vP_means_Fp_slow_exclude(:,i) = mean(vP_fit_Fp_slow_exclude,1)'; % mean for each vP
+     vP_devs_Fp_slow_exclude(:,i) = std(vP_fit_Fp_slow_exclude,0,1)'; % standard deviation for each vP
  end
 %% Generate graphs
 

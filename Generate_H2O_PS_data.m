@@ -11,8 +11,7 @@ addpath('DCE_Simulation_Functions');
 % Select default parameters
 [PhysParam,DCESeqParam,SimParam,T1acqParam] = load_default_params;
  
-%%% Generate variable flow/injection delay sims
-% ranges of PS and vP to test
+% ranges of PS, vP, kbe to test
 PS_range = linspace(SimParam.min_PS,SimParam.max_PS,10)'+1e-8;
 vP_fixed = PhysParam.vP_fixed;
 vP_range = linspace(SimParam.min_vP,SimParam.max_vP,10)';
@@ -35,7 +34,7 @@ for m = 1:N_PS
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
-
+% loop through PS and vP values, simulate
     for i = 1:size(kbe_ranges,2);
         PhysParam.kbe_perS = kbe_ranges(i);
         for i_PS = 1:N_PS
@@ -53,11 +52,11 @@ end
             [vP_fit_2S1X_fast(:,i_vP),temp] = master_single_sim(PhysParam,DCESeqParam,SimParam);
         end
         
-        PS_means_H2O_fast(:,i) = mean(PS_fit_2S1X_fast,1)'; % add mean for each PS for 2S1X
-        PS_devs_H2O_fast(:,i) = std(PS_fit_2S1X_fast,0,1)'; % add standard deviation for 2S1X
+        PS_means_H2O_fast(:,i) = mean(PS_fit_2S1X_fast,1)'; % add mean for each PS 
+        PS_devs_H2O_fast(:,i) = std(PS_fit_2S1X_fast,0,1)'; % add standard deviation
         
-        vP_means_H2O_fast(:,i) = mean(vP_fit_2S1X_fast,1)'; % add mean for each PS for 2S1X
-        vP_devs_H2O_fast(:,i) = std(vP_fit_2S1X_fast,0,1)'; % add standard deviation for 2S1X
+        vP_means_H2O_fast(:,i) = mean(vP_fit_2S1X_fast,1)'; % add mean for each vP
+        vP_devs_H2O_fast(:,i) = std(vP_fit_2S1X_fast,0,1)'; % add standard deviation
     end
     
     %% Sim water exchange with Patlak fitting (fast injection, SXL fit)
@@ -74,7 +73,7 @@ end
             [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
         end
     end
-    
+ % loop through PS and vP values, simulate   
     for i = 1:size(kbe_ranges,2);
         PhysParam.kbe_perS = kbe_ranges(i);
         for i_PS = 1:N_PS
@@ -91,11 +90,11 @@ end
             PhysParam.vP = vP_range(i_vP);
             [vP_fit_2S1X_SXL(:,i_vP),temp] = master_single_sim(PhysParam,DCESeqParam,SimParam);
         end
-        PS_means_H2O_SXL(:,i) = mean(PS_fit_2S1X_SXL,1)'; % add mean for each PS for 2S1X
-        PS_devs_H2O_SXL(:,i) = std(PS_fit_2S1X_SXL,0,1)'; % add standard deviation for 2S1X
+        PS_means_H2O_SXL(:,i) = mean(PS_fit_2S1X_SXL,1)'; % add mean for each PS
+        PS_devs_H2O_SXL(:,i) = std(PS_fit_2S1X_SXL,0,1)'; % add standard deviation
         
-        vP_means_H2O_SXL(:,i) = mean(vP_fit_2S1X_SXL,1)'; % add mean for each PS for 2S1X
-        vP_devs_H2O_SXL(:,i) = std(vP_fit_2S1X_SXL,0,1)'; % add standard deviation for 2S1X
+        vP_means_H2O_SXL(:,i) = mean(vP_fit_2S1X_SXL,1)'; % add mean for each vP
+        vP_devs_H2O_SXL(:,i) = std(vP_fit_2S1X_SXL,0,1)'; % add standard deviation
     end
 
     %% Sim water exchange (slow injection, Patlak fit)
@@ -120,7 +119,7 @@ end
             [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
         end
     end
-    
+    % loop through PS and vP values, simulate
     for i = 1:size(kbe_ranges,2);
         PhysParam.kbe_perS = kbe_ranges(i);
         for i_PS = 1:N_PS
@@ -137,11 +136,11 @@ end
             PhysParam.vP = vP_range(i_vP);
             [vP_fit_2S1X_slow(:,i_vP),temp] = master_single_sim(PhysParam,DCESeqParam,SimParam);
         end
-        PS_means_H2O_slow(:,i) = mean(PS_fit_2S1X_slow,1)'; % add mean for each PS for 2S1X
-        PS_devs_H2O_slow(:,i) = std(PS_fit_2S1X_slow,0,1)'; % add standard deviation for 2S1X
+        PS_means_H2O_slow(:,i) = mean(PS_fit_2S1X_slow,1)'; % add mean for each PS
+        PS_devs_H2O_slow(:,i) = std(PS_fit_2S1X_slow,0,1)'; % add standard deviation
         
-        vP_means_H2O_slow(:,i) = mean(vP_fit_2S1X_slow,1)'; % add mean for each PS for 2S1X
-        vP_devs_H2O_slow(:,i) = std(vP_fit_2S1X_slow,0,1)'; % add standard deviation for 2S1X
+        vP_means_H2O_slow(:,i) = mean(vP_fit_2S1X_slow,1)'; % add mean for each vP
+        vP_devs_H2O_slow(:,i) = std(vP_fit_2S1X_slow,0,1)'; % add standard deviation
         
     end
     
@@ -159,7 +158,7 @@ end
             [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
         end
     end
-    
+% loop through PS and vP values, simulate
     for i = 1:size(kbe_ranges,2);
         PhysParam.kbe_perS = kbe_ranges(i);
         for i_PS = 1:N_PS
@@ -176,11 +175,11 @@ end
             PhysParam.vP = vP_range(i_vP);
             [vP_fit_2S1X_slow(:,i_vP),temp] = master_single_sim(PhysParam,DCESeqParam,SimParam);
         end
-        PS_means_H2O_slow_SXL(:,i) = mean(PS_fit_2S1X_slow_SXL,1)'; % add mean for each PS for 2S1X
-        PS_devs_H2O_slow_SXL(:,i) = std(PS_fit_2S1X_slow_SXL,0,1)'; % add standard deviation for 2S1X
+        PS_means_H2O_slow_SXL(:,i) = mean(PS_fit_2S1X_slow_SXL,1)'; % add mean for each PS
+        PS_devs_H2O_slow_SXL(:,i) = std(PS_fit_2S1X_slow_SXL,0,1)'; % add standard deviation
         
-        vP_means_H2O_slow_SXL(:,i) = mean(vP_fit_2S1X_slow,1)'; % add mean for each PS for 2S1X
-        vP_devs_H2O_slow_SXL(:,i) = std(vP_fit_2S1X_slow,0,1)'; % add standard deviation for 2S1X
+        vP_means_H2O_slow_SXL(:,i) = mean(vP_fit_2S1X_slow,1)'; % add mean for each vP
+        vP_devs_H2O_slow_SXL(:,i) = std(vP_fit_2S1X_slow,0,1)'; % add standard deviation
     end
 
 

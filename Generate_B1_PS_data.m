@@ -33,6 +33,7 @@ for k = 1:size(blood_k_values,2)
     DCESeqParam.tissue_FA_meas_deg = DCESeqParam.FA_nom_deg;
     T1acqParam.T1_SNR = 318;
     
+    % loop through PS and vP values, simulate
     for i_PS = 1:N_PS % Accurate T1 acquisition
         for n = 1:SimParam.N_repetitions
             T1acqParam.FA_true_rads = T1acqParam.blood_FA_true_rads;  % Seperate FA_true and FA_nom for blood and tissue
@@ -108,7 +109,7 @@ for k = 1:size(blood_k_values,2)
     vP_devs_B1_fast_corrected(:,k) = std(vP_fit_fast_corrected,0,1)'; % standard deviation for each vP
 end
 
-%% Generate variable PS and vP - slow injection
+%% B1 inhomogeneity figures (slow injection)
 [PhysParam,DCESeqParam,SimParam,T1acqParam] = load_default_params;
 SimParam.SXLfit = 1; % fit enhancements according to SXL method
 SimParam.NIgnore = max(SimParam.baselineScans) + 3;
@@ -131,6 +132,7 @@ SimParam.NIgnore = max(SimParam.baselineScans) + 3;
     DCESeqParam.tissue_FA_meas_deg = DCESeqParam.FA_nom_deg;
     T1acqParam.T1_SNR = 318;
     
+    % loop through PS and vP values, simulate
     for i_PS = 1:N_PS % Accurate T1 acquisition
         for n = 1:SimParam.N_repetitions
             T1acqParam.FA_true_rads = T1acqParam.blood_FA_true_rads;  % Seperate FA_true and FA_nom for blood and tissue
@@ -161,7 +163,7 @@ SimParam.NIgnore = max(SimParam.baselineScans) + 3;
     vP_devs_B1_slow(:,k) = std(vP_fit_slow,0,1)'; % standard deviation for each vP
  end
 
-%% Generate B1 inhomogeneity figures - (slow injection - B1 corrected)
+%% Generate B1 inhomogeneity figures (slow injection - B1 corrected)
 [PhysParam,DCESeqParam,SimParam,T1acqParam] = load_default_params;
 SimParam.SXLfit = 1; % fit enhancements according to SXL method
 SimParam.NIgnore = max(SimParam.baselineScans) + 3;
@@ -183,6 +185,7 @@ for k = 1:size(blood_k_values,2)
     DCESeqParam.tissue_FA_meas_deg = DCESeqParam.tissue_FA_true_deg; % If B1 correction is on (for DCE) correct FA
     T1acqParam.T1_SNR = 318;
     
+    % loop through PS and vP values, simulate
     for i_PS = 1:N_PS % Accurate T1 acquisition
         for n = 1:SimParam.N_repetitions
             T1acqParam.FA_true_rads = T1acqParam.blood_FA_true_rads;  % Seperate FA_true and FA_nom for blood and tissue
@@ -209,8 +212,8 @@ for k = 1:size(blood_k_values,2)
     PS_means_B1_slow_corrected(:,k) = mean(PS_fit_slow_corrected,1)'; % mean for each PS
     PS_devs_B1_slow_corrected(:,k) = std(PS_fit_slow_corrected,0,1)'; % standard deviation for each PS
     
-    vP_means_B1_slow_corrected(:,k) = mean(vP_fit_slow_corrected,1)'; % mean for each PS
-    vP_devs_B1_slow_corrected(:,k) = std(vP_fit_slow_corrected,0,1)'; % standard deviation for each PS
+    vP_means_B1_slow_corrected(:,k) = mean(vP_fit_slow_corrected,1)'; % mean for each vP
+    vP_devs_B1_slow_corrected(:,k) = std(vP_fit_slow_corrected,0,1)'; % standard deviation for each vP
 end
 
 %% Graphs and scales
@@ -255,7 +258,7 @@ xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 xlim([0 max(PS_range)]);
 ylim([-2 2]);
 title('Bolus injection','FontSize',8);
-legend({'{\itk_b}, {\itk_t} = 1, 1', '{\itk_b}, {\itk_t} = 1.12, 1.12', '{\itk_b}, {\itk_t} = 0.95, 1.12'},'Location','best','FontSize',6)
+legend({'{\itK_{FA,t}},{\itK_{FA,b}} = 1,1', '{\itK_{FA,t}},{\itK_{FA,b}} = 1.12,1.12', '{\itK_{FA,t}},{\itK_{FA,b}} = 0.95,1.12'},'Location','best','FontSize',5)
 legend('boxoff')
 
 

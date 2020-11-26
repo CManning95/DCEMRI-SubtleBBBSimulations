@@ -72,7 +72,7 @@ handles.PhysParam.vE = vE;
 guidata(hObject, handles);
 
 % ------------------------------------------------------------------------
-function initialise_DCE_NAWM_MSS3(handles)
+function initialise_DCE_NAWM_MSS3(handles) % load default params for NAWM
 
 handles.PhysParam.Hct = 0.42;
 handles.PhysParam.vE = 0.2;
@@ -174,7 +174,7 @@ set(handles.VFA_FA_3,'string',handles.acqParam.VFA_FA_3);
 set(handles.T1acq_SNR,'string',handles.acqParam.T1_SNR);
 guidata(handles.figure1,handles)
 
-function initialise_DCE_scGM_MSS3(handles)
+function initialise_DCE_scGM_MSS3(handles) % load default params for scGM
 
 handles.PhysParam.Hct = 0.42;
 handles.PhysParam.vE = 0.2;
@@ -277,9 +277,13 @@ set(handles.T1acq_SNR,'string',handles.acqParam.T1_SNR);
 
 guidata(handles.figure1,handles)
 
-% --- Executes on button press in pushbutton1 - resets values to default
+% --- Executes on button press, starts initialise_DCE_NAWM_MSS3 function
 function pushbutton1_Callback(hObject, eventdata, handles)
 initialise_DCE_NAWM_MSS3(handles);
+
+% --- Executes on button press, starts initialise_DCE_scGM_MSS3 function
+function pushbutton5_Callback(hObject, eventdata, handles)
+initialise_DCE_scGM_MSS3(handles);
 
 function Fp_Callback(hObject, eventdata, handles)
 Fp = str2double(get(hObject,'String'));
@@ -289,7 +293,6 @@ end
 handles.PhysParam.FP_mlPer100gPerMin = Fp;
 guidata(hObject, handles);
 
-% --- Executes during object creation, after setting all properties.
 function Fp_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -303,7 +306,6 @@ end
 handles.PhysParam.T10_blood = T10_blood_s;
 guidata(hObject, handles);
 
-% --- Executes during object creation, after setting all properties.
 function T10_blood_s_CreateFcn(hObject, eventdata, handles)
 
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
@@ -318,9 +320,7 @@ end
 handles.PhysParam.T10_tissue_s = T10_tissue_s;
 guidata(hObject, handles);
 
-% --- Executes during object creation, after setting all properties.
 function T10_tissue_s_CreateFcn(hObject, eventdata, handles)
-
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
@@ -333,7 +333,6 @@ end
 handles.PhysParam.S0_blood = S0_blood;
 guidata(hObject, handles);
 
-% --- Executes during object creation, after setting all properties.
 function S0_blood_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -347,7 +346,6 @@ end
 handles.PhysParam.S0_tissue = S0_tissue;
 guidata(hObject, handles);
 
-% --- Executes during object creation, after setting all properties.
 function S0_tissue_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -361,7 +359,6 @@ end
 handles.PhysParam.kbe_perS = Kbe;
 guidata(hObject, handles);
 
-% --- Executes during object creation, after setting all properties.
 function Kbe_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -375,13 +372,11 @@ end
 handles.PhysParam.kie_perS = Kie;
 guidata(hObject, handles);
 
-% --- Executes during object creation, after setting all properties.
 function Kie_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
 
-% --- Executes on selection change in T1_acq_method.
 function T1_acq_method_Callback(hObject, eventdata, handles)
 T1_opt = get(handles.T1_acq_method, 'Value');
 switch T1_opt
@@ -403,7 +398,6 @@ end
 handles.SeqParam.t_acq_s = t_acq_s;
 guidata(hObject,handles)
 
-% --- Executes during object creation, after setting all properties.
 function t_acq_s_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -417,7 +411,6 @@ end
 handles.SeqParam.t_res_sample_s = t_res_sample_s;
 guidata(hObject,handles)
 
-% --- Executes during object creation, after setting all properties.
 function t_res_sample_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -431,7 +424,6 @@ end
 handles.SeqParam.TR_s = 1e-3 * TR;
 guidata(hObject,handles)
     
-% --- Executes during object creation, after setting all properties.
 function TR_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -445,7 +437,6 @@ end
 handles.SeqParam.TE_s = 1e-3 * TE;
 guidata(hObject,handles)
 
-% --- Executes during object creation, after setting all properties.
 function TE_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -459,7 +450,6 @@ end
 handles.SeqParam.r1_per_mM_per_s = r1;
 guidata(hObject,handles)
     
-% --- Executes during object creation, after setting all properties.
 function r1_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -473,7 +463,6 @@ function r2_Callback(hObject, eventdata, handles)
  handles.SeqParam.r2_per_mM_per_s = r2;
  guidata(hObject,handles)
 
-% --- Executes during object creation, after setting all properties.
 function r2_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -486,8 +475,7 @@ if isnan(FA_nom_deg)
 end
 handles.SeqParam.FA_nom_deg = FA_nom_deg;
 guidata(hObject,handles)
-    
-% --- Executes during object creation, after setting all properties.
+
 function FA_nom_deg_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -501,7 +489,6 @@ end
 handles.SimParam.N_repetitions = N_repetitions;
 guidata(hObject,handles)
 
-% --- Executes during object creation, after setting all properties.
 function N_repetitions_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -515,7 +502,6 @@ function t_res_full_s_Callback(hObject, eventdata, handles)
  handles.SimParam.t_res_full_s = t_res_full_s;
  guidata(hObject,handles)
 
-% --- Executes during object creation, after setting all properties.
 function t_res_full_s_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -528,11 +514,9 @@ if isnan(NIgnore) == 1 && strcmp(handles.SimParam.InjectionRate,'slow') == 1;
 elseif isnan(NIgnore) == 1 && strcmp(handles.SimParam.InjectionRate,'fast') == 1;
     set(hObject,'string',6)
 end
-    
 handles.SimParam.NIgnore = NIgnore;
 guidata(hObject,handles)
 
-% --- Executes during object creation, after setting all properties.
 function NIgnore_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -546,7 +530,6 @@ end
 handles.SimParam.SNR = SNR;
 guidata(hObject,handles)
 
-% --- Executes during object creation, after setting all properties.
 function SNR_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -560,7 +543,6 @@ end
 handles.SimParam.drift_pctPerMin = drift_pctPerMin;
 guidata(hObject,handles)
 
-% --- Executes during object creation, after setting all properties.
 function drift_pctPerMin_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -574,8 +556,326 @@ function blood_FA_error_Callback(hObject, eventdata, handles)
  handles.SeqParam.blood_FA_error = blood_FA_error;
  guidata(hObject,handles)
  
-% --- Executes during object creation, after setting all properties.
 function blood_FA_error_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function InjectionRate_Callback(hObject, eventdata, handles)
+Inj_Rate_opt = get(handles.InjectionRate,'Value');
+switch Inj_Rate_opt
+    case 1
+    case 2
+        handles.SimParam.InjectionRate = 'slow';
+        handles.SimParam.NIgnore = 0;
+        t_start = 0;
+    case 3
+        handles.SimParam.InjectionRate = 'fast';
+        handles.SimParam.NIgnore = 3; % always ignores baseline scans, also ignores this input
+        t_start = 119;
+        %t_start = 3*handles.SeqParam.t_res_sample_s+5; % set min inj delay to 3 pre-contrast sample points(+5s)
+end
+set(handles.NIgnore,'string',handles.SimParam.NIgnore);
+set(handles.t_start,'string',t_start);
+handles.SimParam.t_start_s = t_start;
+guidata(handles.figure1,handles)
+
+function InjectionRate_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function syn_model_Callback(hObject, eventdata, handles)
+syn_model = get(handles.syn_model,'Value');
+switch syn_model
+    case 1
+    case 2
+        handles.SimParam.syn_model = '2CXM';
+    case 3
+        handles.SimParam.syn_model = 'Patlak';
+end
+guidata(handles.figure1,handles)
+
+function syn_model_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function water_exch_model_Callback(hObject, eventdata, handles)
+water_exch_model = get(handles.water_exch_model,'Value');
+switch water_exch_model
+    case 1
+    case 2
+        handles.SimParam.water_exch_model = 'FXL';
+    case 3
+        handles.SimParam.water_exch_model = 'SXL';
+    case 4
+        handles.SimParam.water_exch_model = '2S1XA';
+    case 5
+        handles.SimParam.water_exch_model = '3S2X_num';
+end
+guidata(handles.figure1,handles)
+
+function water_exch_model_CreateFcn(hObject, eventdata, handles)
+
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function min_PS_Callback(hObject, eventdata, handles)
+min_PS = str2double(get(hObject,'String'));
+if isnan(min_PS)
+        set(hObject,'string',0)
+end
+handles.SimParam.min_PS = min_PS;
+guidata(hObject,handles)
+
+function min_PS_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function max_PS_Callback(hObject, eventdata, handles)
+max_PS = str2double(get(hObject,'String'));
+if isnan(max_PS)
+    set(hObject,'string',5)
+end
+handles.SimParam.max_PS = max_PS * 1e-4;
+guidata(hObject,handles)
+
+function max_PS_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function vP_fixed_Callback(hObject, eventdata, handles)
+vP_fixed = str2double(get(hObject,'String'));
+if isnan(vP_fixed)
+    set(hObject,'string',0.0058)
+end
+handles.PhysParam.vP_fixed = vP_fixed;
+guidata(hObject,handles)
+
+function vP_fixed_CreateFcn(hObject, eventdata, handles)
+
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function venous_delay_s_Callback(hObject, eventdata, handles)
+venous_delay_s = str2double(get(hObject,'String'));
+if isnan(venous_delay_s)
+    set(hObject,'string',6)
+end
+handles.SimParam.venous_delay_s = venous_delay_s;
+guidata(hObject,handles)
+
+function venous_delay_s_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function B1_correction_Callback(hObject, eventdata, handles)
+DCE_B1_correction = get(handles.B1_correction, 'Value');
+switch DCE_B1_correction
+    case 0
+        handles.acqParam.B1_correction = 'off';
+    case 1
+        handles.acqParam.B1_correction = 'on';
+end
+guidata(hObject, handles);
+
+function B1_correction_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function t_start_Callback(hObject, eventdata, handles)
+t_start = str2double(get(hObject,'String'));
+if isnan(t_start) == 1 && strcmp(handles.SimParam.InjectionRate,'slow') == 1;
+    set(hObject,'string',0)
+elseif isnan(t_start) == 1 && strcmp(handles.SimParam.InjectionRate,'fast') == 1;
+    set(hObject,'string',119)
+end
+
+handles.SimParam.t_start_s = t_start;
+
+if (strcmp(handles.SimParam.InjectionRate,'fast') == 1) && ((t_start < (3*handles.SeqParam.t_res_sample_s)) == 1)
+    InjDelay_error = msgbox(['ERROR: Injection delay must be greater than 3 times the sample resolution, so that '...
+        'there are at least 3 pre-contrast data points'], 'Error');
+end
+guidata(hObject,handles)
+
+function t_start_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function min_vP_Callback(hObject, eventdata, handles)
+min_vP = str2double(get(hObject,'String'));
+if isnan(min_vP)
+    set(hObject,'string',0)
+end
+handles.SimParam.min_vP = min_vP;
+guidata(hObject,handles)
+
+function min_vP_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function max_vP_Callback(hObject, eventdata, handles)
+max_vP = str2double(get(hObject,'String'));
+if isnan(max_vP)
+    set(hObject,'string',0.02)
+end
+handles.SimParam.max_vP = max_vP;
+guidata(hObject,handles)
+
+function max_vP_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function PS_fixed_Callback(hObject, eventdata, handles)
+PS_fixed = str2double(get(hObject,'String'));
+if isnan(PS_fixed)
+    set(hObject,'string',2.5)
+end
+handles.PhysParam.PS_fixed = PS_fixed * 1e-4;
+guidata(hObject,handles)
+
+function PS_fixed_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function vP_fixed_single_Callback(hObject, eventdata, handles)
+vP_fixed_single = str2double(get(hObject,'String'));
+if isnan(vP_fixed_single)
+    set(hObject,'string', 0.02)
+end
+handles.PhysParam.vP_fixed_single = vP_fixed_single;
+guidata(hObject,handles)
+
+function vP_fixed_single_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function PS_fixed_single_Callback(hObject, eventdata, handles)
+PS_fixed_single = str2double(get(hObject,'String'));
+if isnan(PS_fixed_single)
+    set(hObject,'string',2.5)
+end
+handles.PhysParam.PS_fixed_single = PS_fixed_single * 1e-4;
+guidata(hObject,handles)
+
+function PS_fixed_single_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function assumed_T1_blood_Callback(hObject, eventdata, handles)
+assumed_T1_blood = str2double(get(hObject,'String'));
+handles.assumed_T1_blood = assumed_T1_blood;
+guidata(hObject,handles)
+
+function assumed_T1_blood_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function assumed_T1_tissue_Callback(hObject, eventdata, handles)
+assumed_T1_tissue = str2double(get(hObject,'String'));
+handles.assumed_T1_tissue = assumed_T1_tissue;
+guidata(hObject,handles)
+
+function assumed_T1_tissue_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function VFA_FA_1_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function VFA_FA_2_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function VFA_FA_3_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function VFA_FA_1_Callback(hObject, eventdata, handles)
+VFA_FA_1 = str2double(get(hObject,'String'));
+handles.acqParam.VFA_FA_1 = VFA_FA_1;
+guidata(hObject,handles)
+
+function VFA_FA_2_Callback(hObject, eventdata, handles)
+VFA_FA_2 = str2double(get(hObject,'String'));
+handles.acqParam.VFA_FA_2 = VFA_FA_2;
+guidata(hObject,handles)
+
+function VFA_FA_3_Callback(hObject, eventdata, handles)
+VFA_FA_3 = str2double(get(hObject,'String'));
+handles.acqParam.VFA_FA_3 = VFA_FA_3;
+guidata(hObject,handles)
+
+function Plot_extra_figs_Callback(hObject, eventdata, handles)
+Plot_extra_figs = get(hObject,'Value');
+handles.SimParam.Plot_extra_figs = Plot_extra_figs;
+guidata(hObject,handles)
+
+function SXLfit_Callback(hObject, eventdata, handles)
+SXLfit = get(hObject,'Value');
+handles.SimParam.SXLfit = SXLfit;
+guidata(hObject,handles)
+
+function T1acq_SNR_Callback(hObject, eventdata, handles)
+T1_SNR = str2double(get(hObject,'String'));
+handles.acqParam.T1_SNR = T1_SNR;
+guidata(hObject,handles)
+
+function T1acq_SNR_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function T10_B1_Correction_Callback(hObject, eventdata, handles)
+T10_B1_correction = get(handles.T10_B1_Correction, 'Value');
+switch T10_B1_correction
+    case 0
+        handles.acqParam.T10_B1_correction = 'off';
+    case 1
+        handles.acqParam.T10_B1_correction = 'on';
+end
+guidata(hObject, handles);
+
+function tissue_FA_error_Callback(hObject, eventdata, handles)
+tissue_FA_error = str2double(get(hObject,'String'));
+handles.SeqParam.tissue_FA_error = tissue_FA_error;
+guidata(hObject,handles)
+
+function tissue_FA_error_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+% --- Executes on button press in plot_hold.
+function plot_hold_Callback(hObject, eventdata, handles)
+handles.plot_hold = get(hObject,'Value');
+guidata(hObject,handles)
+
+function plot_label_Callback(hObject, eventdata, handles)
+handles.plot_label = get(hObject,'String');
+guidata(hObject,handles)
+
+% --- Executes during object creation, after setting all properties.
+function plot_label_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
@@ -610,8 +910,8 @@ acqParam.TI_s = [NaN NaN NaN]; % Inversion times
 acqParam.PECentre = [NaN NaN NaN]; % indicates time of centre of k-space
 acqParam.NReadout = [160 160 160]; % number of readout pulses (Siemens - number of slices)
 acqParam.NTry = 1; % Fitting attempts
-acqParam.blood_FA_true_rads = SeqParam.blood_FA_error * acqParam.blood_FA_nom_rads;
-acqParam.tissue_FA_true_rads = SeqParam.tissue_FA_error * acqParam.tissue_FA_nom_rads;
+acqParam.blood_FA_true_rads = SeqParam.blood_FA_error * acqParam.blood_FA_nom_rads; % apply FA error to nominal
+acqParam.tissue_FA_true_rads = SeqParam.tissue_FA_error * acqParam.tissue_FA_nom_rads; % apply FA error to nominal
 switch acqParam.T10_B1_correction
     case 'off' % If B1 correction is off, then FA nominal =/= FA true
     case 'on' % If B1 correction is on, then FA nominal = FA_true (we know transmitted FA)
@@ -629,7 +929,7 @@ if strcmp(acqParam.T1_acq_method,'Assumed') == 0;
     end
 end
 
-% Simulate T1 acquisiton
+%  Simulate T1 acquisition
     disp(['Simulated baseline T1 acquisitions:']);
     disp(['Blood Flip Angle error = ' num2str((100*SeqParam.blood_FA_error)-100) ' %']);
     disp(['Actual blood T1 = ' num2str(PhysParam.T10_blood_s)]);
@@ -637,7 +937,7 @@ end
     disp(['Actual tissue T1 = ' num2str(PhysParam.T10_tissue_s)]);
     
 switch acqParam.T1_acq_method
-    case 'VFA' % if using VFA T1 acq, run N_repetition*n_PS times to simulate T1 errors
+    case 'VFA' % if using VFA T1 acq, run N_repetition*n_PS times to simulate T1 errors, apply noise
            for n = 1:SimParam.N_repetitions
                for m = 1:N_PS
                    acqParam.FA_true_rads = acqParam.blood_FA_true_rads; % Seperate FA_true and FA_nom for blood and tissue
@@ -650,7 +950,7 @@ switch acqParam.T1_acq_method
            end
            disp(['Mean blood T1 = ' num2str(mean2(T1_blood_meas_s))])
            disp(['Mean tissue T1 = ' num2str(mean2(T1_tissue_meas_s))])
-    case {'Accurate','Assumed'}
+    case {'Accurate','Assumed'} % if using accurate or assumed T1 acq, always use same T1
         [T1_blood_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_blood);
         [T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_tissue);
         T1_blood_meas_s = repmat(T1_blood_meas_s,1,N_PS); % each PS needs a T1 value in single_sim
@@ -666,7 +966,7 @@ if handles.plot_hold == 0; % delete previous figures if plot hold is off
     delete(figures_del);
 end
 
-% check previous legend
+% check previous legend, keep legend entry if plot hold is on
 if handles.plot_hold == 1 && ishandle(2) == 1; % if plot hold is on, read current legend
     old_leg = (findall(figure(2),'Type','Legend'));
     if size(old_leg) == 0 % If no entry in old legend, delete variable
@@ -678,8 +978,9 @@ elseif handles.plot_hold == 0; % if plot hold off, clear fig_legend_entry
     clear fig_legend_entry
 end
 
-% Ignore baseline scans and post-contrast points
+% Baseline Scans for calculating base signal for enhancement %
     SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
+    
 %Sort slow injection parameters
 if SimParam.InjectionRate == 'slow'
     load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
@@ -703,6 +1004,7 @@ switch handles.acqParam.B1_correction
         SeqParam.tissue_FA_meas_deg = SeqParam.FA_nom_deg;
 end
 
+% loop through each PS value, and simulate
 for i_PS = 1:N_PS
     PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_PS);
     PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_PS);
@@ -752,216 +1054,6 @@ end
 a = get(gca,'XTickLabel');
 set(gca,'XTickLabel',a,'fontsize',9);
 
-% --- Executes on selection change in InjectionRate.
-function InjectionRate_Callback(hObject, eventdata, handles)
-Inj_Rate_opt = get(handles.InjectionRate,'Value');
-switch Inj_Rate_opt
-    case 1
-    case 2
-        handles.SimParam.InjectionRate = 'slow';
-        handles.SimParam.NIgnore = 0;
-        t_start = 0;
-    case 3
-        handles.SimParam.InjectionRate = 'fast';
-        handles.SimParam.NIgnore = 3; % always ignores baseline scans, also ignores this input
-        t_start = 119;
-        %t_start = 3*handles.SeqParam.t_res_sample_s+5; % set min inj delay to 3 pre-contrast sample points(+5s)
-end
-set(handles.NIgnore,'string',handles.SimParam.NIgnore);
-set(handles.t_start,'string',t_start);
-handles.SimParam.t_start_s = t_start;
-guidata(handles.figure1,handles)
-
-
-% --- Executes during object creation, after setting all properties.
-function InjectionRate_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on selection change in syn_model.
-function syn_model_Callback(hObject, eventdata, handles)
-syn_model = get(handles.syn_model,'Value');
-switch syn_model
-    case 1
-    case 2
-        handles.SimParam.syn_model = '2CXM';
-    case 3
-        handles.SimParam.syn_model = 'Patlak';
-end
-guidata(handles.figure1,handles)
-
-
-
-% --- Executes during object creation, after setting all properties.
-function syn_model_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-% --- Executes on selection change in water_exch_model.
-function water_exch_model_Callback(hObject, eventdata, handles)
-water_exch_model = get(handles.water_exch_model,'Value');
-switch water_exch_model
-    case 1
-    case 2
-        handles.SimParam.water_exch_model = 'FXL';
-    case 3
-        handles.SimParam.water_exch_model = 'SXL';
-    case 4
-        handles.SimParam.water_exch_model = '2S1XA';
-    case 5
-        handles.SimParam.water_exch_model = '3S2X_num';
-end
-guidata(handles.figure1,handles)
-
-% --- Executes during object creation, after setting all properties.
-function water_exch_model_CreateFcn(hObject, eventdata, handles)
-
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-function min_PS_Callback(hObject, eventdata, handles)
-min_PS = str2double(get(hObject,'String'));
-if isnan(min_PS)
-        set(hObject,'string',0)
-end
-handles.SimParam.min_PS = min_PS;
-guidata(hObject,handles)
-
-% --- Executes during object creation, after setting all properties.
-function min_PS_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-function max_PS_Callback(hObject, eventdata, handles)
-max_PS = str2double(get(hObject,'String'));
-if isnan(max_PS)
-    set(hObject,'string',5)
-end
-handles.SimParam.max_PS = max_PS * 1e-4;
-guidata(hObject,handles)
-
-% --- Executes during object creation, after setting all properties.
-function max_PS_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-function vP_fixed_Callback(hObject, eventdata, handles)
-vP_fixed = str2double(get(hObject,'String'));
-if isnan(vP_fixed)
-    set(hObject,'string',0.0058)
-end
-handles.PhysParam.vP_fixed = vP_fixed;
-guidata(hObject,handles)
-
-% --- Executes during object creation, after setting all properties.
-function vP_fixed_CreateFcn(hObject, eventdata, handles)
-
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-function venous_delay_s_Callback(hObject, eventdata, handles)
-venous_delay_s = str2double(get(hObject,'String'));
-if isnan(venous_delay_s)
-    set(hObject,'string',6)
-end
-handles.SimParam.venous_delay_s = venous_delay_s;
-guidata(hObject,handles)
-
-% --- Executes during object creation, after setting all properties.
-function venous_delay_s_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-% --- Executes on selection change in B1_correction.
-function B1_correction_Callback(hObject, eventdata, handles)
-DCE_B1_correction = get(handles.B1_correction, 'Value');
-switch DCE_B1_correction
-    case 0
-        handles.acqParam.B1_correction = 'off';
-    case 1
-        handles.acqParam.B1_correction = 'on';
-end
-guidata(hObject, handles);
-
-% --- Executes during object creation, after setting all properties.
-function B1_correction_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-function t_start_Callback(hObject, eventdata, handles)
-t_start = str2double(get(hObject,'String'));
-if isnan(t_start) == 1 && strcmp(handles.SimParam.InjectionRate,'slow') == 1;
-    set(hObject,'string',0)
-elseif isnan(t_start) == 1 && strcmp(handles.SimParam.InjectionRate,'fast') == 1;
-    set(hObject,'string',119)
-end
-
-handles.SimParam.t_start_s = t_start;
-
-if (strcmp(handles.SimParam.InjectionRate,'fast') == 1) && ((t_start < (3*handles.SeqParam.t_res_sample_s)) == 1)
-    %error('Injection delay error')
-    InjDelay_error = msgbox(['ERROR: Injection delay must be greater than 3 times the sample resolution, so that '...
-        'there are at least 3 pre-contrast data points'], 'Error');
-end
-guidata(hObject,handles)
-
-% --- Executes during object creation, after setting all properties.
-function t_start_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-function min_vP_Callback(hObject, eventdata, handles)
-min_vP = str2double(get(hObject,'String'));
-if isnan(min_vP)
-    set(hObject,'string',0)
-end
-handles.SimParam.min_vP = min_vP;
-guidata(hObject,handles)
-
-% --- Executes during object creation, after setting all properties.
-function min_vP_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-function max_vP_Callback(hObject, eventdata, handles)
-max_vP = str2double(get(hObject,'String'));
-if isnan(max_vP)
-    set(hObject,'string',0.02)
-end
-handles.SimParam.max_vP = max_vP;
-guidata(hObject,handles)
-
-% --- Executes during object creation, after setting all properties.
-function max_vP_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-function PS_fixed_Callback(hObject, eventdata, handles)
-PS_fixed = str2double(get(hObject,'String'));
-if isnan(PS_fixed)
-    set(hObject,'string',2.5)
-end
-handles.PhysParam.PS_fixed = PS_fixed * 1e-4;
-guidata(hObject,handles)
-
-% --- Executes during object creation, after setting all properties.
-function PS_fixed_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
 % --- Executes on button press in run_vP_sims.
 function run_vP_sims_Callback(hObject, eventdata, handles)
 PhysParam = handles.PhysParam;
@@ -992,8 +1084,8 @@ acqParam.TI_s = [NaN NaN NaN]; % Inversion times
 acqParam.PECentre = [NaN NaN NaN]; % indicates time of centre of k-space
 acqParam.NReadout = [160 160 160]; % number of readout pulses (Siemens - number of slices)
 acqParam.NTry = 1; % Fitting attempts
-acqParam.blood_FA_true_rads = SeqParam.blood_FA_error * acqParam.blood_FA_nom_rads;
-acqParam.tissue_FA_true_rads = SeqParam.tissue_FA_error * acqParam.tissue_FA_nom_rads;
+acqParam.blood_FA_true_rads = SeqParam.blood_FA_error * acqParam.blood_FA_nom_rads; % apply FA error to nominal
+acqParam.tissue_FA_true_rads = SeqParam.tissue_FA_error * acqParam.tissue_FA_nom_rads; % apply FA error to nominal
 switch acqParam.T10_B1_correction
     case 'off' % If B1 correction is off, then FA nominal =/= FA true
     case 'on' % If B1 correction is on, then FA nominal = FA_true (we know transmitted FA)
@@ -1032,7 +1124,7 @@ switch acqParam.T1_acq_method
            end
            disp(['Mean blood T1 = ' num2str(mean2(T1_blood_meas_s))])
            disp(['Mean tissue T1 = ' num2str(mean2(T1_tissue_meas_s))])
-    case {'Accurate','Assumed'}
+    case {'Accurate','Assumed'} % if using accurate or assumed T1 acq, always use same T1
         [T1_blood_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_blood);
         [T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_tissue);
         T1_blood_meas_s = repmat(T1_blood_meas_s,1,N_vP); % each PS needs a T1 value in single_sim
@@ -1048,7 +1140,7 @@ if handles.plot_hold == 0; % delete previous figures if plot hold is off
     delete(figures_del);
 end
 
-% check previous legend
+% check previous legend, read legend entry if plot hold on
 if handles.plot_hold == 1 && ishandle(2) == 1; % if plot hold is on, read current legend
     old_leg = (findall(figure(2),'Type','Legend'));
     if size(old_leg) == 0 % If no entry in old legend, delete variable
@@ -1060,7 +1152,7 @@ elseif handles.plot_hold == 0; % if plot hold off, clear fig_legend_entry
     clear fig_legend_entry
 end
 
-% Ignore baseline scans and post-contrast points
+% baseline scans for baseline signal, used for % enhancement
     SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
 %Sort slow injection parameters
 if SimParam.InjectionRate == 'slow'
@@ -1085,6 +1177,7 @@ switch handles.acqParam.B1_correction
         SeqParam.tissue_FA_meas_deg = SeqParam.FA_nom_deg;
 end
 
+% loop through vP values, simulate
 for i_vP = 1:N_vP
     PhysParam.T1_blood_meas_s = T1_blood_meas_s(:,i_vP);
     PhysParam.T1_tissue_meas_s = T1_tissue_meas_s(:,i_vP);
@@ -1133,28 +1226,6 @@ end
 a = get(gca,'XTickLabel');
 set(gca,'XTickLabel',a,'fontsize',9);
 
-% --- Executes on button press in pushbutton5.
-function pushbutton5_Callback(hObject, eventdata, handles)
-initialise_DCE_scGM_MSS3(handles);
-
-% --- Executes on button press in plot_hold.
-function plot_hold_Callback(hObject, eventdata, handles)
-handles.plot_hold = get(hObject,'Value');
-guidata(hObject,handles)
-
-function plot_label_Callback(hObject, eventdata, handles)
-handles.plot_label = get(hObject,'String');
-guidata(hObject,handles)
-
-% --- Executes during object creation, after setting all properties.
-function plot_label_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-function text11_CreateFcn(hObject, eventdata, handles)
-
-
 % --- Executes on button press in Single_PS.
 function Single_PS_Callback(hObject, eventdata, handles)
 PhysParam = handles.PhysParam;
@@ -1177,8 +1248,8 @@ acqParam.TI_s = [NaN NaN NaN]; % Inversion times
 acqParam.PECentre = [NaN NaN NaN]; % indicates time of centre of k-space
 acqParam.NReadout = [160 160 160]; % number of readout pulses (Siemens - number of slices)
 acqParam.NTry = 1; % Fitting attempts
-acqParam.blood_FA_true_rads = SeqParam.blood_FA_error * acqParam.blood_FA_nom_rads;
-acqParam.tissue_FA_true_rads = SeqParam.tissue_FA_error * acqParam.tissue_FA_nom_rads;
+acqParam.blood_FA_true_rads = SeqParam.blood_FA_error * acqParam.blood_FA_nom_rads; % apply FA error to nominal
+acqParam.tissue_FA_true_rads = SeqParam.tissue_FA_error * acqParam.tissue_FA_nom_rads; % apply FA error to nominal
 switch acqParam.T10_B1_correction
     case 'off' % If B1 correction is off, then FA nominal =/= FA true
     case 'on' % If B1 correction is on, then FA nominal = FA_true (we know transmitted FA)
@@ -1215,15 +1286,18 @@ end
                 end
            disp(['Mean blood T1 = ' num2str(mean(T1_blood_meas_s))])
            disp(['Mean tissue T1 = ' num2str(mean(T1_tissue_meas_s))])
-        case {'Accurate','Assumed'}
+        case {'Accurate','Assumed'} % if using accurate or assumed T1 acq, always use same T1
             [T1_blood_meas_s,temp,acqParam.FA_error_meas,temp2] = MeasureT1(PhysParam.S0_blood,PhysParam.T10_blood_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_blood);
             [T1_tissue_meas_s,temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,acqParam,acqParam.T1_acq_method,handles.assumed_T1_tissue);
             
     end
     PhysParam.T1_blood_meas_s = T1_blood_meas_s;
     PhysParam.T1_tissue_meas_s = T1_tissue_meas_s;
-    SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
-%Sort slow injection parameters
+    
+% baseline scans for baseline signal, used for % enhancement
+SimParam.baselineScans = [1:3]; % datapoints to use for calculating base signal
+    
+    %Sort slow injection parameters
 if SimParam.InjectionRate == 'slow'
      load('Slow_Cp_AIF_mM.mat') % load example slow injection VIF
     SimParam.Cp_AIF_mM = Cp_AIF_mM;
@@ -1256,142 +1330,4 @@ CreateStruct.WindowStyle = 'modal';
 PS_msg = msgbox(['Mean PS = ' num2str(mean(PS_fit_1,2)*1e4) '(\pm ' num2str(1e4*std(PS_fit_1,0)) ') x 10^{-4} per min, mean v_p = '...
     num2str(mean(vP_fit_1,2)*1e3) '(\pm ' num2str(1e3*std(vP_fit_1,0)) ')'], 'Single PS sim', CreateStruct);
 
-function vP_fixed_single_Callback(hObject, eventdata, handles)
-vP_fixed_single = str2double(get(hObject,'String'));
-if isnan(vP_fixed_single)
-    set(hObject,'string', 0.02)
-end
-handles.PhysParam.vP_fixed_single = vP_fixed_single;
-guidata(hObject,handles)
 
-% --- Executes during object creation, after setting all properties.
-function vP_fixed_single_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-function PS_fixed_single_Callback(hObject, eventdata, handles)
-PS_fixed_single = str2double(get(hObject,'String'));
-if isnan(PS_fixed_single)
-    set(hObject,'string',2.5)
-end
-handles.PhysParam.PS_fixed_single = PS_fixed_single * 1e-4;
-guidata(hObject,handles)
-
-% --- Executes during object creation, after setting all properties.
-function PS_fixed_single_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-function assumed_T1_blood_Callback(hObject, eventdata, handles)
-assumed_T1_blood = str2double(get(hObject,'String'));
-handles.assumed_T1_blood = assumed_T1_blood;
-guidata(hObject,handles)
-
-% --- Executes during object creation, after setting all properties.
-function assumed_T1_blood_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-function assumed_T1_tissue_Callback(hObject, eventdata, handles)
-assumed_T1_tissue = str2double(get(hObject,'String'));
-handles.assumed_T1_tissue = assumed_T1_tissue;
-guidata(hObject,handles)
-
-% --- Executes during object creation, after setting all properties.
-function assumed_T1_tissue_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-% --- Executes during object creation, after setting all properties.
-function VFA_FA_1_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-% --- Executes during object creation, after setting all properties.
-function VFA_FA_2_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-% --- Executes during object creation, after setting all properties.
-function VFA_FA_3_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-function VFA_FA_1_Callback(hObject, eventdata, handles)
-VFA_FA_1 = str2double(get(hObject,'String'));
-handles.acqParam.VFA_FA_1 = VFA_FA_1;
-guidata(hObject,handles)
-
-function VFA_FA_2_Callback(hObject, eventdata, handles)
-VFA_FA_2 = str2double(get(hObject,'String'));
-handles.acqParam.VFA_FA_2 = VFA_FA_2;
-guidata(hObject,handles)
-
-function VFA_FA_3_Callback(hObject, eventdata, handles)
-VFA_FA_3 = str2double(get(hObject,'String'));
-handles.acqParam.VFA_FA_3 = VFA_FA_3;
-guidata(hObject,handles)
-
-% --- Executes on button press in Plot_extra_figs.
-function Plot_extra_figs_Callback(hObject, eventdata, handles)
-Plot_extra_figs = get(hObject,'Value');
-handles.SimParam.Plot_extra_figs = Plot_extra_figs;
-guidata(hObject,handles)
-
-% --- Executes on button press in SXLfit.
-function SXLfit_Callback(hObject, eventdata, handles)
-SXLfit = get(hObject,'Value');
-handles.SimParam.SXLfit = SXLfit;
-guidata(hObject,handles)
-
-
-
-function T1acq_SNR_Callback(hObject, eventdata, handles)
-T1_SNR = str2double(get(hObject,'String'));
-handles.acqParam.T1_SNR = T1_SNR;
-guidata(hObject,handles)
-
-
-% --- Executes during object creation, after setting all properties.
-function T1acq_SNR_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-% --- Executes on button press in T10_B1_Correction.
-function T10_B1_Correction_Callback(hObject, eventdata, handles)
-T10_B1_correction = get(handles.T10_B1_Correction, 'Value');
-switch T10_B1_correction
-    case 0
-        handles.acqParam.T10_B1_correction = 'off';
-    case 1
-        handles.acqParam.T10_B1_correction = 'on';
-end
-guidata(hObject, handles);
-
-
-
-function tissue_FA_error_Callback(hObject, eventdata, handles)
-tissue_FA_error = str2double(get(hObject,'String'));
-handles.SeqParam.tissue_FA_error = tissue_FA_error;
-guidata(hObject,handles)
-
-
-% --- Executes during object creation, after setting all properties.
-function tissue_FA_error_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to tissue_FA_error (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end

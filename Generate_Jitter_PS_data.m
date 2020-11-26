@@ -20,6 +20,7 @@ N_PS = size(PS_range,1); %range sizes to test
 N_vP = size(vP_range,1); %range sizes to test
 Delay_ranges = [0 4 8 12]; % Injection delay ranges
 
+%% Generate variable jitter PS - fast injection
 % T1 acquisition
 acqParam.T1_SNR = 318;
 for m = 1:N_PS
@@ -32,8 +33,7 @@ for m = 1:N_PS
         [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
     end
 end
-
-%% Generate variable jitter PS - fast injection
+% loop through PS and vP values, simulate
 for i = 1:size(Delay_ranges,2);
      SimParam.t_start_s = 119 + Delay_ranges(i);
      for i_PS = 1:N_PS
@@ -78,8 +78,8 @@ end
          [T1_tissue_meas_s(n,m),temp,temp2,temp3] = MeasureT1(PhysParam.S0_tissue,PhysParam.T10_tissue_s,T1acqParam,T1acqParam.T1_acq_method);
      end
  end
- PhysParam.T1_blood_meas_s = mean(T1_blood_meas_s,1);
  
+ % loop through PS and vP values, simulate
  for i = 1:size(Delay_ranges,2);
       SimParam.t_start_s = Delay_ranges(i);
       for i_PS = 1:N_PS
@@ -137,7 +137,7 @@ ylabel('fitted {\itPS} error (x10^{-4} min^{-1} )','FontSize',8);
 xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 title('Bolus injection','FontSize',8);
 xlim([0 max(PS_range)]);
-ylim([-2 2]);
+ylim([-5 5]);
 legend({'No delay','+ 4 s','+ 8 s','+ 12 s'},'Location','best','FontSize',6)
 legend('boxoff')
 
@@ -150,7 +150,7 @@ errorbar(PS_range + 0.18, PS_means_jitter_slow(:,4) - PS_range, 1*PS_devs_jitter
 xlim([0 max(PS_range)]);
 title('Slow injection','FontSize',8);
 xlabel(['True {\itPS} (x10^{-4} min^{-1} )'],'FontSize',8);
-ylim([-2 2]);
+ylim([-5 5]);
 
 subplot(2,2,3)
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
@@ -161,7 +161,7 @@ errorbar(vP_range + 0.39, vP_means_jitter_fast(:,4) - vP_range, 1*vP_devs_jitter
 ylabel('fitted {\itv_p} error (x10^{-3})','FontSize',8);
 xlabel('True {\itv_p} (x10^{-3})','FontSize',8);
 xlim([min(vP_range) max(vP_range)+0.26]);
-ylim([-2 2]);
+ylim([-5 5]);
 
 subplot(2,2,4)
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
@@ -171,7 +171,7 @@ errorbar(vP_range + 0.26, vP_means_jitter_slow(:,3) - vP_range, 1*vP_devs_jitter
 errorbar(vP_range + 0.39, vP_means_jitter_slow(:,4) - vP_range, 1*vP_devs_jitter_slow(:,4),'LineWidth',1.1,'Color',Colour4);
 xlim([min(vP_range) max(vP_range)+0.26]);
 xlabel('True {\itv_p} (x10^{-3})','FontSize',8);
-ylim([-2 2]);
+ylim([-5 5]);
 
 set(gcf, 'units', 'centimeters','Position', [5 5 8.67 10.54]);
 
