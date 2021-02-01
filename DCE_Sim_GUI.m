@@ -49,6 +49,8 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
+function text11_CreateFcn(hObject, eventdata, handles)
+
 function Hct_Callback(hObject, eventdata, handles)
 Hct = str2double(get(hObject,'String'));
 if isnan(Hct)

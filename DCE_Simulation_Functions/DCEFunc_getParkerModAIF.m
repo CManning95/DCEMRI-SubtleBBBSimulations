@@ -23,8 +23,7 @@ t_min=t_s/60; %Parker function uses minute units, so convert time;
 %%set Parker function parameters
 A1=0.809; A2=0.330;
 T1=0.17046; T2=0.365;
-sigma1=0.0563; 
-sigma2=0.132;
+sigma1=0.0563; sigma2=0.132;
 s=38.078; tau=0.483;
 
 % take decay_type from variable input, if none then default to MSS2
@@ -39,15 +38,19 @@ switch decay_type % Set alpha and beta values
     case 'MSS2' % set values to match MSS2 data using AKH edit
         alpha=3.1671; beta=1.0165;
         alpha2=0.5628; beta2=0.0266;
+        Scaling_Factor = 1;
     case 'MSS3' % set values to match MSS3 data using AKH edit
         alpha=3.1671; beta=1.0165;
         alpha2=0.765; beta2=0.0325;
+        Scaling_Factor = 1;
     case 'OG Parker' % set values to original Parker
         alpha=0; beta=0;
-        alpha2=1.050; beta2=0.1685; 
-    case 'OG Parker-MSS3' % First pass similar to OG Parker but long-term decay to match MSS3/high-res AIF
-        alpha=0.246; beta=0.380;
-        alpha2=0.765; beta2=0.0325;
+        alpha2=1.050; beta2=0.1685;
+        Scaling_Factor = 1;
+    case 'OG Parker-MSS3' % First pass similar to OG Parker but long-term decay to match MSS3/high-res AIF, scale to match AUC of MSS3 average AIF
+        alpha=0.246; beta=0.180;
+        alpha2=0.765; beta2=0.0240;
+        Scaling_Factor = 0.89;
 end
 Cb_mM=(A1/(sigma1*sqrt(2*pi)))*exp(-((t_min-T1).^2)/(2*sigma1^2)) + ... %calculate Cb
     (A2/(sigma2*sqrt(2*pi)))*exp(-((t_min-T2).^2)/(2*sigma2^2)) + ...
@@ -58,6 +61,6 @@ Cp_AIF_mM=Cb_mM/(1-Hct); %convert to Cp
 t_preContrast_s=fliplr(t_start_s-t_res_s/2:-t_res_s:0).'; %pre-injection time points (calculate backwards to zero, then reverse, so that time interval is constant)
 
 t_s=[ t_preContrast_s ; t_s + t_start_s]; %add pre-contrast time points to time values
-Cp_AIF_mM=[zeros(size(t_preContrast_s)) ; Cp_AIF_mM]; % add pre-contrast concentration values (zeros)
+Cp_AIF_mM=Scaling_Factor*[zeros(size(t_preContrast_s)) ; Cp_AIF_mM]; % add pre-contrast concentration values (zeros), scale if necessary
 
 end

@@ -144,7 +144,7 @@ if SimParam.Plot_extra_figs == 1;
     subplot(3,2,2)
     plot(timepoints_full_s,Ct_mM,'k-',timepoints_full_s,Ct_cp_mM,'r--',timepoints_full_s,Ct_ees_mM,'g--'); hold on
     errorbar(t_sample,mean(Ct_sample_mM,2),1*std(Ct_sample_mM,0,2),'.');
-    title(['Tissue Conc']);
+    title(['Tissue Conc contributions']);
     ylabel('C_t / mMol');
     legend({'Full C_t','vascular conc', 'extravascular conc', 'Sampled C_t'}, 'Location', 'northeastoutside', 'Fontsize',10)
     subplot(3,2,4)
