@@ -469,28 +469,26 @@ mean_PS_bias_slow_SXL_KFA112 = mean2(PS_means_B1_slow_SXL(:,2) - repmat(PS_range
 mean_PS_bias_fast_SXL_KFAdifferent = mean2(PS_means_B1_fast_SXL(:,3) - repmat(PS_range,1,1))
 mean_PS_bias_slow_SXL_KFAdifferent = mean2(PS_means_B1_slow_SXL(:,3) - repmat(PS_range,1,1))
 
-%%
+%% Figure of PS values
 Colour1  = [0 0.447 0.741 0.5];
 Colour2 = [0.85 0.325 0.098 0.5];
 Colour3 = [0.929 0.694 0.125 0.5];
 %Colour4 = [0.4940 0.1840 0.5560 0.5];
 
 figure()
-h1=subplot(4,4,1) % fast, FXL, no correction
+h1=subplot(2,4,1) % fast, FXL, no correction
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
 errorbar(PS_range, PS_means_B1_fast(:,1) - PS_range, 1*PS_devs_B1_fast(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
 errorbar(PS_range + 0.03, PS_means_B1_fast(:,2) - PS_range, 1*PS_devs_B1_fast(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
 errorbar(PS_range + 0.06, PS_means_B1_fast(:,3) - PS_range, 1*PS_devs_B1_fast(:,3),'LineWidth',1.1,'Color',Colour3);
-ylabel({'{\bfNo B1 correction}'},'FontSize',8);
+ylabel({'{\bfNo {\itB_1^+} correction}'},'FontSize',8);
 %xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 xlim([0 max(PS_range)]);
 ylim([-2 2]);
 title('Bolus (FXL fitting)','FontSize',8);
 
-
-
-subplot(4,4,2) % slow, FXL, no correction
+subplot(2,4,2) % slow, FXL, no correction
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
 errorbar(PS_range, PS_means_B1_slow(:,1) - PS_range, 1*PS_devs_B1_slow(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
@@ -498,11 +496,11 @@ errorbar(PS_range + 0.03, PS_means_B1_slow(:,2) - PS_range, 1*PS_devs_B1_slow(:,
 errorbar(PS_range + 0.06, PS_means_B1_slow(:,3) - PS_range, 1*PS_devs_B1_slow(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
 xlim([0 max(PS_range)]);
 ylim([-2 2]);
-title('Slow (FXL fitting)','FontSize',8);
+title('Slow inj (FXL fitting)','FontSize',8);
 %xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 
 
-subplot(4,4,3) % fast, NXL, no correction
+subplot(2,4,3) % fast, NXL, no correction
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
 errorbar(PS_range, PS_means_B1_fast_SXL(:,1) - PS_range, 1*PS_devs_B1_fast_SXL(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
@@ -513,7 +511,7 @@ ylim([-2 2]);
 title('Bolus (NXL fitting)','FontSize',8);
 %xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 
-subplot(4,4,4) % slow, NXL, no correction
+subplot(2,4,4) % slow, NXL, no correction
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
 errorbar(PS_range, PS_means_B1_slow_SXL(:,1) - PS_range, 1*PS_devs_B1_slow_SXL(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
@@ -521,10 +519,10 @@ errorbar(PS_range + 0.03, PS_means_B1_slow_SXL(:,2) - PS_range, 1*PS_devs_B1_slo
 errorbar(PS_range + 0.06, PS_means_B1_slow_SXL(:,3) - PS_range, 1*PS_devs_B1_slow_SXL(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
 xlim([0 max(PS_range)]);
 ylim([-2 2]);
-title('Slow (NXL fitting)','FontSize',8);
+title('Slow inj (NXL fitting)','FontSize',8);
 %xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 
-h2=subplot(4,4,5) % fast, FXL, correction
+h2=subplot(2,4,5) % fast, FXL, correction
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
 errorbar(PS_range, PS_means_B1_fast_corrected(:,1) - PS_range, 1*PS_devs_B1_fast_corrected(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
@@ -532,13 +530,13 @@ errorbar(PS_range + 0.03, PS_means_B1_fast_corrected(:,2) - PS_range, 1*PS_devs_
 errorbar(PS_range + 0.06, PS_means_B1_fast_corrected(:,3) - PS_range, 1*PS_devs_B1_fast_corrected(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
 xlim([0 max(PS_range)]);
 ylim([-0.8 2]);
-ylabel({'{\bfB1 corrected}'},'FontSize',8);
+ylabel({'{\bf{\itB_1^+} corrected}'},'FontSize',8);
 %title('Bolus ({\itB1} corrected)','FontSize',8);
 xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
-legend({'{\itK_{FA,t}},{\itK_{FA,b}} = 1,1', '{\itK_{FA,t}},{\itK_{FA,b}} = 1.12,1.12', '{\itK_{FA,t}},{\itK_{FA,b}} = 0.95,1.12'},'Location','best','FontSize',5)
+legend({'1,1', '1.12,1.12','0.95,1.12'},'Position',[0.172 0.360 0.081 0.0207],'FontSize',8)
 legend('boxoff')
 
-subplot(4,4,6) % slow, FXL, correction
+subplot(2,4,6) % slow, FXL, correction
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
 errorbar(PS_range, PS_means_B1_slow_corrected(:,1) - PS_range, 1*PS_devs_B1_slow_corrected(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
@@ -549,7 +547,7 @@ ylim([-0.8 2]);
 %title('Slow injection','FontSize',8);
 xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 
-subplot(4,4,7) % fast, SXL, correction
+subplot(2,4,7) % fast, SXL, correction
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
 errorbar(PS_range, PS_means_B1_fast_SXL_corrected(:,1) - PS_range, 1*PS_devs_B1_fast_SXL_corrected(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
@@ -560,7 +558,7 @@ ylim([-0.8 2]);
 %title('Slow injection','FontSize',8);
 xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 
-subplot(4,4,8) % slow, SXL, correction
+subplot(2,4,8) % slow, SXL, correction
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
 errorbar(PS_range, PS_means_B1_slow_SXL_corrected(:,1) - PS_range, 1*PS_devs_B1_slow_SXL_corrected(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
@@ -571,18 +569,43 @@ ylim([-0.8 2]);
 %title('Slow injection','FontSize',8);
 xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 
-h3=subplot(4,4,9) % fast, FXL, no correction
+p1=get(h1,'position');
+p2=get(h2,'position');
+height=p1(2)+p1(4)-p2(2);
+hx1=axes('position',[0.11 p2(2) p2(3) height],'visible','off');
+h_label=ylabel('Fitted {\itPS} error (x10^{-4} min^{-1} )','visible','on');
+
+annotation(figure(1),'textbox',[0.090 0.920 0.05 0.045],'String','(A)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.297 0.920 0.06 0.045],'String','(B)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.503 0.920 0.06 0.045],'String','(C)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.709 0.920 0.06 0.045],'String','(D)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.090 0.445 0.06 0.045],'String','(E)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.297 0.445 0.06 0.045],'String','(F)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.503 0.445 0.06 0.045],'String','(G)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.709 0.445 0.06 0.045],'String','(H)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+
+annotation(figure(1),'textbox',[0.155 0.405 0.2 0.045],'String','{\itK_{FA,t}} , {\itK_{FA,b}}','LineStyle','none','FitBoxToText','off','FontSize',9);
+
+set(gcf, 'units', 'centimeters','PaperPosition', [0 0 20 16]);    % can be bigger than screen
+print(gcf, 'Figure_5.png', '-dpng','-r800');
+print(gcf, 'Figure_5.tif', '-dtiff','-r800');
+
+%% Figure of vp values
+figure(2)
+
+h3=subplot(2,4,1) % fast, FXL, no correction
 
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True vP','HandleVisibility','off'); hold on;
 errorbar(vP_range, vP_means_B1_fast(:,1) - vP_range, 1*vP_devs_B1_fast(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
 errorbar(vP_range + 0.013, vP_means_B1_fast(:,2) - vP_range, 1*vP_devs_B1_fast(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
 errorbar(vP_range + 0.026, vP_means_B1_fast(:,3) - vP_range, 1*vP_devs_B1_fast(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
 %xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
-ylabel({'{\bfNo B1 correction}'},'FontSize',8);
+ylabel({'{\bfNo {\itB_1^+} correction}'},'FontSize',8);
 xlim([min(vP_range) max(vP_range)+0.026]);
 ylim([-1 0.2]);
+title('Bolus (FXL fitting)','FontSize',8);
 
-subplot(4,4,10) % slow, FXL, no correction
+subplot(2,4,2) % slow, FXL, no correction
 
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True vP','HandleVisibility','off'); hold on;
 errorbar(vP_range, vP_means_B1_slow(:,1) - vP_range, 1*vP_devs_B1_slow(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
@@ -591,8 +614,9 @@ errorbar(vP_range + 0.026, vP_means_B1_slow(:,3) - vP_range, 1*vP_devs_B1_slow(:
 %xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
 xlim([min(vP_range) max(vP_range)+0.026]);
 ylim([-1 0.2]);
+title('Slow inj (FXL fitting)','FontSize',8);
 
-subplot(4,4,11) % fast, NXL, no correction
+subplot(2,4,3) % fast, NXL, no correction
 
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True vP','HandleVisibility','off'); hold on;
 errorbar(vP_range, vP_means_B1_fast_SXL(:,1) - vP_range, 1*vP_devs_B1_fast_SXL(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
@@ -601,8 +625,9 @@ errorbar(vP_range + 0.026, vP_means_B1_fast_SXL(:,3) - vP_range, 1*vP_devs_B1_fa
 %xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
 xlim([min(vP_range) max(vP_range)+0.026]);
 ylim([-1 0.2]);
+title('Bolus (NXL fitting)','FontSize',8);
 
-subplot(4,4,12) % slow, NXL, no correction
+subplot(2,4,4) % slow, NXL, no correction
 
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True vP','HandleVisibility','off'); hold on;
 errorbar(vP_range, vP_means_B1_slow_SXL(:,1) - vP_range, 1*vP_devs_B1_slow_SXL(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
@@ -611,19 +636,21 @@ errorbar(vP_range + 0.026, vP_means_B1_slow_SXL(:,3) - vP_range, 1*vP_devs_B1_sl
 %xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
 xlim([min(vP_range) max(vP_range)+0.026]);
 ylim([-1 0.2]);
+title('Slow inj (NXL fitting)','FontSize',8);
 
-h4=subplot(4,4,13) % fast, FXL, correction
+h4=subplot(2,4,5) % fast, FXL, correction
 
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True vP','HandleVisibility','off'); hold on;
 errorbar(vP_range, vP_means_B1_fast_corrected(:,1) - vP_range, 1*vP_devs_B1_fast_corrected(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
 errorbar(vP_range + 0.013, vP_means_B1_fast_corrected(:,2) - vP_range, 1*vP_devs_B1_fast_corrected(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
 errorbar(vP_range + 0.026, vP_means_B1_fast_corrected(:,3) - vP_range, 1*vP_devs_B1_fast_corrected(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
 xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
-ylabel({'{\bfB1 corrected}'},'FontSize',8);
+ylabel({'{\bf{\itB_1^+} corrected}'},'FontSize',8);
 xlim([min(vP_range) max(vP_range)+0.026]);
 ylim([-0.5 0.2]);
 
-subplot(4,4,14) % slow, FXL, correction
+
+subplot(2,4,6) % slow, FXL, correction
 
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True vP','HandleVisibility','off'); hold on;
 errorbar(vP_range, vP_means_B1_slow_corrected(:,1) - vP_range, 1*vP_devs_B1_slow_corrected(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
@@ -633,7 +660,7 @@ xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
 xlim([min(vP_range) max(vP_range)+0.026]);
 ylim([-0.5 0.2]);
 
-subplot(4,4,15) % fast, NXL, correction
+subplot(2,4,7) % fast, NXL, correction
 
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True vP','HandleVisibility','off'); hold on;
 errorbar(vP_range, vP_means_B1_fast_SXL_corrected(:,1) - vP_range, 1*vP_devs_B1_fast_SXL_corrected(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
@@ -642,8 +669,10 @@ errorbar(vP_range + 0.026, vP_means_B1_fast_SXL_corrected(:,3) - vP_range, 1*vP_
 xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
 xlim([min(vP_range) max(vP_range)+0.026]);
 ylim([-0.5 0.2]);
+legend({'1,1', '1.12,1.12', '0.95,1.12'},'Location','best','FontSize',8)
+legend('boxoff')
 
-subplot(4,4,16) % slow, NXL, correction
+subplot(2,4,8) % slow, NXL, correction
 
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True vP','HandleVisibility','off'); hold on;
 errorbar(vP_range, vP_means_B1_slow_SXL_corrected(:,1) - vP_range, 1*vP_devs_B1_slow_SXL_corrected(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
@@ -653,37 +682,25 @@ xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
 xlim([min(vP_range) max(vP_range)+0.026]);
 ylim([-0.5 0.2]);
 
-p1=get(h1,'position');
-p2=get(h2,'position');
-height=p1(2)+p1(4)-p2(2);
-hx1=axes('position',[0.11 p2(2) p2(3) height],'visible','off');
-h_label=ylabel('Fitted {\itPS} error (x10^{-4} min^{-1} )','visible','on');
-
 p3=get(h3,'position');
 p4=get(h4,'position');
 height=p3(2)+p3(4)-p4(2);
 hx2=axes('position',[0.11 p4(2) p4(3) height],'visible','off');
 h_label=ylabel('Fitted {\itv_p} error (x10^{-2})','visible','on');
 
-set(gcf, 'units', 'centimeters','Position', [5 5 17.56 21.08]);
+set(gcf, 'units', 'centimeters','Position', [5 5 20 16]);
 
-annotation(figure(1),'textbox',[0.090 0.918 0.05 0.045],'String','(A)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.297 0.918 0.06 0.045],'String','(B)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.503 0.918 0.06 0.045],'String','(C)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.709 0.918 0.06 0.045],'String','(D)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.090 0.697 0.06 0.045],'String','(E)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.297 0.697 0.06 0.045],'String','(F)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.503 0.697 0.06 0.045],'String','(G)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.709 0.697 0.06 0.045],'String','(H)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.090 0.476 0.06 0.045],'String','(I)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.297 0.476 0.06 0.045],'String','(J)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.503 0.476 0.06 0.045],'String','(K)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.709 0.476 0.06 0.045],'String','(L)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.090 0.255 0.06 0.045],'String','(M)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.297 0.255 0.06 0.045],'String','(N)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.503 0.255 0.06 0.045],'String','(O)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.709 0.255 0.06 0.045],'String','(P)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(2),'textbox',[0.090 0.920 0.06 0.045],'String','(A)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(2),'textbox',[0.297 0.920 0.06 0.045],'String','(B)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(2),'textbox',[0.503 0.920 0.06 0.045],'String','(C)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(2),'textbox',[0.709 0.920 0.06 0.045],'String','(D)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(2),'textbox',[0.090 0.445 0.06 0.045],'String','(E)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(2),'textbox',[0.297 0.445 0.06 0.045],'String','(F)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(2),'textbox',[0.503 0.445 0.06 0.045],'String','(G)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(2),'textbox',[0.709 0.445 0.06 0.045],'String','(H)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
 
-set(gcf, 'units', 'centimeters','PaperPosition', [0 0 17.56 21.08]);    % can be bigger than screen
-print(gcf, 'Figure_5.png', '-dpng','-r800');
-print(gcf, 'Figure_5.tif', '-dtiff','-r800');
+annotation(figure(2),'textbox',[0.563 0.184 0.2 0.045],'String','{\itK_{FA,t}} , {\itK_{FA,b}}','LineStyle','none','FitBoxToText','off','FontSize',9);
+
+set(gcf, 'units', 'centimeters','PaperPosition', [0 0 20 16]);    % can be bigger than screen
+set(gcf,'PaperPositionMode','manual');
+print(gcf, 'Supp_Figure_vP_B1.png', '-dpng','-r800');

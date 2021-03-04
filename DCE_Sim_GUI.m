@@ -1330,6 +1330,6 @@ PhysParam.PS_perMin = PhysParam.PS_fixed_single;
 CreateStruct.Interpreter = 'tex';
 CreateStruct.WindowStyle = 'modal';
 PS_msg = msgbox(['Mean PS = ' num2str(mean(PS_fit_1,2)*1e4) '(\pm ' num2str(1e4*std(PS_fit_1,0)) ') x 10^{-4} per min, mean v_p = '...
-    num2str(mean(vP_fit_1,2)*1e3) '(\pm ' num2str(1e3*std(vP_fit_1,0)) ')'], 'Single PS sim', CreateStruct);
+    num2str(mean(vP_fit_1,2)*1e3) '(\pm ' num2str(1e3*std(vP_fit_1,0)) ') x 10^{-3}'], 'Single PS sim', CreateStruct);
 
 

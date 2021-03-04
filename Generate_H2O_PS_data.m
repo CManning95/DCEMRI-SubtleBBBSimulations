@@ -382,7 +382,7 @@ end
     save('vP_devs_H2O','vP_devs_H2O_fast','vP_devs_H2O_fast_exclude','vP_devs_H2O_SXL',...
        'vP_devs_H2O_SXL_exclude','vP_devs_H2O_slow','vP_devs_H2O_slow_exclude','vP_devs_H2O_slow_SXL','vP_devs_H2O_slow_SXL_exclude');
 
-%% Plot figures       
+%% Plot figures of PS     
 Colour1  = [0 0.447 0.741 0.5];
 Colour2 = [0.85 0.325 0.098 0.5];
 Colour3 = [0.929 0.694 0.125 0.5];
@@ -391,230 +391,245 @@ Colour5 = [0.466 0.674 0.188 0.5];
 
 figure(1)
 
-h1=subplot(4,4,1) % fast, FXL
+h1=subplot(2,4,1) % fast, FXL
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(PS_range, PS_means_H2O_fast(:,1) - PS_range, 1*PS_devs_H2O_fast(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(PS_range, PS_means_H2O_fast(:,1) - PS_range, 1*PS_devs_H2O_fast(:,1),'LineWidth',1.1,'Color',Colour1, 'Linestyle', '--'); hold on;
 errorbar(PS_range + 0.04, PS_means_H2O_fast(:,2) - PS_range, 1*PS_devs_H2O_fast(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
 errorbar(PS_range + 0.08, PS_means_H2O_fast(:,3) - PS_range, 1*PS_devs_H2O_fast(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
 errorbar(PS_range + 0.12, PS_means_H2O_fast(:,4) - PS_range, 1*PS_devs_H2O_fast(:,4),'Linewidth',1.1,'Color',Colour4); hold on;
-errorbar(PS_range + 0.16, PS_means_H2O_fast(:,5) - PS_range, 1*PS_devs_H2O_fast(:,5),'Linewidth',1.1,'Color',Colour5, 'Linestyle', ':');
+errorbar(PS_range + 0.16, PS_means_H2O_fast(:,5) - PS_range, 1*PS_devs_H2O_fast(:,5),'Linewidth',1.1,'Color',Colour5, 'Linestyle', '--');
 ylabel({'{\bfNo exclusion}'},'FontSize',8);
 title('Bolus (FXL fitting)','FontSize',8);
 xlim([0 max(PS_range)+0.12]);
 ylim([-5 5]);
-legend({'{\itk_{be}} = 0 s^{-1}','{\itk_{be}} = 1.375 s^{-1}','{\itk_{be}} = 2.75 s^{-1}','{\itk_{be}} = 5.5 s^{-1}','{\itk_{be}} = 1000 s^{-1}'},'Position',[0.172 0.815 0.081 0.0207],'FontSize',6)
+legend({'{\itk_{be}} = 0 s^{-1}','{\itk_{be}} = 1.375 s^{-1}','{\itk_{be}} = 2.75 s^{-1}','{\itk_{be}} = 5.5 s^{-1}','{\itk_{be}} = 1000 s^{-1}'},'Position',[0.172 0.660 0.081 0.0207],'FontSize',8)
 legend('boxoff')
 
-subplot(4,4,2) % slow, FXL
+subplot(2,4,2) % slow, FXL
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(PS_range, PS_means_H2O_slow(:,1) - PS_range, 1*PS_devs_H2O_slow(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(PS_range, PS_means_H2O_slow(:,1) - PS_range, 1*PS_devs_H2O_slow(:,1),'LineWidth',1.1,'Color',Colour1, 'Linestyle', '--'); hold on;
 errorbar(PS_range + 0.04, PS_means_H2O_slow(:,2) - PS_range, 1*PS_devs_H2O_slow(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
 errorbar(PS_range + 0.08, PS_means_H2O_slow(:,3) - PS_range, 1*PS_devs_H2O_slow(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
 errorbar(PS_range + 0.12, PS_means_H2O_slow(:,4) - PS_range, 1*PS_devs_H2O_slow(:,4),'LineWidth',1.1,'Color',Colour4); hold on;
-errorbar(PS_range + 0.16, PS_means_H2O_slow(:,5) - PS_range, 1*PS_devs_H2O_slow(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', ':');
-title('Slow (FXL fitting)','FontSize',8);
+errorbar(PS_range + 0.16, PS_means_H2O_slow(:,5) - PS_range, 1*PS_devs_H2O_slow(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', '--');
+title('Slow inj (FXL fitting)','FontSize',8);
 xlim([0 max(PS_range)+0.12]);
 ylim([-2.75 2.75]);
 
-subplot(4,4,3) % fast, NXL
+subplot(2,4,3) % fast, NXL
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(PS_range, PS_means_H2O_SXL(:,1) - PS_range, 1*PS_devs_H2O_SXL(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(PS_range, PS_means_H2O_SXL(:,1) - PS_range, 1*PS_devs_H2O_SXL(:,1),'LineWidth',1.1,'Color',Colour1, 'Linestyle', '--'); hold on;
 errorbar(PS_range + 0.04, PS_means_H2O_SXL(:,2) - PS_range, 1*PS_devs_H2O_SXL(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
 errorbar(PS_range + 0.08, PS_means_H2O_SXL(:,3) - PS_range, 1*PS_devs_H2O_SXL(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
 errorbar(PS_range + 0.12, PS_means_H2O_SXL(:,4) - PS_range, 1*PS_devs_H2O_SXL(:,4),'LineWidth',1.1,'Color',Colour4); hold on;
-errorbar(PS_range + 0.16, PS_means_H2O_SXL(:,5) - PS_range, 1*PS_devs_H2O_SXL(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', ':');
+errorbar(PS_range + 0.16, PS_means_H2O_SXL(:,5) - PS_range, 1*PS_devs_H2O_SXL(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', '--');
 title('Bolus (NXL fitting)','FontSize',8);
 xlim([0 max(PS_range)+0.12]);
 ylim([-2.75 2.75]);
 
-subplot(4,4,4) % slow, NXL
+subplot(2,4,4) % slow, NXL
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(PS_range, PS_means_H2O_slow_SXL(:,1) - PS_range, 1*PS_devs_H2O_slow_SXL(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(PS_range, PS_means_H2O_slow_SXL(:,1) - PS_range, 1*PS_devs_H2O_slow_SXL(:,1),'LineWidth',1.1,'Color',Colour1, 'Linestyle', '--'); hold on;
 errorbar(PS_range + 0.04, PS_means_H2O_slow_SXL(:,2) - PS_range, 1*PS_devs_H2O_slow_SXL(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
 errorbar(PS_range + 0.08, PS_means_H2O_slow_SXL(:,3) - PS_range, 1*PS_devs_H2O_slow_SXL(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
 errorbar(PS_range + 0.12, PS_means_H2O_slow_SXL(:,4) - PS_range, 1*PS_devs_H2O_slow_SXL(:,4),'LineWidth',1.1,'Color',Colour4); hold on;
-errorbar(PS_range + 0.16, PS_means_H2O_slow_SXL(:,5) - PS_range, 1*PS_devs_H2O_slow_SXL(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', ':');
-title('Slow (NXL fitting)','FontSize',8);
+errorbar(PS_range + 0.16, PS_means_H2O_slow_SXL(:,5) - PS_range, 1*PS_devs_H2O_slow_SXL(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', '--');
+title('Slow inj (NXL fitting)','FontSize',8);
 xlim([0 max(PS_range)+0.12]);
 ylim([-2.75 2.75]);
 
-h2=subplot(4,4,5) %, fast, FXL, exclude
+h2=subplot(2,4,5) %, fast, FXL, exclude
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(PS_range, PS_means_H2O_fast_exclude(:,1) - PS_range, 1*PS_devs_H2O_fast_exclude(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(PS_range, PS_means_H2O_fast_exclude(:,1) - PS_range, 1*PS_devs_H2O_fast_exclude(:,1),'LineWidth',1.1,'Color',Colour1, 'Linestyle', '--'); hold on;
 errorbar(PS_range + 0.04, PS_means_H2O_fast_exclude(:,2) - PS_range, 1*PS_devs_H2O_fast_exclude(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
 errorbar(PS_range + 0.08, PS_means_H2O_fast_exclude(:,3) - PS_range, 1*PS_devs_H2O_fast_exclude(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
 errorbar(PS_range + 0.12, PS_means_H2O_fast_exclude(:,4) - PS_range, 1*PS_devs_H2O_fast_exclude(:,4),'Linewidth',1.1,'Color',Colour4); hold on;
-errorbar(PS_range + 0.16, PS_means_H2O_fast_exclude(:,5) - PS_range, 1*PS_devs_H2O_fast_exclude(:,5),'Linewidth',1.1,'Color',Colour5, 'Linestyle', ':');
+errorbar(PS_range + 0.16, PS_means_H2O_fast_exclude(:,5) - PS_range, 1*PS_devs_H2O_fast_exclude(:,5),'Linewidth',1.1,'Color',Colour5, 'Linestyle', '--');
 ylabel({'{\bfw/ exclusion}'},'FontSize',8);
 xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 xlim([0 max(PS_range)+0.12]);
 ylim([-2.75 2.75]);
 
-subplot(4,4,6) % slow, FXL, exclude
+subplot(2,4,6) % slow, FXL, exclude
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(PS_range, PS_means_H2O_slow_exclude(:,1) - PS_range, 1*PS_devs_H2O_slow_exclude(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(PS_range, PS_means_H2O_slow_exclude(:,1) - PS_range, 1*PS_devs_H2O_slow_exclude(:,1),'LineWidth',1.1,'Color',Colour1, 'Linestyle', '--'); hold on;
 errorbar(PS_range + 0.04, PS_means_H2O_slow_exclude(:,2) - PS_range, 1*PS_devs_H2O_slow_exclude(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
 errorbar(PS_range + 0.08, PS_means_H2O_slow_exclude(:,3) - PS_range, 1*PS_devs_H2O_slow_exclude(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
 errorbar(PS_range + 0.12, PS_means_H2O_slow_exclude(:,4) - PS_range, 1*PS_devs_H2O_slow_exclude(:,4),'Linewidth',1.1,'Color',Colour4); hold on;
-errorbar(PS_range + 0.16, PS_means_H2O_slow_exclude(:,5) - PS_range, 1*PS_devs_H2O_slow_exclude(:,5),'Linewidth',1.1,'Color',Colour5, 'Linestyle', ':');
+errorbar(PS_range + 0.16, PS_means_H2O_slow_exclude(:,5) - PS_range, 1*PS_devs_H2O_slow_exclude(:,5),'Linewidth',1.1,'Color',Colour5, 'Linestyle', '--');
 xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 xlim([0 max(PS_range)+0.12]);
 ylim([-2.75 2.75]);
 
-subplot(4,4,7) % fast, NXL, exclude
+subplot(2,4,7) % fast, NXL, exclude
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(PS_range, PS_means_H2O_SXL_exclude(:,1) - PS_range, 1*PS_devs_H2O_SXL_exclude(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(PS_range, PS_means_H2O_SXL_exclude(:,1) - PS_range, 1*PS_devs_H2O_SXL_exclude(:,1),'LineWidth',1.1,'Color',Colour1, 'Linestyle', '--'); hold on;
 errorbar(PS_range + 0.04, PS_means_H2O_SXL_exclude(:,2) - PS_range, 1*PS_devs_H2O_SXL_exclude(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
 errorbar(PS_range + 0.08, PS_means_H2O_SXL_exclude(:,3) - PS_range, 1*PS_devs_H2O_SXL_exclude(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
 errorbar(PS_range + 0.12, PS_means_H2O_SXL_exclude(:,4) - PS_range, 1*PS_devs_H2O_SXL_exclude(:,4),'LineWidth',1.1,'Color',Colour4); hold on;
-errorbar(PS_range + 0.16, PS_means_H2O_SXL_exclude(:,5) - PS_range, 1*PS_devs_H2O_SXL_exclude(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', ':');
+errorbar(PS_range + 0.16, PS_means_H2O_SXL_exclude(:,5) - PS_range, 1*PS_devs_H2O_SXL_exclude(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', '--');
 xlim([0 max(PS_range)+0.12]);
 ylim([-2.75 2.75]);
 xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 
-subplot(4,4,8) % slow, NXL, exclude
+subplot(2,4,8) % slow, NXL, exclude
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(PS_range, PS_means_H2O_slow_SXL_exclude(:,1) - PS_range, 1*PS_devs_H2O_slow_SXL_exclude(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
+errorbar(PS_range, PS_means_H2O_slow_SXL_exclude(:,1) - PS_range, 1*PS_devs_H2O_slow_SXL_exclude(:,1),'LineWidth',1.1,'Color',Colour1, 'Linestyle', '--'); hold on;
 errorbar(PS_range + 0.04, PS_means_H2O_slow_SXL_exclude(:,2) - PS_range, 1*PS_devs_H2O_slow_SXL_exclude(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
 errorbar(PS_range + 0.08, PS_means_H2O_slow_SXL_exclude(:,3) - PS_range, 1*PS_devs_H2O_slow_SXL_exclude(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
 errorbar(PS_range + 0.12, PS_means_H2O_slow_SXL_exclude(:,4) - PS_range, 1*PS_devs_H2O_slow_SXL_exclude(:,4),'LineWidth',1.1,'Color',Colour4); hold on;
-errorbar(PS_range + 0.16, PS_means_H2O_slow_SXL_exclude(:,5) - PS_range, 1*PS_devs_H2O_slow_SXL_exclude(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', ':');
+errorbar(PS_range + 0.16, PS_means_H2O_slow_SXL_exclude(:,5) - PS_range, 1*PS_devs_H2O_slow_SXL_exclude(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', '--');
 xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 xlim([0 max(PS_range)+0.12]);
 ylim([-2.75 2.75]);
 
-h3=subplot(4,4,9) % fast, FXL
-
-plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(vP_range, vP_means_H2O_fast(:,1) - vP_range, 1*vP_devs_H2O_fast(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
-errorbar(vP_range + 0.011, vP_means_H2O_fast(:,2) - vP_range, 1*vP_devs_H2O_fast(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
-errorbar(vP_range + 0.022, vP_means_H2O_fast(:,3) - vP_range, 1*vP_devs_H2O_fast(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
-errorbar(vP_range + 0.033, vP_means_H2O_fast(:,4) - vP_range, 1*vP_devs_H2O_fast(:,4),'LineWidth',1.1,'Color',Colour4); hold on;
-errorbar(vP_range + 0.044, vP_means_H2O_fast(:,5) - vP_range, 1*vP_devs_H2O_fast(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', ':');
-ylabel({'{\bfNo exclusion}'},'FontSize',8);
-xlim([min(vP_range) max(vP_range)+0.026]);
-ylim([-1.4 0.2]);
-
-subplot(4,4,10) % slow, FXL
-
-plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(vP_range, vP_means_H2O_slow(:,1) - vP_range, 1*vP_devs_H2O_slow(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
-errorbar(vP_range + 0.011, vP_means_H2O_slow(:,2) - vP_range, 1*vP_devs_H2O_slow(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
-errorbar(vP_range + 0.022, vP_means_H2O_slow(:,3) - vP_range, 1*vP_devs_H2O_slow(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
-errorbar(vP_range + 0.033, vP_means_H2O_slow(:,4) - vP_range, 1*vP_devs_H2O_slow(:,4),'LineWidth',1.1,'Color',Colour4); hold on;
-errorbar(vP_range + 0.044, vP_means_H2O_slow(:,5) - vP_range, 1*vP_devs_H2O_slow(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', ':');
-xlim([min(vP_range) max(vP_range)+0.026]);
-ylim([-0.8 0.8]);
-
-subplot(4,4,11) % fast, NXL
-
-plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(vP_range, vP_means_H2O_SXL(:,1) - vP_range, 1*vP_devs_H2O_SXL(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
-errorbar(vP_range + 0.011, vP_means_H2O_SXL(:,2) - vP_range, 1*vP_devs_H2O_SXL(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
-errorbar(vP_range + 0.022, vP_means_H2O_SXL(:,3) - vP_range, 1*vP_devs_H2O_SXL(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
-errorbar(vP_range + 0.033, vP_means_H2O_SXL(:,4) - vP_range, 1*vP_devs_H2O_SXL(:,4),'LineWidth',1.1,'Color',Colour4); hold on;
-errorbar(vP_range + 0.044, vP_means_H2O_SXL(:,5) - vP_range, 1*vP_devs_H2O_SXL(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', ':');
-xlim([min(vP_range) max(vP_range)+0.026]);
-ylim([-0.8 0.8]);
-
-subplot(4,4,12) % slow, NXL
-
-plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(vP_range, vP_means_H2O_slow_SXL(:,1) - vP_range, 1*vP_devs_H2O_slow_SXL(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
-errorbar(vP_range + 0.011, vP_means_H2O_slow_SXL(:,2) - vP_range, 1*vP_devs_H2O_slow_SXL(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
-errorbar(vP_range + 0.022, vP_means_H2O_slow_SXL(:,3) - vP_range, 1*vP_devs_H2O_slow_SXL(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
-errorbar(vP_range + 0.033, vP_means_H2O_slow_SXL(:,4) - vP_range, 1*vP_devs_H2O_slow_SXL(:,4),'LineWidth',1.1,'Color',Colour4); hold on;
-errorbar(vP_range + 0.044, vP_means_H2O_slow_SXL(:,5) - vP_range, 1*vP_devs_H2O_slow_SXL(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', ':');
-xlim([min(vP_range) max(vP_range)+0.026]);
-ylim([-0.8 0.8]);
-
-h4=subplot(4,4,13) % fast, FXL, exclude
-
-plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(vP_range, vP_means_H2O_fast_exclude(:,1) - vP_range, 1*vP_devs_H2O_fast_exclude(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
-errorbar(vP_range + 0.011, vP_means_H2O_fast_exclude(:,2) - vP_range, 1*vP_devs_H2O_fast_exclude(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
-errorbar(vP_range + 0.022, vP_means_H2O_fast_exclude(:,3) - vP_range, 1*vP_devs_H2O_fast_exclude(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
-errorbar(vP_range + 0.033, vP_means_H2O_fast_exclude(:,4) - vP_range, 1*vP_devs_H2O_fast_exclude(:,4),'LineWidth',1.1,'Color',Colour4); hold on;
-errorbar(vP_range + 0.044, vP_means_H2O_fast_exclude(:,5) - vP_range, 1*vP_devs_H2O_fast_exclude(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', ':');
-xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
-ylabel({'{\bfw/ exclusion}'},'FontSize',8);
-xlim([min(vP_range) max(vP_range)+0.026]);
-ylim([-0.8 0.8]);
-
-subplot(4,4,14) % slow, FXL, exclude
-
-plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(vP_range, vP_means_H2O_slow_exclude(:,1) - vP_range, 1*vP_devs_H2O_slow_exclude(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
-errorbar(vP_range + 0.011, vP_means_H2O_slow_exclude(:,2) - vP_range, 1*vP_devs_H2O_slow_exclude(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
-errorbar(vP_range + 0.022, vP_means_H2O_slow_exclude(:,3) - vP_range, 1*vP_devs_H2O_slow_exclude(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
-errorbar(vP_range + 0.033, vP_means_H2O_slow_exclude(:,4) - vP_range, 1*vP_devs_H2O_slow_exclude(:,4),'LineWidth',1.1,'Color',Colour4); hold on;
-errorbar(vP_range + 0.044, vP_means_H2O_slow_exclude(:,5) - vP_range, 1*vP_devs_H2O_slow_exclude(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', ':');
-xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
-xlim([min(vP_range) max(vP_range)+0.026]);
-ylim([-0.8 0.8]);
-
-subplot(4,4,15) % fast, NXL, exclude
-
-plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(vP_range, vP_means_H2O_SXL_exclude(:,1) - vP_range, 1*vP_devs_H2O_SXL_exclude(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
-errorbar(vP_range + 0.011, vP_means_H2O_SXL_exclude(:,2) - vP_range, 1*vP_devs_H2O_SXL_exclude(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
-errorbar(vP_range + 0.022, vP_means_H2O_SXL_exclude(:,3) - vP_range, 1*vP_devs_H2O_SXL_exclude(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
-errorbar(vP_range + 0.033, vP_means_H2O_SXL_exclude(:,4) - vP_range, 1*vP_devs_H2O_SXL_exclude(:,4),'LineWidth',1.1,'Color',Colour4); hold on;
-errorbar(vP_range + 0.044, vP_means_H2O_SXL_exclude(:,5) - vP_range, 1*vP_devs_H2O_SXL_exclude(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', ':');
-xlim([min(vP_range) max(vP_range)+0.026]);
-xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
-ylim([-0.8 0.8]);
-
-subplot(4,4,16) % slow, NXL, exclude
-plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
-errorbar(vP_range, vP_means_H2O_slow_SXL_exclude(:,1) - vP_range, 1*vP_devs_H2O_slow_SXL_exclude(:,1),'LineWidth',1.1,'Color',Colour1); hold on;
-errorbar(vP_range + 0.011, vP_means_H2O_slow_SXL_exclude(:,2) - vP_range, 1*vP_devs_H2O_slow_SXL_exclude(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
-errorbar(vP_range + 0.022, vP_means_H2O_slow_SXL_exclude(:,3) - vP_range, 1*vP_devs_H2O_slow_SXL_exclude(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
-errorbar(vP_range + 0.033, vP_means_H2O_slow_SXL_exclude(:,4) - vP_range, 1*vP_devs_H2O_slow_SXL_exclude(:,4),'LineWidth',1.1,'Color',Colour4); hold on;
-errorbar(vP_range + 0.044, vP_means_H2O_slow_SXL_exclude(:,5) - vP_range, 1*vP_devs_H2O_slow_SXL_exclude(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', ':');
-xlim([min(vP_range) max(vP_range)+0.026]);
-xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
-ylim([-0.8 0.8]);
-set(gcf, 'units', 'centimeters','Position', [5 5 17.56 21.08]);
-
+figure(1)
 p1=get(h1,'position');
 p2=get(h2,'position');
 height=p1(2)+p1(4)-p2(2);
 hx1=axes('position',[0.11 p2(2) p2(3) height],'visible','off');
 h_label=ylabel('Fitted {\itPS} error (x10^{-4} min^{-1} )','visible','on');
 
+annotation(figure(1),'textbox',[0.090 0.920 0.05 0.045],'String','(A)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.297 0.920 0.06 0.045],'String','(B)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.503 0.920 0.06 0.045],'String','(C)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.709 0.920 0.06 0.045],'String','(D)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.090 0.445 0.06 0.045],'String','(E)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.297 0.445 0.06 0.045],'String','(F)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.503 0.445 0.06 0.045],'String','(G)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(1),'textbox',[0.709 0.445 0.06 0.045],'String','(H)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+
+set(gcf, 'units', 'centimeters','PaperPosition', [0 0 20 16]);    % can be bigger than screen
+set(gcf,'PaperPositionMode','manual');
+print(gcf, 'Figure_2.png', '-dpng','-r800');
+print(gcf, 'Figure_2.tif', '-dtiff','-r800');
+
+%% Plot Figure of vp (for supplementary material)
+figure(2)
+h3=subplot(2,4,1) % fast, FXL
+
+plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
+errorbar(vP_range, vP_means_H2O_fast(:,1) - vP_range, 1*vP_devs_H2O_fast(:,1),'LineWidth',1.1,'Color',Colour1, 'Linestyle', '--'); hold on;
+errorbar(vP_range + 0.011, vP_means_H2O_fast(:,2) - vP_range, 1*vP_devs_H2O_fast(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(vP_range + 0.022, vP_means_H2O_fast(:,3) - vP_range, 1*vP_devs_H2O_fast(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
+errorbar(vP_range + 0.033, vP_means_H2O_fast(:,4) - vP_range, 1*vP_devs_H2O_fast(:,4),'LineWidth',1.1,'Color',Colour4); hold on;
+errorbar(vP_range + 0.044, vP_means_H2O_fast(:,5) - vP_range, 1*vP_devs_H2O_fast(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', '--');
+ylabel({'{\bfNo exclusion}'},'FontSize',8);
+xlim([min(vP_range) max(vP_range)+0.026]);
+ylim([-1.4 0.2]);
+title('Bolus (FXL fitting)','FontSize',8);
+
+subplot(2,4,2) % slow, FXL
+
+plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
+errorbar(vP_range, vP_means_H2O_slow(:,1) - vP_range, 1*vP_devs_H2O_slow(:,1),'LineWidth',1.1,'Color',Colour1, 'Linestyle', '--'); hold on;
+errorbar(vP_range + 0.011, vP_means_H2O_slow(:,2) - vP_range, 1*vP_devs_H2O_slow(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(vP_range + 0.022, vP_means_H2O_slow(:,3) - vP_range, 1*vP_devs_H2O_slow(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
+errorbar(vP_range + 0.033, vP_means_H2O_slow(:,4) - vP_range, 1*vP_devs_H2O_slow(:,4),'LineWidth',1.1,'Color',Colour4); hold on;
+errorbar(vP_range + 0.044, vP_means_H2O_slow(:,5) - vP_range, 1*vP_devs_H2O_slow(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', '--');
+xlim([min(vP_range) max(vP_range)+0.026]);
+ylim([-0.8 0.8]);
+title('Slow inj (FXL fitting)','FontSize',8);
+
+subplot(2,4,3) % fast, NXL
+
+plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
+errorbar(vP_range, vP_means_H2O_SXL(:,1) - vP_range, 1*vP_devs_H2O_SXL(:,1),'LineWidth',1.1,'Color',Colour1, 'Linestyle', '--'); hold on;
+errorbar(vP_range + 0.011, vP_means_H2O_SXL(:,2) - vP_range, 1*vP_devs_H2O_SXL(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(vP_range + 0.022, vP_means_H2O_SXL(:,3) - vP_range, 1*vP_devs_H2O_SXL(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
+errorbar(vP_range + 0.033, vP_means_H2O_SXL(:,4) - vP_range, 1*vP_devs_H2O_SXL(:,4),'LineWidth',1.1,'Color',Colour4); hold on;
+errorbar(vP_range + 0.044, vP_means_H2O_SXL(:,5) - vP_range, 1*vP_devs_H2O_SXL(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', '--');
+xlim([min(vP_range) max(vP_range)+0.026]);
+ylim([-0.8 0.8]);
+title('Bolus (NXL fitting)','FontSize',8);
+
+subplot(2,4,4) % slow, NXL
+
+plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
+errorbar(vP_range, vP_means_H2O_slow_SXL(:,1) - vP_range, 1*vP_devs_H2O_slow_SXL(:,1),'LineWidth',1.1,'Color',Colour1, 'Linestyle', '--'); hold on;
+errorbar(vP_range + 0.011, vP_means_H2O_slow_SXL(:,2) - vP_range, 1*vP_devs_H2O_slow_SXL(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(vP_range + 0.022, vP_means_H2O_slow_SXL(:,3) - vP_range, 1*vP_devs_H2O_slow_SXL(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
+errorbar(vP_range + 0.033, vP_means_H2O_slow_SXL(:,4) - vP_range, 1*vP_devs_H2O_slow_SXL(:,4),'LineWidth',1.1,'Color',Colour4); hold on;
+errorbar(vP_range + 0.044, vP_means_H2O_slow_SXL(:,5) - vP_range, 1*vP_devs_H2O_slow_SXL(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', '--');
+xlim([min(vP_range) max(vP_range)+0.026]);
+ylim([-0.8 0.8]);
+title('Slow inj (NXL fitting)','FontSize',8);
+
+h4=subplot(2,4,5) % fast, FXL, exclude
+
+plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
+errorbar(vP_range, vP_means_H2O_fast_exclude(:,1) - vP_range, 1*vP_devs_H2O_fast_exclude(:,1),'LineWidth',1.1,'Color',Colour1, 'Linestyle', '--'); hold on;
+errorbar(vP_range + 0.011, vP_means_H2O_fast_exclude(:,2) - vP_range, 1*vP_devs_H2O_fast_exclude(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(vP_range + 0.022, vP_means_H2O_fast_exclude(:,3) - vP_range, 1*vP_devs_H2O_fast_exclude(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
+errorbar(vP_range + 0.033, vP_means_H2O_fast_exclude(:,4) - vP_range, 1*vP_devs_H2O_fast_exclude(:,4),'LineWidth',1.1,'Color',Colour4); hold on;
+errorbar(vP_range + 0.044, vP_means_H2O_fast_exclude(:,5) - vP_range, 1*vP_devs_H2O_fast_exclude(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', '--');
+xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
+ylabel({'{\bfw/ exclusion}'},'FontSize',8);
+xlim([min(vP_range) max(vP_range)+0.026]);
+ylim([-0.8 0.8]);
+legend({'{\itk_{be}} = 0 s^{-1}','{\itk_{be}} = 1.375 s^{-1}','{\itk_{be}} = 2.75 s^{-1}','{\itk_{be}} = 5.5 s^{-1}','{\itk_{be}} = 1000 s^{-1}'},'Position',[0.172 0.355 0.081 0.0207],'FontSize',8)
+legend('boxoff')
+
+subplot(2,4,6) % slow, FXL, exclude
+
+plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
+errorbar(vP_range, vP_means_H2O_slow_exclude(:,1) - vP_range, 1*vP_devs_H2O_slow_exclude(:,1),'LineWidth',1.1,'Color',Colour1, 'Linestyle', '--'); hold on;
+errorbar(vP_range + 0.011, vP_means_H2O_slow_exclude(:,2) - vP_range, 1*vP_devs_H2O_slow_exclude(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(vP_range + 0.022, vP_means_H2O_slow_exclude(:,3) - vP_range, 1*vP_devs_H2O_slow_exclude(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
+errorbar(vP_range + 0.033, vP_means_H2O_slow_exclude(:,4) - vP_range, 1*vP_devs_H2O_slow_exclude(:,4),'LineWidth',1.1,'Color',Colour4); hold on;
+errorbar(vP_range + 0.044, vP_means_H2O_slow_exclude(:,5) - vP_range, 1*vP_devs_H2O_slow_exclude(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', '--');
+xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
+xlim([min(vP_range) max(vP_range)+0.026]);
+ylim([-0.8 0.8]);
+
+subplot(2,4,7) % fast, NXL, exclude
+
+plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
+errorbar(vP_range, vP_means_H2O_SXL_exclude(:,1) - vP_range, 1*vP_devs_H2O_SXL_exclude(:,1),'LineWidth',1.1,'Color',Colour1, 'Linestyle', '--'); hold on;
+errorbar(vP_range + 0.011, vP_means_H2O_SXL_exclude(:,2) - vP_range, 1*vP_devs_H2O_SXL_exclude(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(vP_range + 0.022, vP_means_H2O_SXL_exclude(:,3) - vP_range, 1*vP_devs_H2O_SXL_exclude(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
+errorbar(vP_range + 0.033, vP_means_H2O_SXL_exclude(:,4) - vP_range, 1*vP_devs_H2O_SXL_exclude(:,4),'LineWidth',1.1,'Color',Colour4); hold on;
+errorbar(vP_range + 0.044, vP_means_H2O_SXL_exclude(:,5) - vP_range, 1*vP_devs_H2O_SXL_exclude(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', '--');
+xlim([min(vP_range) max(vP_range)+0.026]);
+xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
+ylim([-0.8 0.8]);
+
+subplot(2,4,8) % slow, NXL, exclude
+plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
+errorbar(vP_range, vP_means_H2O_slow_SXL_exclude(:,1) - vP_range, 1*vP_devs_H2O_slow_SXL_exclude(:,1),'LineWidth',1.1,'Color',Colour1, 'Linestyle', '--'); hold on;
+errorbar(vP_range + 0.011, vP_means_H2O_slow_SXL_exclude(:,2) - vP_range, 1*vP_devs_H2O_slow_SXL_exclude(:,2),'LineWidth',1.1,'Color',Colour2); hold on;
+errorbar(vP_range + 0.022, vP_means_H2O_slow_SXL_exclude(:,3) - vP_range, 1*vP_devs_H2O_slow_SXL_exclude(:,3),'LineWidth',1.1,'Color',Colour3); hold on;
+errorbar(vP_range + 0.033, vP_means_H2O_slow_SXL_exclude(:,4) - vP_range, 1*vP_devs_H2O_slow_SXL_exclude(:,4),'LineWidth',1.1,'Color',Colour4); hold on;
+errorbar(vP_range + 0.044, vP_means_H2O_slow_SXL_exclude(:,5) - vP_range, 1*vP_devs_H2O_slow_SXL_exclude(:,5),'LineWidth',1.1,'Color',Colour5, 'Linestyle', '--');
+xlim([min(vP_range) max(vP_range)+0.026]);
+xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
+ylim([-0.8 0.8]);
+set(gcf, 'units', 'centimeters','Position', [5 5 20 16]);
+
+figure(2)
 p3=get(h3,'position');
 p4=get(h4,'position');
 height=p3(2)+p3(4)-p4(2);
 hx2=axes('position',[0.11 p4(2) p4(3) height],'visible','off');
 h_label=ylabel('Fitted {\itv_p} error (x10^{-2})','visible','on');
 
-annotation(figure(1),'textbox',[0.090 0.918 0.05 0.045],'String','(A)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.297 0.918 0.06 0.045],'String','(B)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.503 0.918 0.06 0.045],'String','(C)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.709 0.918 0.06 0.045],'String','(D)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.090 0.697 0.06 0.045],'String','(E)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.297 0.697 0.06 0.045],'String','(F)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.503 0.697 0.06 0.045],'String','(G)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.709 0.697 0.06 0.045],'String','(H)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.090 0.476 0.06 0.045],'String','(I)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.297 0.476 0.06 0.045],'String','(J)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.503 0.476 0.06 0.045],'String','(K)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.709 0.476 0.06 0.045],'String','(L)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.090 0.255 0.06 0.045],'String','(M)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.297 0.255 0.06 0.045],'String','(N)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.503 0.255 0.06 0.045],'String','(O)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
-annotation(figure(1),'textbox',[0.709 0.255 0.06 0.045],'String','(P)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(2),'textbox',[0.090 0.920 0.06 0.045],'String','(A)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(2),'textbox',[0.297 0.920 0.06 0.045],'String','(B)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(2),'textbox',[0.503 0.920 0.06 0.045],'String','(C)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(2),'textbox',[0.709 0.920 0.06 0.045],'String','(D)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(2),'textbox',[0.090 0.445 0.06 0.045],'String','(E)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(2),'textbox',[0.297 0.445 0.06 0.045],'String','(F)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(2),'textbox',[0.503 0.445 0.06 0.045],'String','(G)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
+annotation(figure(2),'textbox',[0.709 0.445 0.06 0.045],'String','(H)','LineStyle','none','FitBoxToText','off','fontweight','bold','FontSize',9);
 
-set(gcf, 'units', 'centimeters','PaperPosition', [0 0 17.56 21.08]);    % can be bigger than screen
+set(gcf, 'units', 'centimeters','PaperPosition', [0 0 20 16]);    % can be bigger than screen
 set(gcf,'PaperPositionMode','manual');
-print(gcf, 'Figure_2.png', '-dpng','-r800');
-print(gcf, 'Figure_2.tif', '-dtiff','-r800');
+print(gcf, 'Supp_Figure_vP_H2O.png', '-dpng','-r800');
