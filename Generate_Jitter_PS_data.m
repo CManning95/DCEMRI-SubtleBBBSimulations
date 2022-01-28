@@ -376,7 +376,46 @@ save('vP_means_jitter','vP_means_jitter_fast','vP_means_jitter_fast_SXL','vP_mea
 save('vP_devs_jitter','vP_devs_jitter_fast','vP_devs_jitter_fast_SXL','vP_devs_jitter_slow','vP_devs_jitter_slow_SXL'...
     ,'vP_devs_jitter_fast_exclude','vP_devs_jitter_slow_exclude','vP_devs_jitter_fast_SXL_exclude','vP_devs_jitter_slow_SXL_exclude')
 
-
+%% Calculate sensitivities
+PS_sensitivities = NaN(1,8);
+vP_sensitivities = NaN(1,8);
+for i = 1:10
+    PS_s_fast(i) = max(PS_means_jitter_fast(i,:)) - min(PS_means_jitter_fast(i,:));
+    PS_s_fast_exclude(i) = max(PS_means_jitter_fast_exclude(i,:)) - min(PS_means_jitter_fast_exclude(i,:));
+    PS_s_fast_SXL(i) = max(PS_means_jitter_fast_SXL(i,:)) - min(PS_means_jitter_fast_SXL(i,:));
+    PS_s_fast_SXL_exclude(i) = max(PS_means_jitter_fast_SXL_exclude(i,:)) - min(PS_means_jitter_fast_SXL_exclude(i,:));
+    PS_s_slow(i) = max(PS_means_jitter_slow(i,:)) - min(PS_means_jitter_slow(i,:));
+    PS_s_slow_exclude(i) = max(PS_means_jitter_slow_exclude(i,:)) - min(PS_means_jitter_slow_exclude(i,:));
+    PS_s_slow_SXL(i) = max(PS_means_jitter_slow_SXL(i,:)) - min(PS_means_jitter_slow_SXL(i,:));
+    PS_s_slow_SXL_exclude(i) = max(PS_means_jitter_slow_SXL_exclude(i,:)) - min(PS_means_jitter_slow_SXL_exclude(i,:));
+    
+    vP_s_fast(i) = max(vP_means_jitter_fast(i,:)) - min(vP_means_jitter_fast(i,:));
+    vP_s_fast_exclude(i) = max(vP_means_jitter_fast_exclude(i,:)) - min(vP_means_jitter_fast_exclude(i,:));
+    vP_s_fast_SXL(i) = max(vP_means_jitter_fast_SXL(i,:)) - min(vP_means_jitter_fast_SXL(i,:));
+    vP_s_fast_SXL_exclude(i) = max(vP_means_jitter_fast_SXL_exclude(i,:)) - min(vP_means_jitter_fast_SXL_exclude(i,:));
+    vP_s_slow(i) = max(vP_means_jitter_slow(i,:)) - min(vP_means_jitter_slow(i,:));
+    vP_s_slow_exclude(i) = max(vP_means_jitter_slow_exclude(i,:)) - min(vP_means_jitter_slow_exclude(i,:));
+    vP_s_slow_SXL(i) = max(vP_means_jitter_slow_SXL(i,:)) - min(vP_means_jitter_slow_SXL(i,:));
+    vP_s_slow_SXL_exclude(i) = max(vP_means_jitter_slow_SXL_exclude(i,:)) - min(vP_means_jitter_slow_SXL_exclude(i,:));
+end    
+    PS_sensitivities(1) = mean(PS_s_fast);
+    PS_sensitivities(2) = mean(PS_s_slow);
+    PS_sensitivities(3) = mean(PS_s_fast_SXL);
+    PS_sensitivities(4) = mean(PS_s_slow_SXL);
+    PS_sensitivities(5) = mean(PS_s_fast_exclude);
+    PS_sensitivities(6) = mean(PS_s_slow_exclude);
+    PS_sensitivities(7) = mean(PS_s_fast_SXL_exclude);
+    PS_sensitivities(8) = mean(PS_s_slow_SXL_exclude);
+    
+    vP_sensitivities(1) = mean(vP_s_fast);
+    vP_sensitivities(2) = mean(vP_s_slow);
+    vP_sensitivities(3) = mean(vP_s_fast_SXL);
+    vP_sensitivities(4) = mean(vP_s_slow_SXL);
+    vP_sensitivities(5) = mean(vP_s_fast_exclude);
+    vP_sensitivities(6) = mean(vP_s_slow_exclude);
+    vP_sensitivities(7) = mean(vP_s_fast_SXL_exclude);
+    vP_sensitivities(8) = mean(vP_s_slow_SXL_exclude);
+    
 %% Plot figure of results
 Colour1  = [0 0.447 0.741 0.5];
 Colour2 = [0.85 0.325 0.098 0.5];
@@ -399,6 +438,8 @@ ylim([-5 5]);
 legend({'No delay','+ 4 s','+ 8 s','+ 12 s'},'Location','best','FontSize',8)
 legend('boxoff')
 
+annotation(figure(1),'textbox',[0.138 0.712 0.3 0.045],'String',['{\its} = ' num2str(round(PS_sensitivities(1),2)) ' x 10^{-4} min^{-1}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
+
 subplot(2,4,2) % slow, FXL
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
@@ -409,6 +450,8 @@ errorbar(PS_range + 0.18, PS_means_jitter_slow(:,4) - PS_range, 1*PS_devs_jitter
 xlim([0 max(PS_range)]);
 title('Slow inj (FXL fitting)','FontSize',8);
 ylim([-1.25 1.6]);
+
+annotation(figure(1),'textbox',[0.345 0.759 0.3 0.045],'String',['{\its} = ' num2str(round(PS_sensitivities(2),2)) ' x 10^{-4} min^{-1}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
 
 subplot(2,4,3) % fast, NXL
 
@@ -421,6 +464,8 @@ title('Bolus (NXL fitting)','FontSize',8);
 xlim([0 max(PS_range)]);
 ylim([-1.25 1.6]);
 
+annotation(figure(1),'textbox',[0.552 0.859 0.3 0.045],'String',['{\its} = 1.00 x 10^{-4} min^{-1}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
+
 subplot(2,4,4) % slow, NXL
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
@@ -431,6 +476,8 @@ errorbar(PS_range + 0.18, PS_means_jitter_slow_SXL(:,4) - PS_range, 1*PS_devs_ji
 xlim([0 max(PS_range)]);
 title('Slow inj (NXL fitting)','FontSize',8);
 ylim([-1.25 1.6]);
+
+annotation(figure(1),'textbox',[0.759 0.859 0.3 0.045],'String',['{\its} = ' num2str(round(PS_sensitivities(4),2)) ' x 10^{-4} min^{-1}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
 
 h2=subplot(2,4,5) % fast, FXL, exclude
 
@@ -444,6 +491,8 @@ xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 xlim([0 max(PS_range)]);
 ylim([-1.25 1.6]);
 
+annotation(figure(1),'textbox',[0.138 0.385 0.3 0.045],'String',['{\its} = ' num2str(round(PS_sensitivities(5),2)) ' x 10^{-4} min^{-1}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
+
 subplot(2,4,6) % slow, FXL, exclude
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
@@ -454,6 +503,8 @@ errorbar(PS_range + 0.18, PS_means_jitter_slow_exclude(:,4) - PS_range, 1*PS_dev
 xlim([0 max(PS_range)]);
 xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 ylim([-1.25 1.6]);
+
+annotation(figure(1),'textbox',[0.345 0.285 0.3 0.045],'String',['{\its} = ' num2str(round(PS_sensitivities(6),2)) ' x 10^{-4} min^{-1}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
 
 subplot(2,4,7) % fast, NXL, exclude
 
@@ -466,6 +517,8 @@ xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 xlim([0 max(PS_range)]);
 ylim([-1.25 1.6]);
 
+annotation(figure(1),'textbox',[0.552 0.385 0.3 0.045],'String',['{\its} = ' num2str(round(PS_sensitivities(7),2)) ' x 10^{-4} min^{-1}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
+
 subplot(2,4,8) % slow, NXL, exclude
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
@@ -476,6 +529,8 @@ errorbar(PS_range + 0.18, PS_means_jitter_slow_SXL_exclude(:,4) - PS_range, 1*PS
 xlim([0 max(PS_range)]);
 xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 ylim([-1 1.6]);
+
+annotation(figure(1),'textbox',[0.759 0.385 0.3 0.045],'String',['{\its} = ' num2str(round(PS_sensitivities(8),2)) ' x 10^{-4} min^{-1}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
 
 p1=get(h1,'position');
 p2=get(h2,'position');
@@ -510,6 +565,8 @@ xlim([min(vP_range) max(vP_range)+0.026]);
 ylim([-1.5 0.5]);
 title('Bolus (FXL fitting)','FontSize',8);
 
+annotation(figure(2),'textbox',[0.153 0.584 0.3 0.045],'String',['{\its} = ' num2str(round(vP_sensitivities(1),2)) ' x 10^{-2}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
+
 subplot(2,4,2) % slow, FXL
 
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
@@ -520,6 +577,8 @@ errorbar(vP_range + 0.039, vP_means_jitter_slow(:,4) - vP_range, 1*vP_devs_jitte
 xlim([min(vP_range) max(vP_range)+0.026]);
 ylim([-0.5 0.5]);
 title('Slow inj (FXL fitting)','FontSize',8);
+
+annotation(figure(2),'textbox',[0.360 0.859 0.3 0.045],'String',['{\its} = 0.00 x 10^{-2}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
 
 subplot(2,4,3) % fast, NXL
 
@@ -532,6 +591,8 @@ xlim([min(vP_range) max(vP_range)+0.026]);
 ylim([-0.5 0.5]);
 title('Bolus (NXL fitting)','FontSize',8);
 
+annotation(figure(2),'textbox',[0.567 0.584 0.3 0.045],'String',['{\its} = ' num2str(round(vP_sensitivities(3),2)) ' x 10^{-2}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
+
 subplot(2,4,4) % slow, NXL
 
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
@@ -542,6 +603,8 @@ errorbar(vP_range + 0.039, vP_means_jitter_slow_SXL(:,4) - vP_range, 1*vP_devs_j
 xlim([min(vP_range) max(vP_range)+0.026]);
 ylim([-0.5 0.5]);
 title('Slow inj (NXL fitting)','FontSize',8);
+
+annotation(figure(2),'textbox',[0.774 0.584 0.3 0.045],'String',['{\its} = 0.00 x 10^{-2}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
 
 h4=subplot(2,4,5) % fast, FXL, exclude
 
@@ -557,6 +620,8 @@ ylim([-0.5 0.5]);
 legend({'No delay','+ 4 s','+ 8 s','+ 12 s'},'Location','best','FontSize',8)
 legend('boxoff')
 
+annotation(figure(2),'textbox',[0.153 0.285 0.3 0.045],'String',['{\its} = ' num2str(round(vP_sensitivities(5),2)) ' x 10^{-2}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
+
 subplot(2,4,6) % slow, FXL, exclude
 
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
@@ -567,6 +632,8 @@ errorbar(vP_range + 0.039, vP_means_jitter_slow_exclude(:,4) - vP_range, 1*vP_de
 xlim([min(vP_range) max(vP_range)+0.026]);
 xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
 ylim([-0.5 0.5]);
+
+annotation(figure(2),'textbox',[0.360 0.385 0.3 0.045],'String',['{\its} = 0.00 x 10^{-2}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
 
 subplot(2,4,7) % fast, NXL, exclude
 
@@ -579,6 +646,8 @@ xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
 xlim([min(vP_range) max(vP_range)+0.026]);
 ylim([-0.5 0.5]);
 
+annotation(figure(2),'textbox',[0.567 0.110 0.3 0.045],'String',['{\its} = ' num2str(round(vP_sensitivities(7),2)) ' x 10^{-2}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
+
 subplot(2,4,8) % slow, NXL, exclude
 
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
@@ -590,7 +659,7 @@ xlim([min(vP_range) max(vP_range)+0.026]);
 xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
 ylim([-0.5 0.5]);
 
-
+annotation(figure(2),'textbox',[0.774 0.110 0.3 0.045],'String',['{\its} = 0.00 x 10^{-2}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
 
 p3=get(h3,'position');
 p4=get(h4,'position');

@@ -382,6 +382,46 @@ end
     save('vP_devs_H2O','vP_devs_H2O_fast','vP_devs_H2O_fast_exclude','vP_devs_H2O_SXL',...
        'vP_devs_H2O_SXL_exclude','vP_devs_H2O_slow','vP_devs_H2O_slow_exclude','vP_devs_H2O_slow_SXL','vP_devs_H2O_slow_SXL_exclude');
 
+%% Calculate sensitivities
+PS_sensitivities = NaN(1,8);
+vP_sensitivities = NaN(1,8);
+for i = 1:10
+    PS_s_fast(i) = max(PS_means_H2O_fast(i,2:4)) - min(PS_means_H2O_fast(i,2:4));
+    PS_s_fast_exclude(i) = max(PS_means_H2O_fast_exclude(i,2:4)) - min(PS_means_H2O_fast_exclude(i,2:4));
+    PS_s_fast_SXL(i) = max(PS_means_H2O_SXL(i,2:4)) - min(PS_means_H2O_SXL(i,2:4));
+    PS_s_fast_SXL_exclude(i) = max(PS_means_H2O_SXL_exclude(i,2:4)) - min(PS_means_H2O_SXL_exclude(i,2:4));
+    PS_s_slow(i) = max(PS_means_H2O_slow(i,2:4)) - min(PS_means_H2O_slow(i,2:4));
+    PS_s_slow_exclude(i) = max(PS_means_H2O_slow_exclude(i,2:4)) - min(PS_means_H2O_slow_exclude(i,2:4));
+    PS_s_slow_SXL(i) = max(PS_means_H2O_slow_SXL(i,2:4)) - min(PS_means_H2O_slow_SXL(i,2:4));
+    PS_s_slow_SXL_exclude(i) = max(PS_means_H2O_slow_SXL_exclude(i,2:4)) - min(PS_means_H2O_slow_SXL_exclude(i,2:4));
+    
+    vP_s_fast(i) = max(vP_means_H2O_fast(i,2:4)) - min(vP_means_H2O_fast(i,2:4));
+    vP_s_fast_exclude(i) = max(vP_means_H2O_fast_exclude(i,2:4)) - min(vP_means_H2O_fast_exclude(i,2:4));
+    vP_s_fast_SXL(i) = max(vP_means_H2O_SXL(i,2:4)) - min(vP_means_H2O_SXL(i,2:4));
+    vP_s_fast_SXL_exclude(i) = max(vP_means_H2O_SXL_exclude(i,2:4)) - min(vP_means_H2O_SXL_exclude(i,2:4));
+    vP_s_slow(i) = max(vP_means_H2O_slow(i,2:4)) - min(vP_means_H2O_slow(i,2:4));
+    vP_s_slow_exclude(i) = max(vP_means_H2O_slow_exclude(i,2:4)) - min(vP_means_H2O_slow_exclude(i,2:4));
+    vP_s_slow_SXL(i) = max(vP_means_H2O_slow_SXL(i,2:4)) - min(vP_means_H2O_slow_SXL(i,2:4));
+    vP_s_slow_SXL_exclude(i) = max(vP_means_H2O_slow_SXL_exclude(i,2:4)) - min(vP_means_H2O_slow_SXL_exclude(i,2:4));
+end    
+    PS_sensitivities(1) = mean(PS_s_fast);
+    PS_sensitivities(2) = mean(PS_s_slow);
+    PS_sensitivities(3) = mean(PS_s_fast_SXL);
+    PS_sensitivities(4) = mean(PS_s_slow_SXL);
+    PS_sensitivities(5) = mean(PS_s_fast_exclude);
+    PS_sensitivities(6) = mean(PS_s_slow_exclude);
+    PS_sensitivities(7) = mean(PS_s_fast_SXL_exclude);
+    PS_sensitivities(8) = mean(PS_s_slow_SXL_exclude);
+    
+    vP_sensitivities(1) = mean(vP_s_fast);
+    vP_sensitivities(2) = mean(vP_s_slow);
+    vP_sensitivities(3) = mean(vP_s_fast_SXL);
+    vP_sensitivities(4) = mean(vP_s_slow_SXL);
+    vP_sensitivities(5) = mean(vP_s_fast_exclude);
+    vP_sensitivities(6) = mean(vP_s_slow_exclude);
+    vP_sensitivities(7) = mean(vP_s_fast_SXL_exclude);
+    vP_sensitivities(8) = mean(vP_s_slow_SXL_exclude);
+
 %% Plot figures of PS     
 Colour1  = [0 0.447 0.741 0.5];
 Colour2 = [0.85 0.325 0.098 0.5];
@@ -406,6 +446,8 @@ ylim([-5 5]);
 legend({'{\itk_{be}} = 0 s^{-1}','{\itk_{be}} = 1.375 s^{-1}','{\itk_{be}} = 2.75 s^{-1}','{\itk_{be}} = 5.5 s^{-1}','{\itk_{be}} = 1000 s^{-1}'},'Position',[0.172 0.660 0.081 0.0207],'FontSize',8)
 legend('boxoff')
 
+annotation(figure(1),'textbox',[0.138 0.755 0.3 0.045],'String',['{\its} = ' num2str(round(PS_sensitivities(1),2)) ' x 10^{-4} min^{-1}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
+
 subplot(2,4,2) % slow, FXL
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
@@ -417,6 +459,8 @@ errorbar(PS_range + 0.16, PS_means_H2O_slow(:,5) - PS_range, 1*PS_devs_H2O_slow(
 title('Slow inj (FXL fitting)','FontSize',8);
 xlim([0 max(PS_range)+0.12]);
 ylim([-2.75 2.75]);
+
+annotation(figure(1),'textbox',[0.345 0.862 0.3 0.045],'String',['{\its} = 0.20 x 10^{-4} min^{-1}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
 
 subplot(2,4,3) % fast, NXL
 
@@ -430,6 +474,8 @@ title('Bolus (NXL fitting)','FontSize',8);
 xlim([0 max(PS_range)+0.12]);
 ylim([-2.75 2.75]);
 
+annotation(figure(1),'textbox',[0.552 0.862 0.3 0.045],'String',['{\its} = ' num2str(round(PS_sensitivities(3),2)) ' x 10^{-4} min^{-1}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
+
 subplot(2,4,4) % slow, NXL
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
@@ -441,6 +487,8 @@ errorbar(PS_range + 0.16, PS_means_H2O_slow_SXL(:,5) - PS_range, 1*PS_devs_H2O_s
 title('Slow inj (NXL fitting)','FontSize',8);
 xlim([0 max(PS_range)+0.12]);
 ylim([-2.75 2.75]);
+
+annotation(figure(1),'textbox',[0.759 0.862 0.3 0.045],'String',['{\its} = ' num2str(round(PS_sensitivities(4),2)) ' x 10^{-4} min^{-1}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
 
 h2=subplot(2,4,5) %, fast, FXL, exclude
 
@@ -455,6 +503,8 @@ xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 xlim([0 max(PS_range)+0.12]);
 ylim([-2.75 2.75]);
 
+annotation(figure(1),'textbox',[0.138 0.385 0.3 0.045],'String',['{\its} = ' num2str(round(PS_sensitivities(5),2)) ' x 10^{-4} min^{-1}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
+
 subplot(2,4,6) % slow, FXL, exclude
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
@@ -466,6 +516,8 @@ errorbar(PS_range + 0.16, PS_means_H2O_slow_exclude(:,5) - PS_range, 1*PS_devs_H
 xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 xlim([0 max(PS_range)+0.12]);
 ylim([-2.75 2.75]);
+
+annotation(figure(1),'textbox',[0.345 0.385 0.3 0.045],'String',['{\its} = ' num2str(round(PS_sensitivities(6),2)) ' x 10^{-4} min^{-1}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
 
 subplot(2,4,7) % fast, NXL, exclude
 
@@ -479,6 +531,8 @@ xlim([0 max(PS_range)+0.12]);
 ylim([-2.75 2.75]);
 xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 
+annotation(figure(1),'textbox',[0.552 0.385 0.3 0.045],'String',['{\its} = ' num2str(round(PS_sensitivities(7),2)) ' x 10^{-4} min^{-1}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
+
 subplot(2,4,8) % slow, NXL, exclude
 
 plot(PS_range,zeros(size(PS_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
@@ -490,6 +544,8 @@ errorbar(PS_range + 0.16, PS_means_H2O_slow_SXL_exclude(:,5) - PS_range, 1*PS_de
 xlabel('True {\itPS} (x10^{-4} min^{-1} )','FontSize',8);
 xlim([0 max(PS_range)+0.12]);
 ylim([-2.75 2.75]);
+
+annotation(figure(1),'textbox',[0.759 0.385 0.3 0.045],'String',['{\its} = ' num2str(round(PS_sensitivities(8),2)) ' x 10^{-4} min^{-1}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
 
 figure(1)
 p1=get(h1,'position');
@@ -527,6 +583,8 @@ xlim([min(vP_range) max(vP_range)+0.026]);
 ylim([-1.4 0.2]);
 title('Bolus (FXL fitting)','FontSize',8);
 
+annotation(figure(2),'textbox',[0.153 0.584 0.3 0.045],'String',['{\its} = ' num2str(round(vP_sensitivities(1),2)) ' x 10^{-2}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
+
 subplot(2,4,2) % slow, FXL
 
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
@@ -538,6 +596,8 @@ errorbar(vP_range + 0.044, vP_means_H2O_slow(:,5) - vP_range, 1*vP_devs_H2O_slow
 xlim([min(vP_range) max(vP_range)+0.026]);
 ylim([-0.8 0.8]);
 title('Slow inj (FXL fitting)','FontSize',8);
+
+annotation(figure(2),'textbox',[0.360 0.584 0.3 0.045],'String',['{\its} = ' num2str(round(vP_sensitivities(2),2)) ' x 10^{-2}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
 
 subplot(2,4,3) % fast, NXL
 
@@ -551,6 +611,8 @@ xlim([min(vP_range) max(vP_range)+0.026]);
 ylim([-0.8 0.8]);
 title('Bolus (NXL fitting)','FontSize',8);
 
+annotation(figure(2),'textbox',[0.567 0.584 0.3 0.045],'String',['{\its} = ' num2str(round(vP_sensitivities(3),2)) ' x 10^{-2}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
+
 subplot(2,4,4) % slow, NXL
 
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
@@ -562,6 +624,8 @@ errorbar(vP_range + 0.044, vP_means_H2O_slow_SXL(:,5) - vP_range, 1*vP_devs_H2O_
 xlim([min(vP_range) max(vP_range)+0.026]);
 ylim([-0.8 0.8]);
 title('Slow inj (NXL fitting)','FontSize',8);
+
+annotation(figure(2),'textbox',[0.774 0.584 0.3 0.045],'String',['{\its} = ' num2str(round(vP_sensitivities(4),2)) ' x 10^{-2}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
 
 h4=subplot(2,4,5) % fast, FXL, exclude
 
@@ -578,6 +642,8 @@ ylim([-0.8 0.8]);
 legend({'{\itk_{be}} = 0 s^{-1}','{\itk_{be}} = 1.375 s^{-1}','{\itk_{be}} = 2.75 s^{-1}','{\itk_{be}} = 5.5 s^{-1}','{\itk_{be}} = 1000 s^{-1}'},'Position',[0.172 0.355 0.081 0.0207],'FontSize',8)
 legend('boxoff')
 
+annotation(figure(2),'textbox',[0.153 0.110 0.3 0.045],'String',['{\its} = ' num2str(round(vP_sensitivities(5),2)) ' x 10^{-2}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
+
 subplot(2,4,6) % slow, FXL, exclude
 
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
@@ -589,6 +655,8 @@ errorbar(vP_range + 0.044, vP_means_H2O_slow_exclude(:,5) - vP_range, 1*vP_devs_
 xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
 xlim([min(vP_range) max(vP_range)+0.026]);
 ylim([-0.8 0.8]);
+
+annotation(figure(2),'textbox',[0.360 0.110 0.3 0.045],'String',['{\its} = ' num2str(round(vP_sensitivities(6),2)) ' x 10^{-2}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
 
 subplot(2,4,7) % fast, NXL, exclude
 
@@ -602,6 +670,8 @@ xlim([min(vP_range) max(vP_range)+0.026]);
 xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
 ylim([-0.8 0.8]);
 
+annotation(figure(2),'textbox',[0.567 0.110 0.3 0.045],'String',['{\its} = ' num2str(round(vP_sensitivities(7),2)) ' x 10^{-2}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
+
 subplot(2,4,8) % slow, NXL, exclude
 plot(vP_range,zeros(size(vP_range)),'k:','DisplayName','True PS','HandleVisibility','off'); hold on;
 errorbar(vP_range, vP_means_H2O_slow_SXL_exclude(:,1) - vP_range, 1*vP_devs_H2O_slow_SXL_exclude(:,1),'LineWidth',1.1,'Color',Colour1, 'Linestyle', '--'); hold on;
@@ -612,6 +682,9 @@ errorbar(vP_range + 0.044, vP_means_H2O_slow_SXL_exclude(:,5) - vP_range, 1*vP_d
 xlim([min(vP_range) max(vP_range)+0.026]);
 xlabel('True {\itv_p} (x10^{-2})','FontSize',8);
 ylim([-0.8 0.8]);
+
+annotation(figure(2),'textbox',[0.774 0.110 0.3 0.045],'String',['{\its} = ' num2str(round(vP_sensitivities(8),2)) ' x 10^{-2}'],'LineStyle','none','FitBoxToText','off','FontSize',8);
+
 set(gcf, 'units', 'centimeters','Position', [5 5 20 16]);
 
 figure(2)
