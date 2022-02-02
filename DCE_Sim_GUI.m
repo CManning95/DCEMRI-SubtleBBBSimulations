@@ -4,7 +4,7 @@ function varargout = DCE_Sim_GUI(varargin)
 % Will assess various physiological and technical DCE parameters for PS
 % and vP accuracy
 
-% Last Modified by GUIDE v2.5 13-Oct-2020 16:04:36
+% Last Modified by GUIDE v2.5 01-Feb-2022 18:37:13
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -85,9 +85,7 @@ handles.PhysParam.S0_blood = 100;
 handles.PhysParam.S0_tissue = 100;
 handles.PhysParam.kbe_perS = 2.75;
 handles.PhysParam.kie_perS = 1.7;
-handles.PhysParam.vP_fixed = 0.015;
 handles.PhysParam.vP_fixed_single = 0.015;
-handles.PhysParam.PS_fixed = 2.96 * 1e-4;
 handles.PhysParam.PS_fixed_single = 2.96 * 1e-4;
 
 set(handles.Hct, 'String', handles.PhysParam.Hct);
@@ -99,9 +97,7 @@ set(handles.S0_blood, 'String', handles.PhysParam.S0_blood);
 set(handles.S0_tissue, 'String', handles.PhysParam.S0_tissue);
 set(handles.Kbe, 'String', handles.PhysParam.kbe_perS);
 set(handles.Kie, 'String', handles.PhysParam.kie_perS);
-set(handles.vP_fixed,'String',handles.PhysParam.vP_fixed);
 set(handles.vP_fixed_single,'String',handles.PhysParam.vP_fixed_single);
-set(handles.PS_fixed,'String',handles.PhysParam.PS_fixed * 1e4);
 set(handles.PS_fixed_single,'String',handles.PhysParam.PS_fixed_single * 1e4);
 
 handles.SeqParam.t_acq_s = 1268;
@@ -169,7 +165,7 @@ set(handles.water_exch_model, 'value',4);
 set(handles.B1_correction, 'value',0);
 set(handles.T10_B1_Correction, 'value',0);
 set(handles.Plot_extra_figs,'value',0);
-set(handles.SXLfit,'value',0);
+set(handles.SXLfit,'value',2);
 set(handles.VFA_FA_1,'string',handles.acqParam.VFA_FA_1);
 set(handles.VFA_FA_2,'string',handles.acqParam.VFA_FA_2);
 set(handles.VFA_FA_3,'string',handles.acqParam.VFA_FA_3);
@@ -187,9 +183,7 @@ handles.PhysParam.S0_blood = 100;
 handles.PhysParam.S0_tissue = 100;
 handles.PhysParam.kbe_perS = 2.65;
 handles.PhysParam.kie_perS = 1.7;
-handles.PhysParam.vP_fixed = 0.027;
 handles.PhysParam.vP_fixed_single = 0.027;
-handles.PhysParam.PS_fixed = 5 * 1e-4;
 handles.PhysParam.PS_fixed_single = 5 * 1e-4;
 
 set(handles.Hct, 'String', handles.PhysParam.Hct);
@@ -201,9 +195,7 @@ set(handles.S0_blood, 'String', handles.PhysParam.S0_blood);
 set(handles.S0_tissue, 'String', handles.PhysParam.S0_tissue);
 set(handles.Kbe, 'String', handles.PhysParam.kbe_perS);
 set(handles.Kie, 'String', handles.PhysParam.kie_perS);
-set(handles.vP_fixed,'String',handles.PhysParam.vP_fixed);
 set(handles.vP_fixed_single,'String',handles.PhysParam.vP_fixed_single);
-set(handles.PS_fixed,'String',handles.PhysParam.PS_fixed * 1e4);
 set(handles.PS_fixed_single,'String',handles.PhysParam.PS_fixed_single * 1e4);
 
 handles.SeqParam.t_acq_s = 1268;
@@ -271,7 +263,7 @@ set(handles.water_exch_model, 'value',4);
 set(handles.B1_correction, 'value',0);
 set(handles.T10_B1_Correction, 'value',0);
 set(handles.Plot_extra_figs,'value',0);
-set(handles.SXLfit,'value',0);
+set(handles.SXLfit,'value',2);
 set(handles.VFA_FA_1,'string',handles.acqParam.VFA_FA_1);
 set(handles.VFA_FA_2,'string',handles.acqParam.VFA_FA_2);
 set(handles.VFA_FA_3,'string',handles.acqParam.VFA_FA_3);
@@ -834,9 +826,20 @@ handles.SimParam.Plot_extra_figs = Plot_extra_figs;
 guidata(hObject,handles)
 
 function SXLfit_Callback(hObject, eventdata, handles)
-SXLfit = get(hObject,'Value');
-handles.SimParam.SXLfit = SXLfit;
-guidata(hObject,handles)
+SXLfit = get(handles.SXLfit,'Value');
+switch SXLfit
+    case 1
+    case 2
+        handles.SimParam.SXLfit = 0;
+    case 3
+        handles.SimParam.SXLfit = 1;
+end
+guidata(handles.figure1,handles)
+
+
+set(handles.t_start,'string',t_start);
+handles.SimParam.t_start_s = t_start;
+guidata(handles.figure1,handles)
 
 function T1acq_SNR_Callback(hObject, eventdata, handles)
 T1_SNR = str2double(get(hObject,'String'));
@@ -891,7 +894,7 @@ acqParam = handles.acqParam;
 
 % ranges of PS to test for fixed vP
 PS_range = linspace(SimParam.min_PS,SimParam.max_PS,10)'+1e-8;
-vP_fixed = PhysParam.vP_fixed; %vP for NAWM, Heye et al. 2016 
+vP_fixed = PhysParam.vP_fixed_single; %vP for NAWM, Heye et al. 2016 
 
 %range sizes
 N_PS = size(PS_range,1);
@@ -1039,22 +1042,22 @@ PS_range = PS_range * 1e4;
 PS_means_1 = PS_means_1 * 1e4;
 PS_devs_1 = PS_devs_1 * 1e4;
 
+% set font size for axes ticks and labels
+a = get(gca,'XTickLabel');
+set(gca,'XTickLabel',a,'fontsize',12);
+
 % plot results of simulations
 errorbar(PS_range, PS_means_1(:,1) - PS_range, 1*PS_devs_1(:,1),'LineWidth',1.3);
-xlabel('True PS (x10^{-4} min^{-1} )');
-ylabel('fitted PS error (x10^{-4} min^{-1} )');
+PS_sims_xlabel=xlabel('True PS (x10^{-4} min^{-1} )', 'FontSize', 20);
+PS_sims_ylabel=ylabel('fitted PS error (x10^{-4} min^{-1} )', 'FontSize', 20);
 xlim([0 max(PS_range)]);
-%ylim([-2 2]);
-%plot legend (if there are entries)
+
 if exist('fig_legend_entry') ~= 0;
     if isa(fig_legend_entry,'cell') == 1
         legend(fig_legend_entry);
         legend('boxoff');
     end
 end
-% set font size for axes ticks and labels
-a = get(gca,'XTickLabel');
-set(gca,'XTickLabel',a,'fontsize',9);
 
 % --- Executes on button press in run_vP_sims.
 function run_vP_sims_Callback(hObject, eventdata, handles)
@@ -1065,7 +1068,7 @@ acqParam = handles.acqParam;
 
 % ranges of PS to test for fixed vP
 vP_range = linspace(SimParam.min_vP,SimParam.max_vP,10)'+1e-8;
-PS_fixed = PhysParam.PS_fixed; 
+PS_fixed = PhysParam.PS_fixed_single; 
 
 %range sizes
 N_vP = size(vP_range,1);
@@ -1211,9 +1214,14 @@ vP_range = vP_range * 1e3;
 vP_means_1 = vP_means_1 * 1e3;
 vP_devs_1 = vP_devs_1 * 1e3;
 
+% set font size for axes ticks and labels
+a = get(gca,'XTickLabel');
+set(gca,'XTickLabel',a,'fontsize',12);
+
+% plot results of simulations
 errorbar(vP_range, vP_means_1(:,1) - vP_range, 1*vP_devs_1(:,1),'LineWidth',1.3);
-xlabel('True vP (x10^{-3})');
-ylabel('fitted vP error (x10^{-3})');
+vP_sims_xlabel=xlabel('True vP (x10^{-3})','FontSize',20);
+vP_sims_ylabel=ylabel('fitted vP error (x10^{-3})','FontSize',20);
 xlim([min(vP_range) max(vP_range)]);
 %ylim([-2 2]);
 
@@ -1224,9 +1232,7 @@ if exist('fig_legend_entry') ~= 0;
         legend('boxoff');
     end
 end
-% set font size for axes ticks and labels
-a = get(gca,'XTickLabel');
-set(gca,'XTickLabel',a,'fontsize',9);
+
 
 % --- Executes on button press in Single_PS.
 function Single_PS_Callback(hObject, eventdata, handles)
@@ -1329,7 +1335,16 @@ PhysParam.PS_perMin = PhysParam.PS_fixed_single;
 
 CreateStruct.Interpreter = 'tex';
 CreateStruct.WindowStyle = 'modal';
-PS_msg = msgbox(['Mean PS = ' num2str(mean(PS_fit_1,2)*1e4) '(\pm ' num2str(1e4*std(PS_fit_1,0)) ') x 10^{-4} per min, mean v_p = '...
-    num2str(mean(vP_fit_1,2)*1e3) '(\pm ' num2str(1e3*std(vP_fit_1,0)) ') x 10^{-3}'], 'Single PS sim', CreateStruct);
+PS_msg = sprintf(['Mean PS = ' num2str(mean(PS_fit_1,2)*1e4) '(\x00B1 ' num2str(1e4*std(PS_fit_1,0)) ') x 10^{-4} per min \nMean v_p = '...
+    num2str(mean(vP_fit_1,2)*1e3) '(\x00B1 ' num2str(1e3*std(vP_fit_1,0)) ') x 10^{-3}']);
+uiwait(msgbox(PS_msg, 'Single PS sim', CreateStruct));
 
 
+
+
+
+% --------------------------------------------------------------------
+function Untitled_1_Callback(hObject, eventdata, handles)
+% hObject    handle to Untitled_1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
