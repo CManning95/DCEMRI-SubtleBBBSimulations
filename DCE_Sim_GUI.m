@@ -836,11 +836,6 @@ switch SXLfit
 end
 guidata(handles.figure1,handles)
 
-
-set(handles.t_start,'string',t_start);
-handles.SimParam.t_start_s = t_start;
-guidata(handles.figure1,handles)
-
 function T1acq_SNR_Callback(hObject, eventdata, handles)
 T1_SNR = str2double(get(hObject,'String'));
 handles.acqParam.T1_SNR = T1_SNR;
@@ -1337,14 +1332,5 @@ CreateStruct.Interpreter = 'tex';
 CreateStruct.WindowStyle = 'modal';
 PS_msg = sprintf(['Mean PS = ' num2str(mean(PS_fit_1,2)*1e4) '(\x00B1 ' num2str(1e4*std(PS_fit_1,0)) ') x 10^{-4} per min \nMean v_p = '...
     num2str(mean(vP_fit_1,2)*1e3) '(\x00B1 ' num2str(1e3*std(vP_fit_1,0)) ') x 10^{-3}']);
-uiwait(msgbox(PS_msg, 'Single PS sim', CreateStruct));
+uiwait(msgbox(PS_msg, 'Single sim', CreateStruct));
 
-
-
-
-
-% --------------------------------------------------------------------
-function Untitled_1_Callback(hObject, eventdata, handles)
-% hObject    handle to Untitled_1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
